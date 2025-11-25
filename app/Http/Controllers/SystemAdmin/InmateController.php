@@ -17,21 +17,65 @@ class InmateController extends Controller
 {
     public function index(Request $request){
         $query = Inmate::with('institution');
+        $search = trim((string)$request->get('search',''));
         $institutionId = $request->get('institution_id');
         $type = $request->get('type');
         $sort = $request->get('sort','name_asc');
+        if($search !== ''){
+            $query->where(function($q) use ($search){
+                $q->where('first_name','like',"%{$search}%")
+                  ->orWhere('last_name','like',"%{$search}%")
+                  ->orWhereRaw("CONCAT(first_name,' ',COALESCE(last_name,'')) like ?", ["%{$search}%"])
+                  ->orWhere('admission_number','like',"%{$search}%")
+                  ->orWhere('registration_number','like',"%{$search}%");
+                if (ctype_digit($search)) {
+                    $q->orWhere('id',(int)$search);
+                }
+            });
+
+            // Relevance-based ordering: prefix and exact matches first, then others
+            $safe = str_replace(['%','_'], ['\\%','\\_'], $search);
+            $prefix = $safe.'%';
+            $contains = '%'.$safe.'%';
+
+            $query->orderByRaw(<<<SQL
+                CASE
+                    WHEN CONCAT(first_name,' ',COALESCE(last_name,'')) LIKE ? THEN 1
+                    WHEN first_name LIKE ? THEN 2
+                    WHEN last_name LIKE ? THEN 3
+                    WHEN admission_number LIKE ? THEN 4
+                    WHEN registration_number LIKE ? THEN 5
+                    WHEN CAST(id AS CHAR) = ? THEN 6
+                    WHEN CONCAT(first_name,' ',COALESCE(last_name,'')) LIKE ? THEN 7
+                    WHEN first_name LIKE ? THEN 8
+                    WHEN last_name LIKE ? THEN 9
+                    ELSE 10
+                END
+            SQL, [
+                $prefix,
+                $prefix,
+                $prefix,
+                $prefix,
+                $prefix,
+                $safe,
+                $contains,
+                $contains,
+                $contains,
+            ]);
+        }
         if($institutionId){ $query->where('institution_id',$institutionId); }
         if($type){ $query->where('type',$type); }
+        // Fallback/stable ordering when no search or same relevance
         match($sort){
-            'name_desc' => $query->orderBy('first_name','desc'),
+            'name_desc' => $query->orderBy('first_name','desc')->orderBy('id','asc'),
             'created_asc' => $query->orderBy('id','asc'),
             'created_desc' => $query->orderBy('id','desc'),
-            default => $query->orderBy('first_name','asc'),
+            default => $query->orderBy('first_name','asc')->orderBy('id','asc'),
         };
-        $inmates = $query->paginate(15)->appends($request->only('institution_id','type','sort'));
+        $inmates = $query->paginate(15)->appends($request->only('search','institution_id','type','sort'));
         $institutions = Institution::orderBy('name')->get(['id','name']);
         $types = Inmate::select('type')->whereNotNull('type')->where('type','!=','')->distinct()->orderBy('type')->pluck('type');
-        return view('system_admin.inmates.index', compact('inmates','institutions','institutionId','types','type','sort'));
+        return view('system_admin.inmates.index', compact('inmates','institutions','institutionId','types','type','sort','search'));
     }
 
     public function create(){

@@ -72,18 +72,19 @@
 
     </head>
     <body class="font-sans antialiased bg-light" @auth data-auth="{{ auth()->id() }}" @endauth>
-    <div class="d-flex min-vh-100">
+    <div class="d-flex min-vh-100 w-100">
         <!-- Desktop Sidebar (locked/fixed) -->
         <div class="d-none d-lg-block position-fixed h-100" style="width:260px; left:0; top:0; z-index:1030;">
             @include('layouts.partials.sidebar')
         </div>
-        <!-- Content wrapper adds left margin to avoid overlap -->
-        <div class="flex-grow-1 d-flex flex-column" style="margin-left:0; margin-left:260px;">
+        <!-- Content wrapper: no fixed margin here; handled via CSS so mobile isn't squashed -->
+        <div class="flex-grow-1 d-flex flex-column aw-app-shell">
             <nav class="navbar navbar-light bg-white border-bottom sticky-top d-lg-none">
                 <div class="container-fluid">
                     <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"><span class="bi bi-list"></span></button>
-                    <span class="navbar-brand ms-2 fw-semibold d-flex align-items-center">
-                        <img src="{{ asset('assets/aathmiya.png') }}" alt="aathmiya" style="height:22px;width:auto">
+                    <span class="navbar-brand ms-2 fw-semibold d-flex align-items-center gap-2">
+                        <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="Kunjachan Missionary Bhavan" style="height:28px;width:28px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(255,255,255,.9);">
+                        <span class="text-uppercase" style="letter-spacing:.05em;font-size:.75rem;line-height:1.2;">KUNJACHAN MISSIONARY<br>BHAVAN</span>
                     </span>
                     @auth
                     @php
@@ -269,7 +270,7 @@
                     </div>
                 </header>
             @endif
-            <main class="flex-grow-1 py-4 px-3">
+            <main class="flex-grow-1 py-4 px-3 w-100">
                 @isset($slot)
                     {{ $slot }}
                 @else
@@ -279,6 +280,14 @@
             </main>
         </div>
     </div>
+
+    <style>
+        /* Layout shell: on large screens push content right of fixed sidebar; on small screens use full width */
+        .aw-app-shell { margin-left: 0; }
+        @media (min-width: 992px) {
+            .aw-app-shell { margin-left: 260px; }
+        }
+    </style>
 
     <!-- Mobile Offcanvas Sidebar -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
