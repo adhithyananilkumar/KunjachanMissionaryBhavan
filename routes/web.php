@@ -49,6 +49,7 @@ use App\Http\Controllers\Admin\MedicineController as AdminMedicineController;
 // Public website pages (static, no app logic)
 Route::view('/', 'public.home')->name('home');
 Route::view('/about', 'public.about')->name('about');
+Route::view('/timeline', 'public.timeline')->name('timeline');
 // Institutions (public)
 Route::get('/institutions', function(){
     $institutions = [
