@@ -44,6 +44,7 @@
                             <div class="timeline-icon">
                                 <i class="fas fa-question-circle" aria-hidden="true"></i>
                             </div>
+                            <div class="timeline-connector timeline-connector-horizontal" aria-hidden="true"></div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -78,6 +79,7 @@
                             <div class="timeline-icon">
                                 <i class="fas fa-pencil-ruler" aria-hidden="true"></i>
                             </div>
+                            <div class="timeline-connector timeline-connector-horizontal" aria-hidden="true"></div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -112,6 +114,7 @@
                             <div class="timeline-icon">
                                 <i class="fas fa-chalkboard" aria-hidden="true"></i>
                             </div>
+                            <div class="timeline-connector timeline-connector-horizontal" aria-hidden="true"></div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -132,7 +135,6 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-connector timeline-connector-down" aria-hidden="true"></div>
                             <div class="timeline-icon">
                                 <i class="fas fa-shopping-cart" aria-hidden="true"></i>
                             </div>
@@ -144,11 +146,10 @@
                     <div class="timeline-row">
                         <div class="timeline-col timeline-col-left"></div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-connector timeline-connector-up" aria-hidden="true"></div>
-                            <div class="timeline-connector timeline-connector-down" aria-hidden="true"></div>
                             <div class="timeline-icon">
                                 <i class="fas fa-tools" aria-hidden="true"></i>
                             </div>
+                            <div class="timeline-connector timeline-connector-horizontal" aria-hidden="true"></div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -169,7 +170,6 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-connector timeline-connector-up" aria-hidden="true"></div>
                             <div class="timeline-icon">
                                 <i class="fas fa-check-circle" aria-hidden="true"></i>
                             </div>
@@ -239,8 +239,18 @@
         font-size: 1.4rem;
     }
 
-    .timeline-connector {
-        display: none;
+    .timeline-connector-horizontal {
+        position: absolute;
+        left: 50%;
+        width: 90px;
+        height: 0;
+        border-top: 2px dashed rgba(15, 23, 42, 0.18);
+        transform: translateX(-50%);
+        z-index: 0;
+    }
+
+    .timeline-col-icon--shift-right .timeline-connector-horizontal {
+        right: auto;
     }
 
     .timeline-week {
