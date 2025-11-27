@@ -18,7 +18,6 @@
         <div class="row">
             <div class="col-lg-10 mx-auto">
                 <div class="surface timeline-vertical">
-                    <div class="timeline-center-line" aria-hidden="true"></div>
 
                     {{-- Week 1 --}}
                     <div class="timeline-row">
@@ -30,9 +29,7 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon">
-                                <i class="fas fa-comments" aria-hidden="true"></i>
-                            </div>
+                            <div class="timeline-icon"><i class="fas fa-comments"></i></div>
                         </div>
                         <div class="timeline-col timeline-col-right"></div>
                     </div>
@@ -41,10 +38,7 @@
                     <div class="timeline-row">
                         <div class="timeline-col timeline-col-left"></div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon">
-                                <i class="fas fa-question-circle" aria-hidden="true"></i>
-                            </div>
-                            <div class="timeline-connector timeline-connector-horizontal" aria-hidden="true"></div>
+                            <div class="timeline-icon"><i class="fas fa-question-circle"></i></div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -65,9 +59,7 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon">
-                                <i class="fas fa-lightbulb" aria-hidden="true"></i>
-                            </div>
+                            <div class="timeline-icon"><i class="fas fa-lightbulb"></i></div>
                         </div>
                         <div class="timeline-col timeline-col-right"></div>
                     </div>
@@ -76,10 +68,7 @@
                     <div class="timeline-row">
                         <div class="timeline-col timeline-col-left"></div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon">
-                                <i class="fas fa-pencil-ruler" aria-hidden="true"></i>
-                            </div>
-                            <div class="timeline-connector timeline-connector-horizontal" aria-hidden="true"></div>
+                            <div class="timeline-icon"><i class="fas fa-pencil-ruler"></i></div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -100,9 +89,7 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon">
-                                <i class="fas fa-paper-plane" aria-hidden="true"></i>
-                            </div>
+                            <div class="timeline-icon"><i class="fas fa-paper-plane"></i></div>
                         </div>
                         <div class="timeline-col timeline-col-right"></div>
                     </div>
@@ -111,10 +98,7 @@
                     <div class="timeline-row">
                         <div class="timeline-col timeline-col-left"></div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon">
-                                <i class="fas fa-chalkboard" aria-hidden="true"></i>
-                            </div>
-                            <div class="timeline-connector timeline-connector-horizontal" aria-hidden="true"></div>
+                            <div class="timeline-icon"><i class="fas fa-chalkboard"></i></div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -135,9 +119,7 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon">
-                                <i class="fas fa-shopping-cart" aria-hidden="true"></i>
-                            </div>
+                            <div class="timeline-icon"><i class="fas fa-shopping-cart"></i></div>
                         </div>
                         <div class="timeline-col timeline-col-right"></div>
                     </div>
@@ -146,10 +128,7 @@
                     <div class="timeline-row">
                         <div class="timeline-col timeline-col-left"></div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon">
-                                <i class="fas fa-tools" aria-hidden="true"></i>
-                            </div>
-                            <div class="timeline-connector timeline-connector-horizontal" aria-hidden="true"></div>
+                            <div class="timeline-icon"><i class="fas fa-tools"></i></div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -170,12 +149,11 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon">
-                                <i class="fas fa-check-circle" aria-hidden="true"></i>
-                            </div>
+                            <div class="timeline-icon"><i class="fas fa-check-circle"></i></div>
                         </div>
                         <div class="timeline-col timeline-col-right"></div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -183,140 +161,70 @@
 </section>
 @endsection
 
+
 @push('styles')
 <style>
-    .timeline-vertical {
-        position: relative;
-        padding: 2.5rem 1.5rem;
-    }
+.timeline-vertical { position: relative; padding: 2.5rem 1.5rem; overflow: hidden; }
 
-    .timeline-center-line {
-        position: relative;
-        width: 100%;
-        border-top: 2px solid rgba(15, 23, 42, 0.06);
-        margin-bottom: 2rem;
-    }
+/* Curved dotted path passing through all circles */
+.timeline-vertical::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+        background:
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 900'%3E%3Cpath d='M120 60 C 135 140 135 220 120 300 S 105 460 120 540 S 135 700 120 780' fill='none' stroke='%23b91c1c' stroke-width='3' stroke-dasharray='4 6' /%3E%3C/svg%3E")
+        center/contain no-repeat;
+    z-index: 0;
+}
 
-    .timeline-row {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
-        gap: 1.25rem;
-        margin-bottom: 2.5rem;
-    }
+.timeline-row {
+    display: grid;
+    grid-template-columns: 1.1fr auto 1.1fr;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
 
-    .timeline-row:last-child {
-        margin-bottom: 0;
-    }
+.timeline-card {
+    background: #fff;
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 0.25rem 0.9rem rgba(15,23,42,.08);
+}
 
-    .timeline-col {
-        min-height: 3.5rem;
-    }
+.timeline-icon {
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    background: #e9efff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #fff;
+    position: relative;
+    z-index: 1;
+}
 
-    .timeline-card {
-        background: var(--kb-surface, #ffffff);
-        border-radius: 0.75rem;
-        padding: 1.25rem 1.5rem;
-        box-shadow: 0 0.25rem 0.9rem rgba(15, 23, 42, 0.08);
-    }
+.timeline-col-icon {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
 
-    .timeline-icon {
-        position: relative;
-        z-index: 1;
-        width: 3.25rem;
-        height: 3.25rem;
-        border-radius: 50%;
-        background: var(--kb-primary-soft);
-        color: var(--kb-primary-dark);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0.4rem 1rem rgba(15, 23, 42, 0.16);
-        border: 3px solid #ffffff;
-    }
+.timeline-col-icon--shift-left { transform: translateX(-55px); }
+.timeline-col-icon--shift-right { transform: translateX(55px); }
 
-    .timeline-icon i {
-        font-size: 1.4rem;
-    }
+.timeline-col-left .timeline-card {
+    margin-right: 1.5rem;
+}
 
-    .timeline-connector-horizontal {
-        position: absolute;
-        left: 50%;
-        width: 90px;
-        height: 0;
-        border-top: 2px dashed rgba(15, 23, 42, 0.18);
-        transform: translateX(-50%);
-        z-index: 0;
-    }
+.timeline-col-right .timeline-card {
+    margin-left: 1.5rem;
+}
 
-    .timeline-col-icon--shift-right .timeline-connector-horizontal {
-        right: auto;
-    }
-
-    .timeline-week {
-        font-size: 0.85rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--kb-accent);
-        margin-bottom: 0.15rem;
-    }
-
-    .timeline-col-icon {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .timeline-col-icon--shift-left {
-        transform: translateX(-45px);
-    }
-
-    .timeline-col-icon--shift-right {
-        transform: translateX(45px);
-    }
-
-    @media (min-width: 992px) {
-        .timeline-vertical {
-            padding: 3rem 3rem;
-        }
-    }
-
-    @media (max-width: 767.98px) {
-        .timeline-vertical {
-            padding: 2rem 1rem;
-        }
-
-        .timeline-center-line {
-            display: none;
-        }
-
-        .timeline-row {
-            grid-template-columns: auto 1fr;
-            grid-template-areas:
-                "icon content";
-            margin-bottom: 1.75rem;
-        }
-
-        .timeline-col-left,
-        .timeline-col-right {
-            display: none;
-        }
-
-        .timeline-col-icon {
-            grid-area: icon;
-            margin-right: 0.75rem;
-            transform: none;
-        }
-
-        .timeline-connector {
-            display: none;
-        }
-
-        .timeline-card {
-            grid-area: content;
-        }
-    }
+@media (max-width: 767px) {
+    .timeline-vertical::before { display: none; }
+}
 </style>
 @endpush
