@@ -10,7 +10,7 @@
                 <div class="surface">
                     <div class="section-heading">Project Timeline</div>
                     <h1 class="h3 mb-2">Step-by-step journey</h1>
-                    <p class="muted mb-0">Follow the weekly milestones from initial consultation to final review.</p>
+                    
                 </div>
             </div>
         </div>
@@ -29,7 +29,7 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon"><i class="fas fa-comments"></i></div>
+                            <div class="timeline-icon">1</div>
                         </div>
                         <div class="timeline-col timeline-col-right"></div>
                     </div>
@@ -38,7 +38,7 @@
                     <div class="timeline-row">
                         <div class="timeline-col timeline-col-left"></div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon"><i class="fas fa-question-circle"></i></div>
+                            <div class="timeline-icon">2</div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -59,7 +59,7 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon"><i class="fas fa-lightbulb"></i></div>
+                            <div class="timeline-icon">3</div>
                         </div>
                         <div class="timeline-col timeline-col-right"></div>
                     </div>
@@ -68,7 +68,7 @@
                     <div class="timeline-row">
                         <div class="timeline-col timeline-col-left"></div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon"><i class="fas fa-pencil-ruler"></i></div>
+                            <div class="timeline-icon">4</div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -89,7 +89,7 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon"><i class="fas fa-paper-plane"></i></div>
+                            <div class="timeline-icon">5</div>
                         </div>
                         <div class="timeline-col timeline-col-right"></div>
                     </div>
@@ -98,7 +98,7 @@
                     <div class="timeline-row">
                         <div class="timeline-col timeline-col-left"></div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon"><i class="fas fa-chalkboard"></i></div>
+                            <div class="timeline-icon">6</div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -119,7 +119,7 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon"><i class="fas fa-shopping-cart"></i></div>
+                            <div class="timeline-icon">7</div>
                         </div>
                         <div class="timeline-col timeline-col-right"></div>
                     </div>
@@ -128,7 +128,7 @@
                     <div class="timeline-row">
                         <div class="timeline-col timeline-col-left"></div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon"><i class="fas fa-tools"></i></div>
+                            <div class="timeline-icon">8</div>
                         </div>
                         <div class="timeline-col timeline-col-right">
                             <div class="timeline-card">
@@ -149,7 +149,7 @@
                             </div>
                         </div>
                         <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="timeline-icon">9</div>
                         </div>
                         <div class="timeline-col timeline-col-right"></div>
                     </div>
@@ -224,6 +224,9 @@
     border: 3px solid #fff;
     position: relative;
     z-index: 2;
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 1.1rem;
 }
 
 /* Controlled side shifting without touching line */

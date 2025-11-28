@@ -43,6 +43,7 @@
                 <li class="nav-item"><a href="{{ route('institutions.index') }}" class="nav-link {{ request()->routeIs('institutions.*') ? 'active' : '' }}">Institutions</a></li>
                 <li class="nav-item"><a href="{{ route('gallery') }}" class="nav-link {{ request()->routeIs('gallery') ? 'active' : '' }}">Gallery</a></li>
                 <li class="nav-item"><a href="{{ route('blog.index') }}" class="nav-link {{ request()->routeIs('blog.*') ? 'active' : '' }}">Blog</a></li>
+                <li class="nav-item"><a href="{{ route('timeline') }}" class="nav-link {{ request()->routeIs('timeline') ? 'active' : '' }}">Timeline</a></li>
                 <li class="nav-item"><a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
                 <li class="nav-item ms-lg-2"><a href="{{ route('donate') }}" class="btn btn-kb rounded-pill px-3">Donate</a></li>
                 @auth
@@ -87,6 +88,7 @@
                 <li class="mb-1"><a href="{{ route('institutions.index') }}">Institutions</a></li>
                 <li class="mb-1"><a href="{{ route('gallery') }}">Gallery</a></li>
                 <li class="mb-1"><a href="{{ route('blog.index') }}">Blog</a></li>
+                <li class="mb-1"><a href="{{ route('timeline') }}">Timeline</a></li>
                 <li class="mb-1"><a href="{{ route('contact') }}">Contact</a></li>
                 <li class="mb-1"><a href="{{ route('donate') }}">Donate</a></li>
             </ul>
