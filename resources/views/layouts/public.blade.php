@@ -17,10 +17,7 @@
 <body>
 <div id="page-loader" class="page-loader" aria-hidden="true">
     <div class="loader-inner">
-        <svg class="spin" width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".2" stroke-width="3"/>
-            <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-        </svg>
+        <div class="loader"></div>
         <div class="loader-brand d-flex align-items-center gap-2 mt-2">
             <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="{{ $appName }} Logo" height="28">
             <span>{{ $appName }}</span>
@@ -87,6 +84,7 @@
                 <li class="mb-1"><a href="{{ route('institutions.index') }}">Institutions</a></li>
                 <li class="mb-1"><a href="{{ route('gallery') }}">Gallery</a></li>
                 <li class="mb-1"><a href="{{ route('blog.index') }}">Blog</a></li>
+                <li class="mb-1"><a href="{{ route('timeline') }}">Timeline</a></li>
                 <li class="mb-1"><a href="{{ route('contact') }}">Contact</a></li>
                 <li class="mb-1"><a href="{{ route('donate') }}">Donate</a></li>
             </ul>
