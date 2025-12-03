@@ -3,272 +3,270 @@
 @section('title','Project Timeline')
 
 @section('content')
-<section class="py-4 hero">
+<section class="py-5 hero">
     <div class="container">
-        <div class="row mb-4">
+        <div class="row mb-5">
             <div class="col-lg-8 mx-auto text-center">
-                <div class="surface">
-                    <div class="section-heading">Project Timeline</div>
-                    <h1 class="h3 mb-2">Step-by-step journey</h1>
-                    
-                </div>
+                <h1 class="display-5 fw-bold mb-3">Timeline</h1>
+                <p class="text-muted lead mx-auto" style="max-width: 700px;">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Duis aute irure dolor in reprehenderit.
+                </p>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-10 mx-auto">
-                <div class="surface timeline-vertical">
-
-                    {{-- Week 1 --}}
-                    <div class="timeline-row">
-                        <div class="timeline-col timeline-col-left">
-                            <div class="timeline-card">
-                                <div class="timeline-week">Week 1</div>
-                                <h2 class="h5 mb-1">Initial Consult</h2>
-                                <p class="muted mb-0">Review terms and clarify project scope with the client.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon">1</div>
-                        </div>
-                        <div class="timeline-col timeline-col-right"></div>
+        <div class="timeline-vertical-wrapper">
+            <div class="timeline-vertical">
+                
+                {{-- Item 1: 2019 (Red) - Left: Year, Right: Content --}}
+                <div class="timeline-item">
+                    <div class="timeline-side left-side text-end">
+                        <div class="timeline-year text-red">2019</div>
                     </div>
-
-                    {{-- Week 2 --}}
-                    <div class="timeline-row">
-                        <div class="timeline-col timeline-col-left"></div>
-                        <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon">2</div>
-                        </div>
-                        <div class="timeline-col timeline-col-right">
-                            <div class="timeline-card">
-                                <div class="timeline-week">Week 2</div>
-                                <h2 class="h5 mb-1">Design Inquiry</h2>
-                                <p class="muted mb-0">Discuss preferred styles, needs, and gather detailed design requirements.</p>
-                            </div>
+                    <div class="timeline-marker-wrapper">
+                        <div class="timeline-marker bg-red"></div>
+                    </div>
+                    <div class="timeline-side right-side text-start">
+                        <div class="timeline-content">
+                            <h3 class="timeline-point text-red">Points 01</h3>
+                            <p class="timeline-desc">
+                                Elements in the subjects that have some purposes and goals for the business or company organization
+                            </p>
+                            <div class="timeline-footer-line bg-red ms-0"></div>
                         </div>
                     </div>
-
-                    {{-- Week 3 --}}
-                    <div class="timeline-row">
-                        <div class="timeline-col timeline-col-left">
-                            <div class="timeline-card">
-                                <div class="timeline-week">Week 3</div>
-                                <h2 class="h5 mb-1">Initial Design Concept</h2>
-                                <p class="muted mb-0">Present the first concept with layout and key visual directions.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon">3</div>
-                        </div>
-                        <div class="timeline-col timeline-col-right"></div>
-                    </div>
-
-                    {{-- Week 4 --}}
-                    <div class="timeline-row">
-                        <div class="timeline-col timeline-col-left"></div>
-                        <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon">4</div>
-                        </div>
-                        <div class="timeline-col timeline-col-right">
-                            <div class="timeline-card">
-                                <div class="timeline-week">Week 4</div>
-                                <h2 class="h5 mb-1">Second Design Concept</h2>
-                                <p class="muted mb-0">Refine the concept, finalize fixtures, materials, and layout options.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Week 5 --}}
-                    <div class="timeline-row">
-                        <div class="timeline-col timeline-col-left">
-                            <div class="timeline-card">
-                                <div class="timeline-week">Week 5</div>
-                                <h2 class="h5 mb-1">Send Out Design Concept</h2>
-                                <p class="muted mb-0">Share the approved concept and supporting documents with stakeholders.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon">5</div>
-                        </div>
-                        <div class="timeline-col timeline-col-right"></div>
-                    </div>
-
-                    {{-- Week 6 --}}
-                    <div class="timeline-row">
-                        <div class="timeline-col timeline-col-left"></div>
-                        <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon">6</div>
-                        </div>
-                        <div class="timeline-col timeline-col-right">
-                            <div class="timeline-card">
-                                <div class="timeline-week">Week 6</div>
-                                <h2 class="h5 mb-1">Finalize Sales Presentation</h2>
-                                <p class="muted mb-0">Prepare the full presentation, confirm scope, and review final details.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Week 7 --}}
-                    <div class="timeline-row">
-                        <div class="timeline-col timeline-col-left">
-                            <div class="timeline-card">
-                                <div class="timeline-week">Week 7</div>
-                                <h2 class="h5 mb-1">Purchasing of Materials</h2>
-                                <p class="muted mb-0">Order and coordinate delivery of all approved project materials.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon">7</div>
-                        </div>
-                        <div class="timeline-col timeline-col-right"></div>
-                    </div>
-
-                    {{-- Week 8 --}}
-                    <div class="timeline-row">
-                        <div class="timeline-col timeline-col-left"></div>
-                        <div class="timeline-col timeline-col-icon timeline-col-icon--shift-right">
-                            <div class="timeline-icon">8</div>
-                        </div>
-                        <div class="timeline-col timeline-col-right">
-                            <div class="timeline-card">
-                                <div class="timeline-week">Week 8</div>
-                                <h2 class="h5 mb-1">Start Initial Installation</h2>
-                                <p class="muted mb-0">Begin on-site installation in line with the agreed project scope.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Week 9 --}}
-                    <div class="timeline-row">
-                        <div class="timeline-col timeline-col-left">
-                            <div class="timeline-card">
-                                <div class="timeline-week">Week 9</div>
-                                <h2 class="h5 mb-1">Review</h2>
-                                <p class="muted mb-0">Walk through the completed work, collect feedback, and close out.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-col timeline-col-icon timeline-col-icon--shift-left">
-                            <div class="timeline-icon">9</div>
-                        </div>
-                        <div class="timeline-col timeline-col-right"></div>
-                    </div>
-
                 </div>
+
+                {{-- Item 2: 2020 (Orange) - Left: Content, Right: Year --}}
+                <div class="timeline-item">
+                    <div class="timeline-side left-side text-end">
+                        <div class="timeline-content">
+                            <h3 class="timeline-point text-orange">Points 02</h3>
+                            <p class="timeline-desc">
+                                Elements in the subjects that have some purposes and goals for the business or company organization
+                            </p>
+                            <div class="timeline-footer-line bg-orange ms-auto"></div>
+                        </div>
+                    </div>
+                    <div class="timeline-marker-wrapper">
+                        <div class="timeline-marker bg-orange"></div>
+                    </div>
+                    <div class="timeline-side right-side text-start">
+                        <div class="timeline-year text-orange">2020</div>
+                    </div>
+                </div>
+
+                {{-- Item 3: 2021 (Yellow) - Left: Year, Right: Content --}}
+                <div class="timeline-item">
+                    <div class="timeline-side left-side text-end">
+                        <div class="timeline-year text-yellow">2021</div>
+                    </div>
+                    <div class="timeline-marker-wrapper">
+                        <div class="timeline-marker bg-yellow"></div>
+                    </div>
+                    <div class="timeline-side right-side text-start">
+                        <div class="timeline-content">
+                            <h3 class="timeline-point text-yellow">Points 03</h3>
+                            <p class="timeline-desc">
+                                Elements in the subjects that have some purposes and goals for the business or company organization
+                            </p>
+                            <div class="timeline-footer-line bg-yellow ms-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Item 4: 2022 (Teal) - Left: Content, Right: Year --}}
+                <div class="timeline-item">
+                    <div class="timeline-side left-side text-end">
+                        <div class="timeline-content">
+                            <h3 class="timeline-point text-teal">Points 04</h3>
+                            <p class="timeline-desc">
+                                Elements in the subjects that have some purposes and goals for the business or company organization
+                            </p>
+                            <div class="timeline-footer-line bg-teal ms-auto"></div>
+                        </div>
+                    </div>
+                    <div class="timeline-marker-wrapper">
+                        <div class="timeline-marker bg-teal"></div>
+                    </div>
+                    <div class="timeline-side right-side text-start">
+                        <div class="timeline-year text-teal">2022</div>
+                    </div>
+                </div>
+
+                {{-- Item 5: 2023 (Purple) - Left: Year, Right: Content --}}
+                <div class="timeline-item">
+                    <div class="timeline-side left-side text-end">
+                        <div class="timeline-year text-purple">2023</div>
+                    </div>
+                    <div class="timeline-marker-wrapper">
+                        <div class="timeline-marker bg-purple"></div>
+                    </div>
+                    <div class="timeline-side right-side text-start">
+                        <div class="timeline-content">
+                            <h3 class="timeline-point text-purple">Points 05</h3>
+                            <p class="timeline-desc">
+                                Elements in the subjects that have some purposes and goals for the business or company organization
+                            </p>
+                            <div class="timeline-footer-line bg-purple ms-0"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 </section>
 @endsection
 
-
 @push('styles')
 <style>
-.timeline-vertical {
-    position: relative;
-    padding: 2.5rem 1.5rem;
-    overflow: hidden;
-}
+    /* Colors */
+    .text-red { color: #dc2626; }
+    .bg-red { background-color: #dc2626; }
+    
+    .text-orange { color: #f97316; }
+    .bg-orange { background-color: #f97316; }
+    
+    .text-yellow { color: #eab308; }
+    .bg-yellow { background-color: #eab308; }
+    
+    .text-teal { color: #14b8a6; }
+    .bg-teal { background-color: #14b8a6; }
+    
+    .text-purple { color: #7c3aed; }
+    .bg-purple { background-color: #7c3aed; }
 
-/* Perfectly centered curved dotted line */
-..timeline-vertical::before {
-    content: "";
-    position: absolute;
-    top: -80px;
-    left: 50%;
-    width: 240px;
-    height: calc(100% + 160px);
-    transform: translateX(-50%);
-    pointer-events: none;
+    .timeline-vertical-wrapper {
+        padding: 2rem 0;
+        position: relative;
+    }
 
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 1800' preserveAspectRatio='xMidYMid meet'%3E%3Cpath d='M120 0 C 160 250 160 450 120 650 S 80 1100 120 1400 S 160 1650 120 1800' fill='none' stroke='%23b91c1c' stroke-width='3' stroke-dasharray='4 6' /%3E%3C/svg%3E")
-        center/contain no-repeat;
+    .timeline-vertical {
+        position: relative;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
 
-    z-index: 0;
-}
-
-
-.timeline-row {
-    display: grid;
-    grid-template-columns: 1fr 120px 1fr;
-    align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-    position: relative;
-    z-index: 1;
-}
-
-.timeline-card {
-    background: #fff;
-    border-radius: 0.75rem;
-    padding: 1.25rem 1.5rem;
-    box-shadow: 0 0.25rem 0.9rem rgba(15,23,42,.08);
-}
-
-/* Icon stays exactly on the line */
-.timeline-col-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-.timeline-icon {
-    width: 3.25rem;
-    height: 3.25rem;
-    border-radius: 50%;
-    background: #e9efff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 3px solid #fff;
-    position: relative;
-    z-index: 2;
-    font-weight: 700;
-    color: #0f172a;
-    font-size: 1.1rem;
-}
-
-/* Controlled side shifting without touching line */
-.timeline-col-icon--shift-left {
-    margin-left: -50px;
-}
-
-.timeline-col-icon--shift-right {
-    margin-left: 50px;
-}
-
-.timeline-col-left .timeline-card {
-    margin-right: 2.5rem;
-}
-
-.timeline-col-right .timeline-card {
-    margin-left: 2.5rem;
-}
-
-@media (max-width: 767px) {
+    /* The main vertical connecting line */
     .timeline-vertical::before {
-        display: none;
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 6px;
+        transform: translateX(-3px);
+        background: linear-gradient(to bottom, 
+            #dc2626 0%, #dc2626 20%, 
+            #f97316 20%, #f97316 40%, 
+            #eab308 40%, #eab308 60%, 
+            #14b8a6 60%, #14b8a6 80%, 
+            #7c3aed 80%, #7c3aed 100%
+        );
+        z-index: 0;
+        border-radius: 4px;
     }
 
-    .timeline-row {
-        grid-template-columns: 1fr;
+    .timeline-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 4rem;
+        position: relative;
+        z-index: 1;
     }
 
-    .timeline-col-icon {
-        margin: 1rem 0;
+    .timeline-side {
+        flex: 1;
+        padding: 0 3rem;
     }
 
-    .timeline-col-icon--shift-left,
-    .timeline-col-icon--shift-right {
-        margin-left: 0;
+    .timeline-marker-wrapper {
+        flex: 0 0 60px; /* Space for the marker */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
     }
 
-    .timeline-col-left .timeline-card,
-    .timeline-col-right .timeline-card {
-        margin: 0;
+    .timeline-marker {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        box-shadow: 0 0 0 2px currentColor;
+        background-color: currentColor;
+        transform: scale(1.5);
     }
-}
 
+    .timeline-year {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .timeline-point {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+    }
+
+    .timeline-desc {
+        font-size: 1rem;
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .timeline-footer-line {
+        width: 50px;
+        height: 4px;
+        border-radius: 2px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 767px) {
+        .timeline-vertical::before {
+            left: 20px; /* Move line to the left */
+        }
+
+        .timeline-item {
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 3rem;
+        }
+
+        .timeline-marker-wrapper {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: auto;
+            justify-content: center;
+            padding-top: 5px; /* Align with top text roughly */
+        }
+        
+        .timeline-marker {
+            transform: scale(1.2);
+        }
+
+        .timeline-side {
+            padding: 0 0 0 3.5rem; /* Indent everything to right of line */
+            width: 100%;
+            text-align: left !important; /* Force left align on mobile */
+        }
+
+        .timeline-side.left-side {
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-footer-line {
+            margin-left: 0 !important; /* Force left align footer line */
+        }
+        
+        .timeline-year {
+            font-size: 1.75rem;
+        }
+    }
 </style>
 @endpush
