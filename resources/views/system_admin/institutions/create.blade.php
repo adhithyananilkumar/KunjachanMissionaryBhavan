@@ -11,7 +11,7 @@
 				</ul>
 			</div>
 		@endif
-		<form method="POST" action="{{ route('system_admin.institutions.store') }}">
+		<form method="POST" action="{{ route('system_admin.institutions.store') }}" enctype="multipart/form-data">
 			@csrf
 			<div class="row g-3">
 				<div class="col-md-6">
@@ -25,6 +25,21 @@
 				<div class="col-12">
 					<label class="form-label">Email</label>
 					<input type="email" name="email" class="form-control form-control-sm" value="{{ old('email') }}">
+				</div>
+				<div class="col-md-6">
+					<label class="form-label">Logo</label>
+					<input type="file" name="logo" class="form-control form-control-sm" accept="image/*">
+				</div>
+				<div class="col-md-6">
+					<label class="form-label">Status <span class="text-danger">*</span></label>
+					<select name="status" class="form-select form-select-sm" required>
+						<option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+						<option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+					</select>
+				</div>
+				<div class="col-12">
+					<label class="form-label">Description</label>
+					<textarea name="description" rows="3" class="form-control">{{ old('description') }}</textarea>
 				</div>
 				<div class="col-12">
 					<label class="form-label">Address <span class="text-danger">*</span></label>

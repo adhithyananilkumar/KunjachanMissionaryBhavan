@@ -32,6 +32,7 @@ use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\Developer\SupportTicketController as DeveloperSupportTicketController;
 use App\Http\Controllers\SystemAdmin\SystemAdminDashboardController;
 use App\Http\Controllers\SystemAdmin\InstitutionController as SystemAdminInstitutionController;
+use App\Http\Controllers\Public\InstitutionController as PublicInstitutionController;
 use App\Http\Controllers\SystemAdmin\InmateController as SystemAdminInmateController;
 use App\Http\Controllers\SystemAdmin\UserController as SystemAdminUserController;
 use App\Http\Controllers\SystemAdmin\GuardianController as SystemAdminGuardianController;
@@ -51,40 +52,9 @@ Route::view('/', 'public.home')->name('home');
 Route::view('/about', 'public.about')->name('about');
 Route::view('/timeline', 'public.timeline')->name('timeline');
 // Institutions (public)
-Route::get('/institutions', function(){
-    $institutions = [
-        ['slug'=>'st-josephs','name'=>'St. Joseph’s Home','location'=>'Kottayam','image'=>'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop'],
-        ['slug'=>'st-marys','name'=>'St. Mary’s Care','location'=>'Ernakulam','image'=>'https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=1200&auto=format&fit=crop'],
-        ['slug'=>'little-flower','name'=>'Little Flower Bhavan','location'=>'Idukki','image'=>'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1200&auto=format&fit=crop'],
-    ];
-    return view('public.institutions.index', compact('institutions'));
-})->name('institutions.index');
-
-Route::get('/institutions/{slug}', function(string $slug){
-    $data = [
-        'st-josephs' => [
-            'name' => 'St. Joseph’s Home',
-            'location' => 'Kottayam',
-            'hero' => 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop',
-        ],
-        'st-marys' => [
-            'name' => 'St. Mary’s Care',
-            'location' => 'Ernakulam',
-            'hero' => 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=1600&auto=format&fit=crop',
-        ],
-        'little-flower' => [
-            'name' => 'Little Flower Bhavan',
-            'location' => 'Idukki',
-            'hero' => 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1600&auto=format&fit=crop',
-        ],
-    ];
-    $institution = $data[$slug] ?? [
-        'name' => ucwords(str_replace('-', ' ', $slug)),
-        'location' => 'Kerala',
-        'hero' => 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1600&auto=format&fit=crop',
-    ];
-    return view('public.institutions.show', compact('institution','slug'));
-})->name('institutions.show');
+// Institutions (public)
+Route::get('/institutions', [PublicInstitutionController::class, 'index'])->name('institutions.index');
+Route::get('/institutions/{id}', [PublicInstitutionController::class, 'show'])->name('institutions.show');
 
 Route::view('/gallery', 'public.gallery')->name('gallery');
 Route::view('/contact', 'public.contact')->name('contact');

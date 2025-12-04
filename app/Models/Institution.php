@@ -16,12 +16,15 @@ class Institution extends Model
      * @var array<int,string>
      */
     protected $fillable = [
-    'name',
-    'address',
-    'phone',
-    'email',
-    'enabled_features',
-    'doctor_assignment_enabled'
+        'name',
+        'logo',
+        'description',
+        'address',
+        'phone',
+        'email',
+        'status',
+        'enabled_features',
+        'doctor_assignment_enabled'
     ];
 
     protected $casts = [

@@ -11,7 +11,7 @@
 				</ul>
 			</div>
 		@endif
-		<form method="POST" action="{{ route('system_admin.institutions.update', $institution->id) }}">
+		<form method="POST" action="{{ route('system_admin.institutions.update', $institution->id) }}" enctype="multipart/form-data">
 			@csrf
 			@method('PUT')
 			<div class="row g-3">
@@ -26,6 +26,26 @@
 				<div class="col-12">
 					<label class="form-label">Email</label>
 					<input type="email" name="email" class="form-control form-control-sm" value="{{ old('email', $institution->email) }}">
+				</div>
+				<div class="col-md-6">
+					<label class="form-label">Logo</label>
+					@if($institution->logo)
+						<div class="mb-2">
+							<img src="{{ asset('storage/'.$institution->logo) }}" alt="Current Logo" style="height: 50px;">
+						</div>
+					@endif
+					<input type="file" name="logo" class="form-control form-control-sm" accept="image/*">
+				</div>
+				<div class="col-md-6">
+					<label class="form-label">Status <span class="text-danger">*</span></label>
+					<select name="status" class="form-select form-select-sm" required>
+						<option value="active" {{ old('status', $institution->status) == 'active' ? 'selected' : '' }}>Active</option>
+						<option value="inactive" {{ old('status', $institution->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+					</select>
+				</div>
+				<div class="col-12">
+					<label class="form-label">Description</label>
+					<textarea name="description" rows="3" class="form-control">{{ old('description', $institution->description) }}</textarea>
 				</div>
 				<div class="col-12">
 					<label class="form-label">Address <span class="text-danger">*</span></label>
