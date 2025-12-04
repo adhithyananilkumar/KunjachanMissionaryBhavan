@@ -59,6 +59,7 @@
 					<button class="btn btn-sm btn-outline-secondary border-0" data-bs-toggle="dropdown" type="button"><span class="bi bi-three-dots"></span></button>
 					<div class="dropdown-menu dropdown-menu-end shadow-sm">
 						<a href="{{ route('system_admin.institutions.show',$institution) }}" class="dropdown-item"><span class="bi bi-building me-2"></span>Open</a>
+						<a href="{{ route('system_admin.institutions.show',$institution) }}#donations" class="dropdown-item"><span class="bi bi-currency-rupee me-2"></span>Edit Donations</a>
 						<a href="{{ route('system_admin.institutions.edit',$institution) }}" class="dropdown-item"><span class="bi bi-pencil-square me-2"></span>Edit</a>
 						<button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteInstitutionModal" data-inst-id="{{ $institution->id }}" data-inst-name="{{ $institution->name }}"><span class="bi bi-trash me-2"></span>Delete</button>
 					</div>

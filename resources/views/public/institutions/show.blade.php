@@ -36,28 +36,35 @@
                 <div class="surface h-100">
                     <div class="section-heading">Donate a Meal</div>
                     <p class="muted">Support {{ $institution->name }} with a meal donation. Choose a plan below.</p>
+                    @php
+                        $settings = $institution->donationSetting;
+                        $breakfast = $settings ? $settings->breakfast_amount : 0;
+                        $lunch = $settings ? $settings->lunch_amount : 0;
+                        $dinner = $settings ? $settings->dinner_amount : 0;
+                        $fullDay = $breakfast + $lunch + $dinner;
+                    @endphp
                     <div class="row g-2">
                         <div class="col-6">
                             <div class="surface text-center">
-                                <div class="h4 mb-0">₹150</div>
+                                <div class="h4 mb-0">₹{{ number_format($breakfast) }}</div>
                                 <div class="small muted">Breakfast</div>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="surface text-center">
-                                <div class="h4 mb-0">₹250</div>
+                                <div class="h4 mb-0">₹{{ number_format($lunch) }}</div>
                                 <div class="small muted">Lunch</div>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="surface text-center">
-                                <div class="h4 mb-0">₹200</div>
+                                <div class="h4 mb-0">₹{{ number_format($dinner) }}</div>
                                 <div class="small muted">Dinner</div>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="surface text-center">
-                                <div class="h4 mb-0">₹500</div>
+                                <div class="h4 mb-0">₹{{ number_format($fullDay) }}</div>
                                 <div class="small muted">Full day</div>
                             </div>
                         </div>
