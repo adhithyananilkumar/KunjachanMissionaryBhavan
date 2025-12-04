@@ -3,7 +3,7 @@
 @section('title','Project Timeline')
 
 @section('content')
-<section class="py-5 hero">
+<section class="py-5 hero" style="background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);">
     <div class="container">
         <div class="row mb-5">
             <div class="col-lg-8 mx-auto text-center">
@@ -120,21 +120,21 @@
 
 @push('styles')
 <style>
-    /* Colors */
-    .text-red { color: #dc2626; }
-    .bg-red { background-color: #dc2626; }
+    /* Colors - Softer Palette */
+    .text-red { color: #f87171; }
+    .bg-red { background-color: #f87171; }
     
-    .text-orange { color: #f97316; }
-    .bg-orange { background-color: #f97316; }
+    .text-orange { color: #fb923c; }
+    .bg-orange { background-color: #fb923c; }
     
-    .text-yellow { color: #eab308; }
-    .bg-yellow { background-color: #eab308; }
+    .text-yellow { color: #facc15; }
+    .bg-yellow { background-color: #facc15; }
     
-    .text-teal { color: #14b8a6; }
-    .bg-teal { background-color: #14b8a6; }
+    .text-teal { color: #2dd4bf; }
+    .bg-teal { background-color: #2dd4bf; }
     
-    .text-purple { color: #7c3aed; }
-    .bg-purple { background-color: #7c3aed; }
+    .text-purple { color: #a78bfa; }
+    .bg-purple { background-color: #a78bfa; }
 
     .timeline-vertical-wrapper {
         padding: 2rem 0;
@@ -157,11 +157,11 @@
         width: 6px;
         transform: translateX(-3px);
         background: linear-gradient(to bottom, 
-            #dc2626 0%, #dc2626 20%, 
-            #f97316 20%, #f97316 40%, 
-            #eab308 40%, #eab308 60%, 
-            #14b8a6 60%, #14b8a6 80%, 
-            #7c3aed 80%, #7c3aed 100%
+            #f87171 0%, #f87171 20%, 
+            #fb923c 20%, #fb923c 40%, 
+            #facc15 40%, #facc15 60%, 
+            #2dd4bf 60%, #2dd4bf 80%, 
+            #a78bfa 80%, #a78bfa 100%
         );
         z-index: 0;
         border-radius: 4px;
