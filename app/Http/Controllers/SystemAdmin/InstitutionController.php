@@ -96,4 +96,24 @@ class InstitutionController extends Controller
     public function tabSettings(Institution $institution){
         return view('system_admin.institutions.tabs.settings', compact('institution'));
     }
+    public function tabDonations(Institution $institution){
+        $settings = $institution->donationSetting ?? new \App\Models\DonationSetting(['institution_id'=>$institution->id]);
+        return view('system_admin.institutions.tabs.donations', compact('institution','settings'));
+    }
+    public function updateDonationSettings(Request $request, Institution $institution){
+        $validated = $request->validate([
+            'breakfast_amount' => 'required|numeric|min:0',
+            'lunch_amount' => 'required|numeric|min:0',
+            'dinner_amount' => 'required|numeric|min:0',
+            'other_amount' => 'nullable|numeric|min:0',
+        ]);
+        $institution->donationSetting()->updateOrCreate(
+            ['institution_id' => $institution->id],
+            $validated
+        );
+        if ($request->wantsJson()) {
+            return response()->json(['ok'=>true,'message'=>'Donation settings updated successfully.']);
+        }
+        return back()->with('success','Donation settings updated successfully.');
+    }
 }

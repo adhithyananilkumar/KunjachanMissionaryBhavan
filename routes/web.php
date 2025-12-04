@@ -33,6 +33,7 @@ use App\Http\Controllers\Developer\SupportTicketController as DeveloperSupportTi
 use App\Http\Controllers\SystemAdmin\SystemAdminDashboardController;
 use App\Http\Controllers\SystemAdmin\InstitutionController as SystemAdminInstitutionController;
 use App\Http\Controllers\Public\InstitutionController as PublicInstitutionController;
+use App\Http\Controllers\Public\DonationController as PublicDonationController;
 use App\Http\Controllers\SystemAdmin\InmateController as SystemAdminInmateController;
 use App\Http\Controllers\SystemAdmin\UserController as SystemAdminUserController;
 use App\Http\Controllers\SystemAdmin\GuardianController as SystemAdminGuardianController;
@@ -58,7 +59,7 @@ Route::get('/institutions/{id}', [PublicInstitutionController::class, 'show'])->
 
 Route::view('/gallery', 'public.gallery')->name('gallery');
 Route::view('/contact', 'public.contact')->name('contact');
-Route::view('/donate', 'public.donate')->name('donate');
+Route::get('/donate', [PublicDonationController::class, 'index'])->name('donate');
 
 // Blog (public, static front-end only)
 Route::view('/blog', 'public.blog.index')->name('blog.index');
@@ -116,6 +117,8 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::get('institutions/{institution}/tabs/overview', [SystemAdminInstitutionController::class,'show'])->name('institutions.tabs.overview');
     Route::get('institutions/{institution}/tabs/users', [SystemAdminInstitutionController::class,'tabUsers'])->name('institutions.tabs.users');
     Route::get('institutions/{institution}/tabs/inmates', [SystemAdminInstitutionController::class,'tabInmates'])->name('institutions.tabs.inmates');
+    Route::get('institutions/{institution}/tabs/donations', [SystemAdminInstitutionController::class,'tabDonations'])->name('institutions.tabs.donations');
+    Route::post('institutions/{institution}/donations', [SystemAdminInstitutionController::class,'updateDonationSettings'])->name('institutions.donations.update');
     Route::get('institutions/{institution}/tabs/settings', [SystemAdminInstitutionController::class,'tabSettings'])->name('institutions.tabs.settings');
     Route::resource('inmates', SystemAdminInmateController::class);
     Route::resource('users', SystemAdminUserController::class);

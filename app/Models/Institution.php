@@ -46,4 +46,12 @@ class Institution extends Model
     {
         return $this->hasMany(Inmate::class);
     }
+
+    /**
+     * Get the donation settings for the institution.
+     */
+    public function donationSetting(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(DonationSetting::class);
+    }
 }
