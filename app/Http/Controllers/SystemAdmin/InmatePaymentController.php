@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Http\Controllers\SystemAdmin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Inmate;
+use App\Models\InmatePayment;
+use App\Models\Institution;
+use Illuminate\Http\Request;
+
+class InmatePaymentController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = InmatePayment::with(['inmate.institution','institution']);
+
+        $institutionId = $request->get('institution_id');
+        $status = $request->get('status');
+        $period = trim((string)$request->get('period',''));
+        $search = trim((string)$request->get('search',''));
+
+        if ($institutionId) {
+            $query->where('institution_id', $institutionId);
+        }
+        if ($status) {
+            $query->where('status', $status);
+        }
+        if ($period !== '') {
+            $query->where('period_label', 'like', "%{$period}%");
+        }
+        if ($search !== '') {
+            $query->whereHas('inmate', function($q) use ($search) {
+                $q->where('first_name','like',"%{$search}%")
+                  ->orWhere('last_name','like',"%{$search}%")
+                  ->orWhereRaw("CONCAT(first_name,' ',COALESCE(last_name,'')) like ?", ["%{$search}%"])
+                  ->orWhere('admission_number','like',"%{$search}%")
+                  ->orWhere('registration_number','like',"%{$search}%");
+            });
+        }
+
+        $payments = $query->orderBy('payment_date','desc')->orderBy('id','desc')
+            ->paginate(20)->appends($request->only('institution_id','status','period','search'));
+
+        $institutions = Institution::orderBy('name')->get(['id','name']);
+        $statuses = ['pending','paid','failed','refunded'];
+
+        $summary = [
+            'total_amount' => (clone $query)->where('status','paid')->sum('amount'),
+            'count' => (clone $query)->count(),
+        ];
+
+        return view('system_admin.payments.index', compact('payments','institutions','institutionId','statuses','status','period','search','summary'));
+    }
+
+    public function storeForInmate(Request $request, Inmate $inmate)
+    {
+        $data = $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'currency' => 'nullable|string|size:3',
+            'payment_date' => 'required|date',
+            'period_label' => 'nullable|string|max:100',
+            'status' => 'required|in:pending,paid,failed,refunded',
+            'method' => 'nullable|string|max:50',
+            'reference' => 'nullable|string|max:100',
+            'notes' => 'nullable|string|max:2000',
+        ]);
+
+        $data['currency'] = strtoupper($data['currency'] ?? 'INR');
+        $data['inmate_id'] = $inmate->id;
+        $data['institution_id'] = $inmate->institution_id;
+
+        InmatePayment::create($data);
+
+        return redirect()
+            ->route('system_admin.inmates.show', $inmate)
+            ->with('success','Payment recorded successfully.');
+    }
+}

@@ -46,6 +46,11 @@ class Inmate extends Model
         'weight' => 'decimal:2',
     ];
 
+    public function payments()
+    {
+        return $this->hasMany(\App\Models\InmatePayment::class);
+    }
+
     public function institution(): BelongsTo
     {
         return $this->belongsTo(Institution::class);

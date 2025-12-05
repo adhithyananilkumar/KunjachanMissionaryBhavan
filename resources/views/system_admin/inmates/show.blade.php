@@ -35,6 +35,7 @@
 		<ul class="nav nav-tabs small" id="inmateTabs" role="tablist">
 		<li class="nav-item"><button class="nav-link active" data-tab="overview" type="button">Overview</button></li>
 		<li class="nav-item"><button class="nav-link" data-tab="medical" type="button">Medical</button></li>
+		<li class="nav-item"><button class="nav-link" data-tab="payments" type="button">Payments</button></li>
 		<li class="nav-item"><button class="nav-link" data-tab="history" type="button">History</button></li>
 		<li class="nav-item"><button class="nav-link" data-tab="documents" type="button">Documents</button></li>
 			<li class="nav-item"><button class="nav-link" data-tab="allocation" type="button">Allocation</button></li>
@@ -59,6 +60,7 @@
 					history: '{{ route('system_admin.inmates.show',$inmate) }}?partial=history',
 					documents: '{{ route('system_admin.inmates.show',$inmate) }}?partial=documents',
 					allocation: '{{ route('system_admin.inmates.show',$inmate) }}?partial=allocation',
+					payments: '{{ route('system_admin.inmates.show',$inmate) }}?partial=payments',
 					settings: '{{ route('system_admin.inmates.show',$inmate) }}?partial=settings',
 				};
 				const finalUrl = url || urlMap[tab];
@@ -95,7 +97,7 @@
 					.catch(()=>{ const er=document.createElement('div'); er.className='alert alert-danger small mt-2'; er.textContent='Save failed'; form.appendChild(er); setTimeout(()=>er.remove(),3000); });
 			});
 			const initial = (location.hash||'').replace('#','') || 'overview';
-			const allowed=['overview','medical','history','documents','allocation','settings'];
+			const allowed=['overview','medical','history','documents','allocation','payments','settings'];
 			load(allowed.includes(initial)?initial:'overview');
 			window.addEventListener('hashchange',()=>{ const h=(location.hash||'').replace('#',''); if(h && h!==active) load(h); });
 

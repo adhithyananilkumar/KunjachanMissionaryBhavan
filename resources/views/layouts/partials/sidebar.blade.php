@@ -75,6 +75,7 @@
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('admin.allocation.*') ? 'active' : '' }}" href="{{ route('admin.allocation.index') }}"><span class="bi bi-grid-3x3-gap me-2"></span>Allocation</a></li>
                 @elseif($role==='system_admin')
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.inmates.*') ? 'active' : '' }}" href="{{ route('system_admin.inmates.index') }}"><span class="bi bi-person-badge me-2"></span>Inmates</a></li>
+                    <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.payments.*') ? 'active' : '' }}" href="{{ route('system_admin.payments.index') }}"><span class="bi bi-cash-stack me-2"></span>Payments</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.institutions.*') ? 'active' : '' }}" href="{{ route('system_admin.institutions.index') }}"><span class="bi bi-building me-2"></span>Institutions</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.medicines.*') ? 'active' : '' }}" href="{{ route('system_admin.medicines.index') }}"><span class="bi bi-box-seam me-2"></span>Inventory</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.medications.*') ? 'active' : '' }}" href="{{ route('system_admin.medications.index') }}"><span class="bi bi-capsule-pill me-2"></span>Medicines</a></li>
