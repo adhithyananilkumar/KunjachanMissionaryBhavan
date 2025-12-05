@@ -16,12 +16,15 @@ class Institution extends Model
      * @var array<int,string>
      */
     protected $fillable = [
-    'name',
-    'address',
-    'phone',
-    'email',
-    'enabled_features',
-    'doctor_assignment_enabled'
+        'name',
+        'logo',
+        'description',
+        'address',
+        'phone',
+        'email',
+        'status',
+        'enabled_features',
+        'doctor_assignment_enabled'
     ];
 
     protected $casts = [
@@ -42,5 +45,13 @@ class Institution extends Model
     public function inmates(): HasMany
     {
         return $this->hasMany(Inmate::class);
+    }
+
+    /**
+     * Get the donation settings for the institution.
+     */
+    public function donationSetting(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(DonationSetting::class);
     }
 }

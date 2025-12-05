@@ -42,8 +42,14 @@
 				<a href="{{ route('system_admin.institutions.show',$institution) }}" class="position-absolute top-0 start-0 w-100 h-100" style="z-index:1;" aria-label="Open institution"></a>
 				<div class="flex-grow-1">
 					<div class="d-flex align-items-center gap-2 mb-1">
+						@if($institution->logo)
+							<img src="{{ asset('storage/'.$institution->logo) }}" alt="Logo" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+						@else
+							<div class="rounded-circle bg-light d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;"><span class="bi bi-building text-muted"></span></div>
+						@endif
 						<span class="fw-semibold">{{ $institution->name }}</span>
 						<span class="badge bg-secondary">#{{ $institution->id }}</span>
+						<span class="badge {{ $institution->status === 'active' ? 'bg-success' : 'bg-secondary' }}">{{ ucfirst($institution->status) }}</span>
 						<span class="badge text-bg-light border"><span class="bi bi-people me-1"></span>{{ $institution->users_count }}</span>
 						<span class="badge text-bg-light border"><span class="bi bi-person-bounding-box me-1"></span>{{ $institution->inmates_count }}</span>
 					</div>
@@ -53,6 +59,7 @@
 					<button class="btn btn-sm btn-outline-secondary border-0" data-bs-toggle="dropdown" type="button"><span class="bi bi-three-dots"></span></button>
 					<div class="dropdown-menu dropdown-menu-end shadow-sm">
 						<a href="{{ route('system_admin.institutions.show',$institution) }}" class="dropdown-item"><span class="bi bi-building me-2"></span>Open</a>
+						<a href="{{ route('system_admin.institutions.show',$institution) }}#donations" class="dropdown-item"><span class="bi bi-currency-rupee me-2"></span>Edit Donations</a>
 						<a href="{{ route('system_admin.institutions.edit',$institution) }}" class="dropdown-item"><span class="bi bi-pencil-square me-2"></span>Edit</a>
 						<button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteInstitutionModal" data-inst-id="{{ $institution->id }}" data-inst-name="{{ $institution->name }}"><span class="bi bi-trash me-2"></span>Delete</button>
 					</div>
