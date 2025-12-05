@@ -48,7 +48,8 @@ use App\Http\Controllers\SystemAdmin\MedicineController as SystemAdminMedicineCo
 use App\Http\Controllers\SystemAdmin\InmatePaymentController as SystemAdminInmatePaymentController;
 use App\Http\Controllers\SystemAdmin\InmateSearchController as SystemAdminInmateSearchController;
 use App\Http\Controllers\Admin\MedicineController as AdminMedicineController;
-// use App\Http\Controllers\Developer\SettingsController as DeveloperSettingsController; // deprecated
+use App\Http\Controllers\Admin\BlogController as AdminBlogController;
+use App\Http\Controllers\Public\BlogController as PublicBlogController;
 
 // Public website pages (static, no app logic)
 Route::view('/', 'public.home')->name('home');
@@ -63,11 +64,9 @@ Route::view('/gallery', 'public.gallery')->name('gallery');
 Route::view('/contact', 'public.contact')->name('contact');
 Route::get('/donate', [PublicDonationController::class, 'index'])->name('donate');
 
-// Blog (public, static front-end only)
-Route::view('/blog', 'public.blog.index')->name('blog.index');
-Route::get('/blog/{slug}', function(string $slug){
-    return view('public.blog.show', compact('slug'));
-})->name('blog.show');
+// Blog (public, dynamic)
+Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [PublicBlogController::class, 'show'])->name('blog.show');
 
 Route::get('/dashboard', [DashboardController::class,'index'])->middleware(['auth','verified'])->name('dashboard');
 
@@ -193,6 +192,8 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::post('inmates/{inmate}/documents/{document}/toggle-share', [SystemAdminInmateController::class,'toggleDocumentShare'])->name('inmates.documents.toggle-share');
     // Guardian messages (reply within guardian show)
     Route::post('guardians/{guardian}/messages', [\App\Http\Controllers\SystemAdmin\GuardianController::class,'replyMessage'])->name('guardians.messages.reply');
+    // Blog Management
+    Route::resource('blogs', AdminBlogController::class);
 });
 
 Route::middleware('auth')->group(function () {
@@ -329,6 +330,8 @@ Route::middleware(['auth','verified','role:admin'])->prefix('admin')->name('admi
     Route::post('guardian-messages/{guardian}', [\App\Http\Controllers\Admin\GuardianMessageController::class,'reply'])->name('guardian-messages.reply');
     // Toggle guardian sharing for a document
     Route::post('inmates/{inmate}/documents/{document}/toggle-share', [AdminInmateController::class,'toggleDocumentShare'])->name('inmates.documents.toggle-share');
+    // Blog Management
+    Route::resource('blogs', AdminBlogController::class);
 });
 
 // Staff routes

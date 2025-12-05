@@ -72,6 +72,7 @@
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('admin.guardians.*') ? 'active' : '' }}" href="{{ route('admin.guardians.index') }}"><span class="bi bi-people me-2"></span>Guardians</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('admin.medicines.*') ? 'active' : '' }}" href="{{ route('admin.medicines.index') }}"><span class="bi bi-box-seam me-2"></span>Inventory</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('admin.medications.*') ? 'active' : '' }}" href="{{ route('admin.medications.index') }}"><span class="bi bi-capsule-pill me-2"></span>Medicines</a></li>
+                    <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('admin.blogs.*') ? 'active' : '' }}" href="{{ route('admin.blogs.index') }}"><span class="bi bi-journal-text me-2"></span>Blog</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('admin.allocation.*') ? 'active' : '' }}" href="{{ route('admin.allocation.index') }}"><span class="bi bi-grid-3x3-gap me-2"></span>Allocation</a></li>
                 @elseif($role==='system_admin')
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.inmates.*') ? 'active' : '' }}" href="{{ route('system_admin.inmates.index') }}"><span class="bi bi-person-badge me-2"></span>Inmates</a></li>
@@ -81,6 +82,7 @@
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.medications.*') ? 'active' : '' }}" href="{{ route('system_admin.medications.index') }}"><span class="bi bi-capsule-pill me-2"></span>Medicines</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.users.*') ? 'active' : '' }}" href="{{ route('system_admin.users.index') }}"><span class="bi bi-people me-2"></span>Users</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.doctors.*') ? 'active' : '' }}" href="{{ route('system_admin.doctors.index') }}"><span class="bi bi-person-badge me-2"></span>Doctors</a></li>
+                    <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.blogs.*') ? 'active' : '' }}" href="{{ route('system_admin.blogs.index') }}"><span class="bi bi-journal-text me-2"></span>Blog</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.blocks.*') ? 'active' : '' }}" href="{{ route('system_admin.blocks.index') }}"><span class="bi bi-grid-3x3-gap me-2"></span>Allocation</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.guardians.*') ? 'active' : '' }}" href="{{ route('system_admin.guardians.index') }}"><span class="bi bi-people-fill me-2"></span>Guardians</a></li>
                 @elseif($role==='guardian')
