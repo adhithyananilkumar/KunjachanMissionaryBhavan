@@ -54,10 +54,10 @@
   <body class="bg-light">
   <nav class="navbar navbar-light bg-white border-bottom sticky-top">
       <div class="container-fluid">
-    <span class="navbar-brand fw-semibold d-flex align-items-center gap-2 me-auto">
+    <a href="{{ route('home') }}" class="navbar-brand fw-semibold d-flex align-items-center gap-2 me-auto text-decoration-none text-dark">
           <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="Kunjachan Missionary Bhavan" style="height:28px;width:28px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(255,255,255,.9)">
           <span class="text-uppercase" style="letter-spacing:.05em;font-size:.75rem;line-height:1.2;">KUNJACHAN MISSIONARY<br>BHAVAN</span>
-        </span>
+        </a>
         <div class="d-flex align-items-center gap-2">
           @auth
             @php
