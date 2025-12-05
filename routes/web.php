@@ -48,6 +48,8 @@ use App\Http\Controllers\SystemAdmin\MedicineController as SystemAdminMedicineCo
 use App\Http\Controllers\Admin\MedicineController as AdminMedicineController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\Public\BlogController as PublicBlogController;
+use App\Http\Controllers\UserDocumentController;
+use App\Http\Controllers\RegistrationPDFController;
 
 // Public website pages (static, no app logic)
 Route::view('/', 'public.home')->name('home');
@@ -326,6 +328,11 @@ Route::middleware(['auth','verified','role:admin'])->prefix('admin')->name('admi
     Route::post('inmates/{inmate}/documents/{document}/toggle-share', [AdminInmateController::class,'toggleDocumentShare'])->name('inmates.documents.toggle-share');
     // Blog Management
     Route::resource('blogs', AdminBlogController::class);
+
+    // User Documents & PDF
+    Route::post('/user/documents', [UserDocumentController::class, 'store'])->name('user.documents.store');
+    Route::get('/user/documents/{document}', [UserDocumentController::class, 'download'])->name('user.documents.download');
+    Route::get('/registration/pdf/{user?}', [RegistrationPDFController::class, 'download'])->name('registration.pdf.download');
 });
 
 // Staff routes

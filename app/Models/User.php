@@ -155,4 +155,11 @@ class User extends Authenticatable
     {
         return in_array((string)$this->role, $roles, true);
     }
+    /**
+     * Get the documents for the user.
+     */
+    public function documents()
+    {
+        return $this->hasMany(UserDocument::class);
+    }
 }
