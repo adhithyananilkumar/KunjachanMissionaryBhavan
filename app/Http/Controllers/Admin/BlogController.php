@@ -12,15 +12,22 @@ use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
+    private function getRoutePrefix()
+    {
+        return request()->routeIs('system_admin.*') ? 'system_admin.blogs.' : 'admin.blogs.';
+    }
+
     public function index()
     {
         $blogs = Blog::with('author')->latest()->paginate(10);
-        return view('admin.blogs.index', compact('blogs'));
+        $prefix = $this->getRoutePrefix();
+        return view('admin.blogs.index', compact('blogs', 'prefix'));
     }
 
     public function create()
     {
-        return view('admin.blogs.create');
+        $prefix = $this->getRoutePrefix();
+        return view('admin.blogs.create', compact('prefix'));
     }
 
     public function store(StoreBlogRequest $request)
@@ -39,12 +46,13 @@ class BlogController extends Controller
 
         Blog::create($data);
 
-        return redirect()->route('admin.blogs.index')->with('success', 'Blog post created successfully.');
+        return redirect()->route($this->getRoutePrefix() . 'index')->with('success', 'Blog post created successfully.');
     }
 
     public function edit(Blog $blog)
     {
-        return view('admin.blogs.edit', compact('blog'));
+        $prefix = $this->getRoutePrefix();
+        return view('admin.blogs.edit', compact('blog', 'prefix'));
     }
 
     public function update(UpdateBlogRequest $request, Blog $blog)
@@ -68,7 +76,7 @@ class BlogController extends Controller
 
         $blog->update($data);
 
-        return redirect()->route('admin.blogs.index')->with('success', 'Blog post updated successfully.');
+        return redirect()->route($this->getRoutePrefix() . 'index')->with('success', 'Blog post updated successfully.');
     }
 
     public function destroy(Blog $blog)
@@ -78,6 +86,6 @@ class BlogController extends Controller
         }
         $blog->delete();
 
-        return redirect()->route('admin.blogs.index')->with('success', 'Blog post deleted successfully.');
+        return redirect()->route($this->getRoutePrefix() . 'index')->with('success', 'Blog post deleted successfully.');
     }
 }

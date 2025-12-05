@@ -5,14 +5,14 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Edit Blog Post</h1>
-        <a href="{{ route('admin.blogs.index') }}" class="btn btn-outline-secondary">
+        <a href="{{ route($prefix . 'index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-2"></i>Back
         </a>
     </div>
 
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form action="{{ route('admin.blogs.update', $blog) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route($prefix . 'update', $blog) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="row">

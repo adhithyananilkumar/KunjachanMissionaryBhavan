@@ -5,7 +5,7 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Blog Management</h1>
-        <a href="{{ route('admin.blogs.create') }}" class="btn btn-primary">
+        <a href="{{ route($prefix . 'create') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-2"></i>New Post
         </a>
     </div>
@@ -41,10 +41,10 @@
                             <td>{{ $blog->published_at ? $blog->published_at->format('M d, Y') : '-' }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.blogs.edit', $blog) }}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                    <a href="{{ route($prefix . 'edit', $blog) }}" class="btn btn-sm btn-outline-primary" title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form action="{{ route('admin.blogs.destroy', $blog) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this post?');">
+                                    <form action="{{ route($prefix . 'destroy', $blog) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this post?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
