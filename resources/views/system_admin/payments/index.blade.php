@@ -166,15 +166,25 @@
 						</div>
 						<div class="col-md-3">
 							<label class="form-label mb-1">Method</label>
-							<input type="text" name="method" class="form-control form-control-sm" placeholder="Cash / UPI / Bank" />
+							<select name="method" class="form-select form-select-sm" id="payMethod">
+								<option value="cash">Cash</option>
+								<option value="upi">UPI</option>
+								<option value="bank_transfer">Bank transfer</option>
+								<option value="card">Card</option>
+								<option value="other">Other</option>
+							</select>
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-3" id="payReceiverGroup">
+							<label class="form-label mb-1">Receiver name</label>
+							<input type="text" name="notes" class="form-control form-control-sm" placeholder="Person who received cash" />
+						</div>
+						<div class="col-md-3 d-none" id="payReferenceGroup">
 							<label class="form-label mb-1">Reference</label>
-							<input type="text" name="reference" class="form-control form-control-sm" placeholder="Receipt / Txn ID" />
+							<input type="text" name="reference" class="form-control form-control-sm" placeholder="Txn / reference ID" />
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-3 d-none" id="payNotesGroup">
 							<label class="form-label mb-1">Notes</label>
-							<textarea name="notes" class="form-control form-control-sm" rows="1" placeholder="Optional notes"></textarea>
+							<textarea name="extra_notes" class="form-control form-control-sm" rows="1" placeholder="Optional notes"></textarea>
 						</div>
 					</form>
 				</div>
@@ -194,6 +204,10 @@
 			const selectedLabel = document.getElementById('paySelectedLabel');
 			const form = document.getElementById('payForm');
 			const submitBtn = document.getElementById('paySubmitBtn');
+			const methodSelect = document.getElementById('payMethod');
+			const receiverGroup = document.getElementById('payReceiverGroup');
+			const referenceGroup = document.getElementById('payReferenceGroup');
+			const notesGroup = document.getElementById('payNotesGroup');
 
 			if(!searchInput || !results || !form || !submitBtn) return;
 
@@ -246,6 +260,24 @@
 				form.action = "{{ url('system-admin/inmates') }}/" + inmateIdField.value + "/payments";
 				form.submit();
 			});
+
+			function updateMethodUI(){
+				const m = methodSelect ? methodSelect.value : 'cash';
+				if(!receiverGroup || !referenceGroup || !notesGroup) return;
+				if(m === 'cash'){
+					receiverGroup.classList.remove('d-none');
+					referenceGroup.classList.add('d-none');
+					notesGroup.classList.add('d-none');
+				}else{
+					receiverGroup.classList.add('d-none');
+					referenceGroup.classList.remove('d-none');
+					notesGroup.classList.remove('d-none');
+				}
+			}
+			if(methodSelect){
+				methodSelect.addEventListener('change', updateMethodUI);
+				updateMethodUI();
+			}
 		});
 	</script>
 </x-app-layout>

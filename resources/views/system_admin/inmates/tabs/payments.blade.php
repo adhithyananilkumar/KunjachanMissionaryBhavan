@@ -44,15 +44,25 @@
 			</div>
 			<div class="col-md-3">
 				<label class="form-label mb-1">Method</label>
-				<input type="text" name="method" class="form-control form-control-sm" placeholder="Cash / UPI / Bank" />
+				<select name="method" class="form-select form-select-sm" id="inmatePayMethod">
+					<option value="cash">Cash</option>
+					<option value="upi">UPI</option>
+					<option value="bank_transfer">Bank transfer</option>
+					<option value="card">Card</option>
+					<option value="other">Other</option>
+				</select>
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-3" id="inmatePayReceiverGroup">
+				<label class="form-label mb-1">Receiver name</label>
+				<input type="text" name="notes" class="form-control form-control-sm" placeholder="Person who received cash" />
+			</div>
+			<div class="col-md-3 d-none" id="inmatePayReferenceGroup">
 				<label class="form-label mb-1">Reference</label>
-				<input type="text" name="reference" class="form-control form-control-sm" placeholder="Receipt / Txn ID" />
+				<input type="text" name="reference" class="form-control form-control-sm" placeholder="Txn / reference ID" />
 			</div>
-			<div class="col-md-6">
+			<div class="col-md-3 d-none" id="inmatePayNotesGroup">
 				<label class="form-label mb-1">Notes</label>
-				<textarea name="notes" class="form-control form-control-sm" rows="1" placeholder="Optional notes"></textarea>
+				<textarea name="extra_notes" class="form-control form-control-sm" rows="1" placeholder="Optional notes"></textarea>
 			</div>
 			<div class="col-12 d-flex justify-content-end">
 				<button class="btn btn-primary btn-sm" type="submit">Save payment</button>
