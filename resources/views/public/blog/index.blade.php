@@ -31,6 +31,9 @@
                             <strong>{{ $blog->author->name ?? 'Admin' }}</strong>
                             <span>·</span>
                             <time datetime="{{ $blog->published_at->toIso8601String() }}">{{ $blog->published_at->diffForHumans() }}</time>
+                            @if($blog->updated_at > $blog->published_at)
+                                <span class="text-muted small ms-1">(Edited)</span>
+                            @endif
                         </div>
                         <div class="text-muted"><i class="bi bi-three-dots"></i></div>
                     </div>

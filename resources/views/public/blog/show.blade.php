@@ -17,6 +17,9 @@
                     By <strong>{{ $blog->author->name ?? 'Admin' }}</strong>
                     <span class="mx-1">·</span>
                     <time datetime="{{ $blog->published_at->toIso8601String() }}">{{ $blog->published_at->format('F d, Y') }}</time>
+                    @if($blog->updated_at > $blog->published_at)
+                        <span class="text-muted fst-italic ms-1">(Edited)</span>
+                    @endif
                 </div>
                 @if($blog->featured_image)
                     <div class="mb-4">
