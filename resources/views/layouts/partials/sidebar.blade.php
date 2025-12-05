@@ -1,7 +1,7 @@
 <aside class="aw-sidebar d-flex flex-column h-100 text-white position-relative" style="overflow:auto;">
     <style>
     .aw-sidebar{--aw-bg:#0f4f4b; --aw-bg-2:#0c4340; --aw-accent:#0EA5A1; background:var(--aw-bg); width:252px; min-width:252px}
-        .aw-brand{height:28px;width:auto}
+        .aw-brand{height:40px;width:40px;border-radius:50%;object-fit:cover}
         .aw-link{color:#e6fbf7}
         .aw-link:hover{background:rgba(255,255,255,.10); color:#fff}
         .aw-link.active{background:rgba(14,165,161,.30); color:#fff; border-left:4px solid var(--aw-accent); border-radius:.6rem}
@@ -25,7 +25,8 @@
             };
         @endphp
         <a href="{{ route($homeRoute) }}" class="text-decoration-none text-white d-flex align-items-center gap-2">
-            <img src="{{ asset('assets/aathmiya.png') }}" class="aw-brand" alt="aathmiya">
+            <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" class="aw-brand" alt="Kunjachan Missionary Bhavan">
+            <span class="fw-semibold" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:.9rem;">Kunjachan Missionary Bhavan</span>
         </a>
     </div>
 
@@ -112,5 +113,5 @@
         </ul>
     </nav>
 
-    <div class="p-2 border-top small text-center text-white-50" style="border-color:rgba(255,255,255,.08)!important">&copy; {{ date('Y') }} Aathmiya</div>
+    <div class="p-2 border-top small text-center text-white-50" style="border-color:rgba(255,255,255,.08)!important">&copy; {{ date('Y') }} Kunjachan Missionary Bhavan</div>
 </aside>

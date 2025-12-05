@@ -8,10 +8,11 @@
     <div class="col-12 col-md-8 col-lg-5">
       <div class="aw-card p-4 p-md-5">
         <div class="text-center mb-3">
-          <img src="{{ asset('assets/aathmiya.png') }}" alt="Aathmiya" style="height:38px;width:auto">
+          <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="Kunjachan Missionary Bhavan" style="height:64px;width:64px;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.9);object-fit:cover;">
+          <div class="mt-2 fw-semibold text-uppercase" style="letter-spacing:.05em;font-size:.9rem;line-height:1.2;">KUNJACHAN MISSIONARY<br>BHAVAN</div>
         </div>
         <h1 class="h3 mb-2 text-center">Welcome back</h1>
-        <p class="text-secondary mb-4 text-center">Sign in to continue to Aathmiya.</p>
+        <p class="text-secondary mb-4 text-center">Sign in to continue.</p>
 
         @if ($errors->any())
             <div class="alert alert-danger py-2">
@@ -76,7 +77,7 @@
       <div class="modal-body">
         <p class="mb-2">Please contact your administrator to reset your account password.</p>
         <ul class="mb-0 text-secondary">
-          <li>Email: support@aathmiya.local</li>
+          <li>Email: kunjachanmissionary@gmail.com</li>
           <li>Or reach out to your institution’s system admin.</li>
         </ul>
       </div>

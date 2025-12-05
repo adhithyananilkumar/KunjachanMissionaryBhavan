@@ -6,8 +6,8 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         @php
-            // Force brand name to Aathmiya across guest pages
-            $appName = 'Aathmiya';
+            // Brand name for guest pages
+            $appName = 'Kunjachan Missionary Bhavan';
             $pageTitleSection = trim($__env->yieldContent('title'));
             $finalTitle = $pageTitleSection ? ($pageTitleSection.' | '.$appName) : $appName;
         @endphp
@@ -33,7 +33,7 @@
                             linear-gradient(160deg, #ffffff 0%, #f6fffd 100%);
                 min-height: 100vh;
             }
-            .aw-nav-brand img { height: 28px; width:auto; }
+            .aw-nav-brand img { height: 40px; width:auto; border-radius:50%; box-shadow:0 0 0 2px rgba(255,255,255,.9); }
             .aw-card { backdrop-filter: blur(10px); background: rgba(255,255,255,.85); border: 1px solid rgba(15,79,75,.08); border-radius: 1rem; box-shadow: 0 12px 30px rgba(0,0,0,.08); }
             .aw-btn-primary { background: var(--aw-primary); border-color: var(--aw-primary); }
             .aw-btn-primary:hover { background: #0c4340; border-color: #0c4340; }
@@ -47,9 +47,9 @@
     <body class="aw-hero d-flex flex-column">
         <nav class="navbar navbar-expand-md bg-transparent py-3">
             <div class="container">
-                <a href="{{ url('/') }}" class="navbar-brand d-flex align-items-center aw-nav-brand">
-                    <img src="{{ asset('assets/aathmiya.png') }}" alt="Aathmiya">
-                    
+                <a href="{{ url('/') }}" class="navbar-brand d-flex align-items-center gap-2 aw-nav-brand">
+                    <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="{{ $appName }} Logo">
+                    <span class="fw-semibold text-uppercase" style="letter-spacing:.05em;font-size:.9rem;line-height:1.2;">KUNJACHAN MISSIONARY<br>BHAVAN</span>
                 </a>
                 <div class="ms-auto d-none d-md-flex align-items-center gap-2">
                     @guest

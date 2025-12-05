@@ -8,10 +8,11 @@
         <div class="col-12 col-md-9 col-lg-6 col-xl-5">
             <div class="aw-card p-4 p-md-5">
                 <div class="text-center mb-3">
-                    <img src="{{ asset('assets/aathmiya.png') }}" alt="Aathmiya" style="height:38px;width:auto">
+                    <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="Kunjachan Missionary Bhavan" style="height:64px;width:64px;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.9);object-fit:cover;">
+                    <div class="mt-2 fw-semibold text-uppercase" style="letter-spacing:.05em;font-size:.9rem;line-height:1.2;">KUNJACHAN MISSIONARY<br>BHAVAN</div>
                 </div>
                 <h1 class="h3 mb-2 text-center">Create your account</h1>
-                <p class="text-secondary mb-4 text-center">Set up your access to Aathmiya.</p>
+                <p class="text-secondary mb-4 text-center">Set up your access to Kunjachan Missionary Bhavan.</p>
 
                 @if ($errors->any())
                         <div class="alert alert-danger py-2">

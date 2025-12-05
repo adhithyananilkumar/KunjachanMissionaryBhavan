@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @php
-      $appName = config('app.name', 'Aathmiya');
+      $appName = 'Kunjachan Missionary Bhavan';
       $user = auth()->user();
       $roleLabel = $user?->role ? ucfirst(str_replace('_',' ', $user->role)) : null;
       $pageTitleSection = trim($__env->yieldContent('title'));
@@ -54,8 +54,9 @@
   <body class="bg-light">
   <nav class="navbar navbar-light bg-white border-bottom sticky-top">
       <div class="container-fluid">
-    <span class="navbar-brand fw-semibold d-flex align-items-center me-auto">
-          <img src="{{ asset('assets/aathmiya.png') }}" alt="aathmiya" style="height:26px;width:auto">
+    <span class="navbar-brand fw-semibold d-flex align-items-center gap-2 me-auto">
+          <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="Kunjachan Missionary Bhavan" style="height:28px;width:28px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(255,255,255,.9)">
+          <span class="text-uppercase" style="letter-spacing:.05em;font-size:.75rem;line-height:1.2;">KUNJACHAN MISSIONARY<br>BHAVAN</span>
         </span>
         <div class="d-flex align-items-center gap-2">
           @auth
