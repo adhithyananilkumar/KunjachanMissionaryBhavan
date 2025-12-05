@@ -1,9 +1,11 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom shadow-sm" role="navigation">
     <div class="container">
-        <!-- Brand / Logo -->
-        <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
-            <x-application-logo class="me-2" />
-            <span class="fw-semibold">{{ config('app.name', 'Aathmiya') }}</span>
+        <!-- Brand / Logo (match public header) -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('dashboard') }}">
+            <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="Kunjachan Missionary Bhavan" style="height:40px;width:40px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px rgba(255,255,255,.9);">
+            <span class="fw-semibold text-uppercase" style="letter-spacing:.05em;font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:.9rem; line-height:1.2;">
+                KUNJACHAN MISSIONARY<br>BHAVAN
+            </span>
         </a>
 
         <!-- Mobile Toggler -->

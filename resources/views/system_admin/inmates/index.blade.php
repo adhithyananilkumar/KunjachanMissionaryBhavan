@@ -18,7 +18,7 @@
 		<div class="row g-2 align-items-end">
 			<div class="col-md-3">
 				<label class="form-label mb-0">Search</label>
-				<input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="name or id">
+				<input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="name, ID, admission or register no">
 			</div>
 			<div class="col-md-2">
 				<label class="form-label mb-0">Type</label>
@@ -59,8 +59,10 @@
 		.inmate-item:hover{background:#f8f9fa; box-shadow:0 2px 6px rgba(0,0,0,0.08); transform:translateY(-2px);} 
 		.inmate-avatar{width:52px;height:52px;object-fit:cover;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.1);} 
 		@media (max-width: 576px){
+			/* Use full width on mobile and tighten spacing */
+			#inmateFilters .card{margin-left:-.75rem;margin-right:-.75rem;border-radius:0;border-left:0;border-right:0;}
+			.inmate-item{padding:.75rem .75rem .75rem .75rem; margin-left:-.75rem; margin-right:-.75rem; border-left:0; border-right:0;}
 			.inmate-avatar{width:44px;height:44px}
-			.inmate-item{padding:.75rem}
 			.inmate-meta .hide-xs{display:none!important}
 		}
 	</style>
@@ -74,7 +76,7 @@
 						<span class="fw-semibold text-truncate d-inline-block" style="max-width:100%">{{ $inmate->full_name }}</span>
 						<span class="badge bg-secondary">ID {{ $inmate->id }}</span>
 						@if($inmate->admission_date)
-							<span class="badge bg-info text-dark">Admitted {{ $inmate->admission_date->format('Y-m-d') }}</span>
+							<span class="badge bg-light text-secondary border">Admitted {{ $inmate->admission_date->format('Y-m-d') }}</span>
 						@endif
 					</div>
 					<div class="text-muted small d-flex flex-wrap gap-3 inmate-meta">
@@ -101,4 +103,38 @@
 	<div class="d-flex justify-content-center">{{ $inmates->links() }}</div>
 
 	{{-- Allocation is now handled on the inmate profile Allocation tab --}}
+	@push('scripts')
+	<script>
+	document.addEventListener('DOMContentLoaded', function(){
+	    const form = document.querySelector('#inmateFilters form');
+	    const input = form ? form.querySelector('input[name="search"]') : null;
+	    const rows = Array.from(document.querySelectorAll('.list-group .inmate-item'));
+	    if(!form || !input || rows.length === 0) return;
+
+	    function matchesRow(row, term){
+	        if(!term) return true;
+	        term = term.toLowerCase();
+	        const text = row.dataset.searchText || (row.textContent || '').toLowerCase();
+	        row.dataset.searchText = text;
+	        return text.indexOf(term) !== -1;
+	    }
+
+	    let timer = null;
+	    input.addEventListener('input', function(){
+	        const val = this.value.trim();
+	        clearTimeout(timer);
+	        // Instant client-side filter for current page
+	        rows.forEach(function(row){
+	            row.style.display = matchesRow(row, val) ? '' : 'none';
+	        });
+	        // After short delay, sync with server (for pagination / large data)
+	        timer = setTimeout(function(){
+	            const pageField = form.querySelector('input[name="page"]');
+	            if(pageField){ pageField.remove(); }
+	            form.submit();
+	        }, 400);
+	    });
+	});
+	</script>
+	@endpush
 </x-app-layout>

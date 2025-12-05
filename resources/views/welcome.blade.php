@@ -6,7 +6,7 @@
         <div class="row g-5 align-items-center">
             <div class="col-lg-8">
                 <div class="tagline mb-3">FOLLOW JESUS</div>
-                <h1 class="display-5 display-title mb-3">KUNJACHAN MISSIYYYYYYYONARY BHAVAN</h1>
+                <h1 class="display-5 display-title mb-3">KUNJACHAN MISSIONARY BHAVAN</h1>
                 <p class="lead mb-4">Psycho-social rehabilitation & compassionate care fostering dignity, healing and reintegration.</p>
                 <ul class="list-check mb-4">
                     <li>Holistic spiritual, medical & social support</li>
