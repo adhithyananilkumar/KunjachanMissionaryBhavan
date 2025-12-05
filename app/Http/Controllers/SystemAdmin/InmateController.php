@@ -270,6 +270,7 @@ class InmateController extends Controller
                 'history' => view('system_admin.inmates.tabs.history', compact('inmate')),
                 'documents' => view('system_admin.inmates.tabs.documents', compact('inmate')),
                 'allocation' => view('system_admin.inmates.tabs.allocation', compact('inmate')),
+                'payments' => view('system_admin.inmates.tabs.payments', compact('inmate')),
                 'settings' => view('system_admin.inmates.tabs.settings', compact('inmate')),
                 default => view('system_admin.inmates.tabs.overview', compact('inmate')),
             };

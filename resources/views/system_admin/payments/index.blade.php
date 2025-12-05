@@ -5,6 +5,20 @@
 		<div class="card-body">
 			<form method="GET" class="row g-2 align-items-end">
 				<div class="col-md-3">
+					<label class="form-label small mb-1">Inmate (by name)</label>
+					<select name="inmate_id" class="form-select form-select-sm">
+						<option value="">All inmates</option>
+						@foreach($inmatesForSelect as $i)
+							<option value="{{ $i->id }}" @selected((int)($inmateId ?? 0) === (int)$i->id)>
+								{{ $i->first_name }} {{ $i->last_name }}
+								@isset($i->admission_number)
+									- {{ $i->admission_number }}
+								@endisset
+							</option>
+						@endforeach
+					</select>
+				</div>
+				<div class="col-md-3">
 					<label class="form-label small mb-1">Institution</label>
 					<select name="institution_id" class="form-select form-select-sm">
 						<option value="">All institutions</option>

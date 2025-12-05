@@ -18,9 +18,13 @@ class InmatePaymentController extends Controller
         $status = $request->get('status');
         $period = trim((string)$request->get('period',''));
         $search = trim((string)$request->get('search',''));
+        $inmateId = $request->get('inmate_id');
 
         if ($institutionId) {
             $query->where('institution_id', $institutionId);
+        }
+        if ($inmateId) {
+            $query->where('inmate_id', $inmateId);
         }
         if ($status) {
             $query->where('status', $status);
@@ -39,17 +43,31 @@ class InmatePaymentController extends Controller
         }
 
         $payments = $query->orderBy('payment_date','desc')->orderBy('id','desc')
-            ->paginate(20)->appends($request->only('institution_id','status','period','search'));
+            ->paginate(20)->appends($request->only('institution_id','status','period','search','inmate_id'));
 
         $institutions = Institution::orderBy('name')->get(['id','name']);
         $statuses = ['pending','paid','failed','refunded'];
+
+        $inmatesForSelect = Inmate::orderBy('first_name')->orderBy('id')
+            ->get(['id','first_name','last_name','admission_number']);
 
         $summary = [
             'total_amount' => (clone $query)->where('status','paid')->sum('amount'),
             'count' => (clone $query)->count(),
         ];
 
-        return view('system_admin.payments.index', compact('payments','institutions','institutionId','statuses','status','period','search','summary'));
+        return view('system_admin.payments.index', compact(
+            'payments',
+            'institutions',
+            'institutionId',
+            'statuses',
+            'status',
+            'period',
+            'search',
+            'summary',
+            'inmateId',
+            'inmatesForSelect'
+        ));
     }
 
     public function storeForInmate(Request $request, Inmate $inmate)
