@@ -28,6 +28,7 @@
                 $tiles = [
                     ['route' => 'system_admin.inmates.create', 'icon' => 'journal-plus', 'title' => 'ADMISSION', 'subtitle' => 'Register new inmate'],
                     ['route' => 'system_admin.inmates.index', 'icon' => 'person-badge', 'title' => 'INMATES', 'subtitle' => 'View all inmates'],
+                    ['route' => 'system_admin.payments.index', 'icon' => 'cash-coin', 'title' => 'PAYMENTS', 'subtitle' => 'Collect & review fees'],
                     ['route' => 'system_admin.users.index', 'icon' => 'people', 'title' => 'STAFFS', 'subtitle' => 'Manage staff'],
                     ['route' => 'system_admin.institutions.index', 'icon' => 'building', 'title' => 'INSTITUTIONS', 'subtitle' => 'Manage institutions'],
                     ['route' => 'system_admin.medicines.index', 'icon' => 'box-seam', 'title' => 'INVENTORY', 'subtitle' => 'Manage stock'],
