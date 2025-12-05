@@ -10,39 +10,56 @@
             </div>
         </div>
 
-        <div class="feed-search mb-3">
+        <form action="{{ route('blog.index') }}" method="GET" class="feed-search mb-3">
             <i class="bi bi-search"></i>
-            <input id="feedSearch" type="search" placeholder="Search posts..." aria-label="Search posts">
-        </div>
+            <input id="feedSearch" name="search" type="search" placeholder="Search posts..." aria-label="Search posts" value="{{ request('search') }}">
+        </form>
 
         <div id="feed" class="feed">
-            @foreach(range(1,8) as $i)
-            <article class="feed-item fade-in" data-text="sample post {{ $i }} reflections community updates mission love care faith">
-                <div class="feed-avatar">{{ substr('KM', 0, 2) }}</div>
+            @forelse($blogs as $blog)
+            <article class="feed-item fade-in">
+                <div class="feed-avatar">
+                    @if($blog->author && $blog->author->profile_picture_path)
+                        <img src="{{ asset('storage/' . $blog->author->profile_picture_path) }}" alt="{{ $blog->author->name }}" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover;">
+                    @else
+                        {{ substr($blog->author->name ?? 'Admin', 0, 2) }}
+                    @endif
+                </div>
                 <div class="feed-body">
                     <div class="d-flex justify-content-between">
                         <div class="feed-meta">
-                            <strong>Kunjachan Bhavan</strong>
+                            <strong>{{ $blog->author->name ?? 'Admin' }}</strong>
                             <span>·</span>
-                            <time datetime="{{ now()->subHours($i*3)->toIso8601String() }}">{{ now()->subHours($i*3)->diffForHumans() }}</time>
+                            <time datetime="{{ $blog->published_at->toIso8601String() }}">{{ $blog->published_at->diffForHumans() }}</time>
                         </div>
                         <div class="text-muted"><i class="bi bi-three-dots"></i></div>
                     </div>
-                    <div class="mt-1">This is a short update from our community — placeholder text for the feed experience. Post {{ $i }}.</div>
-                    @if($i % 2 === 0)
-                        <div class="feed-media">
-                            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1600&auto=format&fit=crop" alt="Post media">
+                    <a href="{{ route('blog.show', $blog->slug) }}" class="text-decoration-none text-dark">
+                        <h5 class="mt-2 fw-bold">{{ $blog->title }}</h5>
+                        <div class="mt-1">{{ Str::limit($blog->short_description, 150) }}</div>
+                    </a>
+                    @if($blog->featured_image)
+                        <div class="feed-media mt-3">
+                            <a href="{{ route('blog.show', $blog->slug) }}">
+                                <img src="{{ asset('storage/' . $blog->featured_image) }}" alt="{{ $blog->title }}">
+                            </a>
                         </div>
                     @endif
-                    <div class="feed-actions">
-                        <span><i class="bi bi-heart"></i></span>
-                        <span><i class="bi bi-chat"></i></span>
-                        <span><i class="bi bi-share"></i></span>
+                    <div class="feed-actions mt-3">
+                        <a href="{{ route('blog.show', $blog->slug) }}" class="btn btn-sm btn-outline-primary rounded-pill">Read More</a>
                     </div>
                 </div>
             </article>
-            @endforeach
+            @empty
+            <div class="text-center py-5">
+                <p class="text-muted">No blog posts found.</p>
+            </div>
+            @endforelse
+        </div>
+
+        <div class="mt-4">
+            {{ $blogs->links() }}
         </div>
     </div>
-    </section>
+</section>
 @endsection
