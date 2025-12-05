@@ -1,5 +1,12 @@
 <x-app-layout>
-	<x-slot name="header"><h2 class="h5 mb-0">Payments</h2></x-slot>
+	<x-slot name="header">
+		<div class="d-flex justify-content-between align-items-center">
+			<h2 class="h5 mb-0">Payments</h2>
+			<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#payModal">
+				<span class="bi bi-cash-coin me-1"></span> Pay
+			</button>
+		</div>
+	</x-slot>
 
 	<div class="card shadow-sm mb-3">
 		<div class="card-body">
@@ -115,4 +122,130 @@
 			<div class="card-footer small">{{ $payments->links() }}</div>
 		@endif
 	</div>
+
+	<!-- Quick Pay Modal: search any inmate and record a payment -->
+	<div class="modal fade" id="payModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Record Payment</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label class="form-label small mb-1">Search inmate</label>
+						<input type="text" class="form-control form-control-sm" id="paySearch" placeholder="Type name, admission # or registration #" autocomplete="off">
+					</div>
+					<div class="list-group small mb-3" id="payResults" style="max-height:200px; overflow:auto;"></div>
+					<form method="POST" id="payForm" class="row g-2 small" action="" autocomplete="off">
+						@csrf
+						<input type="hidden" name="_inmate_id" id="payInmateId" />
+						<div class="col-12 mb-2">
+							<div class="text-muted" id="paySelectedLabel">No inmate selected.</div>
+						</div>
+						<div class="col-md-3">
+							<label class="form-label mb-1">Amount (₹)</label>
+							<input type="number" step="0.01" min="0" name="amount" class="form-control form-control-sm" required />
+						</div>
+						<div class="col-md-3">
+							<label class="form-label mb-1">Payment date</label>
+							<input type="date" name="payment_date" class="form-control form-control-sm" value="{{ now()->toDateString() }}" required />
+						</div>
+						<div class="col-md-3">
+							<label class="form-label mb-1">Period label</label>
+							<input type="text" name="period_label" class="form-control form-control-sm" placeholder="e.g. Nov 2025" />
+						</div>
+						<div class="col-md-3">
+							<label class="form-label mb-1">Status</label>
+							<select name="status" class="form-select form-select-sm">
+								<option value="paid">Paid</option>
+								<option value="pending">Pending</option>
+								<option value="failed">Failed</option>
+								<option value="refunded">Refunded</option>
+							</select>
+						</div>
+						<div class="col-md-3">
+							<label class="form-label mb-1">Method</label>
+							<input type="text" name="method" class="form-control form-control-sm" placeholder="Cash / UPI / Bank" />
+						</div>
+						<div class="col-md-3">
+							<label class="form-label mb-1">Reference</label>
+							<input type="text" name="reference" class="form-control form-control-sm" placeholder="Receipt / Txn ID" />
+						</div>
+						<div class="col-md-6">
+							<label class="form-label mb-1">Notes</label>
+							<textarea name="notes" class="form-control form-control-sm" rows="1" placeholder="Optional notes"></textarea>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary btn-sm" id="paySubmitBtn" disabled>Save payment</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function(){
+			const searchInput = document.getElementById('paySearch');
+			const results = document.getElementById('payResults');
+			const inmateIdField = document.getElementById('payInmateId');
+			const selectedLabel = document.getElementById('paySelectedLabel');
+			const form = document.getElementById('payForm');
+			const submitBtn = document.getElementById('paySubmitBtn');
+
+			if(!searchInput || !results || !form || !submitBtn) return;
+
+			let timeout = null;
+			function renderResults(items){
+				results.innerHTML = '';
+				if(!items.length){
+					results.innerHTML = '<div class="list-group-item text-muted">No inmates found.</div>';
+					return;
+				}
+				items.forEach(function(it){
+					const el = document.createElement('button');
+					el.type = 'button';
+					el.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+					el.innerHTML = '<span>' + it.name + '<div class="text-muted small">Admission # ' + (it.admission_number || '—') + '</div></span>' +
+						'<span class="badge bg-light text-dark">' + (it.institution || '—') + '</span>';
+					el.addEventListener('click', function(){
+						inmateIdField.value = it.id;
+						selectedLabel.textContent = 'Selected: ' + it.name + ' (Adm # ' + (it.admission_number || '—') + ')';
+						submitBtn.disabled = false;
+					});
+					results.appendChild(el);
+				});
+			}
+
+			async function searchInmates(term){
+				term = term.trim();
+				if(term.length < 2){
+					results.innerHTML = '';
+					return;
+				}
+				try{
+					const res = await fetch("{{ route('system_admin.inmates.search') }}?q=" + encodeURIComponent(term), {headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}});
+					if(!res.ok){ throw new Error('Search failed'); }
+					const data = await res.json();
+					renderResults(data.data || []);
+				}catch(e){
+					results.innerHTML = '<div class="list-group-item text-danger small">Search error.</div>';
+				}
+			}
+
+			searchInput.addEventListener('input', function(){
+				clearTimeout(timeout);
+				timeout = setTimeout(function(){ searchInmates(searchInput.value); }, 300);
+			});
+
+			submitBtn.addEventListener('click', function(){
+				if(!inmateIdField.value){ return; }
+				// build action URL for selected inmate and submit
+				form.action = "{{ url('system-admin/inmates') }}/" + inmateIdField.value + "/payments";
+				form.submit();
+			});
+		});
+	</script>
 </x-app-layout>

@@ -46,6 +46,7 @@ use App\Http\Controllers\Admin\BlockController as AdminBlockController;
 use App\Http\Controllers\SystemAdmin\BlockController as SystemAdminBlockController;
 use App\Http\Controllers\SystemAdmin\MedicineController as SystemAdminMedicineController;
 use App\Http\Controllers\SystemAdmin\InmatePaymentController as SystemAdminInmatePaymentController;
+use App\Http\Controllers\SystemAdmin\InmateSearchController as SystemAdminInmateSearchController;
 use App\Http\Controllers\Admin\MedicineController as AdminMedicineController;
 // use App\Http\Controllers\Developer\SettingsController as DeveloperSettingsController; // deprecated
 
@@ -122,6 +123,7 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::post('institutions/{institution}/donations', [SystemAdminInstitutionController::class,'updateDonationSettings'])->name('institutions.donations.update');
     Route::get('institutions/{institution}/tabs/settings', [SystemAdminInstitutionController::class,'tabSettings'])->name('institutions.tabs.settings');
     Route::resource('inmates', SystemAdminInmateController::class);
+    Route::get('inmates-search', SystemAdminInmateSearchController::class)->name('inmates.search');
     // Payments
     Route::get('payments', [SystemAdminInmatePaymentController::class,'index'])->name('payments.index');
     Route::post('inmates/{inmate}/payments', [SystemAdminInmatePaymentController::class,'storeForInmate'])->name('inmates.payments.store');
