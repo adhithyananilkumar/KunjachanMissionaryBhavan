@@ -186,6 +186,7 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::post('inmates/{inmate}/documents', [SystemAdminInmateController::class,'storeDocument'])->name('inmates.documents.store');
     // Toggle guardian sharing for a document
     Route::post('inmates/{inmate}/documents/{document}/toggle-share', [SystemAdminInmateController::class,'toggleDocumentShare'])->name('inmates.documents.toggle-share');
+    Route::get('inmates/{inmate}/pdf', [SystemAdminInmateController::class, 'downloadPdf'])->name('inmates.pdf');
     // Guardian messages (reply within guardian show)
     Route::post('guardians/{guardian}/messages', [\App\Http\Controllers\SystemAdmin\GuardianController::class,'replyMessage'])->name('guardians.messages.reply');
     // Blog Management
@@ -325,7 +326,9 @@ Route::middleware(['auth','verified','role:admin'])->prefix('admin')->name('admi
     Route::get('guardian-messages/{guardian}', [\App\Http\Controllers\Admin\GuardianMessageController::class,'show'])->name('guardian-messages.show');
     Route::post('guardian-messages/{guardian}', [\App\Http\Controllers\Admin\GuardianMessageController::class,'reply'])->name('guardian-messages.reply');
     // Toggle guardian sharing for a document
+    Route::post('inmates/{inmate}/documents', [AdminInmateController::class,'storeDocument'])->name('inmates.documents.store');
     Route::post('inmates/{inmate}/documents/{document}/toggle-share', [AdminInmateController::class,'toggleDocumentShare'])->name('inmates.documents.toggle-share');
+    Route::get('inmates/{inmate}/pdf', [AdminInmateController::class, 'downloadPdf'])->name('inmates.pdf');
     // Blog Management
     Route::resource('blogs', AdminBlogController::class);
 

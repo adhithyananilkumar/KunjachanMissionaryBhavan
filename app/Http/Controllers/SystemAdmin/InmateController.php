@@ -13,8 +13,21 @@ use App\Http\Requests\UpdateInmateRequest;
 use App\Services\AdmissionNumberGenerator;
 use Illuminate\Support\Facades\Storage;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class InmateController extends Controller
 {
+    public function downloadPdf(Inmate $inmate)
+    {
+        $inmate->loadMissing(
+            'geriatricCarePlan','mentalHealthPlan','rehabilitationPlan',
+            'educationalRecords','documents','medications','labTests','therapySessionLogs','appointments','caseLogEntries','institution'
+        );
+        
+        $pdf = Pdf::loadView('pdf.inmate_details', compact('inmate'));
+        return $pdf->download('inmate-details-' . $inmate->admission_number . '.pdf');
+    }
+
     public function index(Request $request){
         $query = Inmate::with('institution');
         $search = trim((string)$request->get('search',''));

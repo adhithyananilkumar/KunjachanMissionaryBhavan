@@ -11,8 +11,22 @@ use App\Models\Location;
 use App\Models\LocationAssignment;
 use App\Models\InmateDocument;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class InmateController extends Controller
 {
+    public function downloadPdf(Inmate $inmate)
+    {
+        $this->authorizeAccess($inmate);
+        $inmate->loadMissing(
+            'geriatricCarePlan','mentalHealthPlan','rehabilitationPlan',
+            'educationalRecords','documents','medications','labTests','therapySessionLogs','appointments','caseLogEntries','institution'
+        );
+        
+        $pdf = Pdf::loadView('pdf.inmate_details', compact('inmate'));
+        return $pdf->download('inmate-details-' . $inmate->admission_number . '.pdf');
+    }
+
     public function index()
     {
         $inmates = Inmate::where('institution_id', Auth::user()->institution_id)
