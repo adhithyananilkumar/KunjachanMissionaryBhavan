@@ -12,6 +12,7 @@ use App\Http\Requests\StoreInmateRequest;
 use App\Http\Requests\UpdateInmateRequest;
 use App\Services\AdmissionNumberGenerator;
 use Illuminate\Support\Facades\Storage;
+use App\Services\Pdf\PdfManager;
 
 class InmateController extends Controller
 {
@@ -276,6 +277,21 @@ class InmateController extends Controller
             };
         }
         return view('system_admin.inmates.show', compact('inmate'));
+    }
+
+    public function downloadReport(Inmate $inmate, PdfManager $pdf)
+    {
+        $inmate->loadMissing(
+            'geriatricCarePlan',
+            'mentalHealthPlan',
+            'rehabilitationPlan',
+            'institution',
+            'currentLocation.location',
+        );
+
+        return $pdf->downloadTemplate('inmate_profile', [
+            'inmate' => $inmate,
+        ]);
     }
 
     public function assignLocation(Request $request, Inmate $inmate)

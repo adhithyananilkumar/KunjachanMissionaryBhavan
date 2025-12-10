@@ -6,6 +6,10 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Pagination\Paginator;
 use App\View\Composers\NotificationComposer;
+use App\Services\Pdf\PdfRenderer;
+use App\Services\Pdf\DompdfRenderer;
+use App\Services\Pdf\PdfManager;
+use Illuminate\Support\Facades\Storage;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->registerPdfBindings();
     }
 
     /**
@@ -32,5 +36,23 @@ class AppServiceProvider extends ServiceProvider
             'layouts.partials.sidebar',
             'layouts.app',
         ], NotificationComposer::class);
+    }
+
+    protected function registerPdfBindings(): void
+    {
+        $this->app->bind(PdfRenderer::class, function () {
+            $driver = config('pdf.default_renderer', 'dompdf');
+            $map = config('pdf.renderers', []);
+            $class = $map[$driver] ?? DompdfRenderer::class;
+
+            return $this->app->make($class);
+        });
+
+        $this->app->singleton(PdfManager::class, function ($app) {
+            return new PdfManager(
+                $app->make(PdfRenderer::class),
+                Storage::disk(config('filesystems.default')),
+            );
+        });
     }
 }

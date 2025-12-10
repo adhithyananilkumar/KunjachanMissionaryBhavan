@@ -122,6 +122,7 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::post('institutions/{institution}/donations', [SystemAdminInstitutionController::class,'updateDonationSettings'])->name('institutions.donations.update');
     Route::get('institutions/{institution}/tabs/settings', [SystemAdminInstitutionController::class,'tabSettings'])->name('institutions.tabs.settings');
     Route::resource('inmates', SystemAdminInmateController::class);
+    Route::get('inmates/{inmate}/report', [SystemAdminInmateController::class,'downloadReport'])->name('inmates.report');
     Route::get('inmates-search', SystemAdminInmateSearchController::class)->name('inmates.search');
     // Payments
     Route::get('payments', [SystemAdminInmatePaymentController::class,'index'])->name('payments.index');

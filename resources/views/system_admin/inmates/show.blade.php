@@ -26,6 +26,7 @@
 				</div>
 			</div>
 			<div class="d-flex flex-wrap gap-2">
+				<a href="{{ route('system_admin.inmates.report',$inmate) }}" class="btn btn-outline-success btn-sm"><span class="bi bi-file-earmark-pdf me-1"></span>Download Report</a>
 				<a href="{{ route('system_admin.inmates.edit',$inmate) }}" class="btn btn-outline-primary btn-sm"><span class="bi bi-pencil-square me-1"></span>Edit</a>
 				<a href="{{ route('system_admin.inmates.index') }}" class="btn btn-outline-secondary btn-sm">Back</a>
 			</div>
