@@ -52,7 +52,10 @@ use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\Public\BlogController as PublicBlogController;
 
 // Public website pages (static, no app logic)
-Route::view('/', 'public.home')->name('home');
+Route::get('/', function() {
+    $galleryImages = \App\Models\GalleryImage::latest()->take(10)->get();
+    return view('public.home', compact('galleryImages'));
+})->name('home');
 Route::view('/about', 'public.about')->name('about');
 Route::view('/timeline', 'public.timeline')->name('timeline');
 // Institutions (public)

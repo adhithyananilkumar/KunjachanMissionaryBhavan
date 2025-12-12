@@ -80,19 +80,23 @@
         </div>
         <div class="marquee surface" onmouseenter="this.classList.add('paused')" onmouseleave="this.classList.remove('paused')">
             <div class="marquee__track">
-                @php($pics = [
-                    asset('assets/gallery/chappel.jpg'),
-                    asset('assets/gallery/output_1.jpg'),
-                    asset('assets/gallery/img4.jpeg'),
-                    asset('assets/gallery/img5.jpeg'),
-                    asset('assets/gallery/img6.jpeg'),
-                    asset('assets/gallery/img7.jpeg')
-                ])
-                @foreach(array_merge($pics,$pics) as $src)
-                <div class="marquee__item">
-                    <img src="{{ $src }}" alt="Moments from our home" loading="lazy">
-                </div>
-                @endforeach
+                @if(isset($galleryImages) && $galleryImages->count() > 0)
+                    {{-- Loop twice for marquee effect --}}
+                    @foreach($galleryImages as $image)
+                    <div class="marquee__item">
+                        <img src="{{ asset('assets/gallery/' . $image->image_path) }}" alt="{{ $image->caption ?? 'Moments from our home' }}" loading="lazy">
+                    </div>
+                    @endforeach
+                    @foreach($galleryImages as $image)
+                    <div class="marquee__item">
+                        <img src="{{ asset('assets/gallery/' . $image->image_path) }}" alt="{{ $image->caption ?? 'Moments from our home' }}" loading="lazy">
+                    </div>
+                    @endforeach
+                @else
+                    <div class="marquee__item">
+                        <p class="text-white">No images in gallery</p>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
