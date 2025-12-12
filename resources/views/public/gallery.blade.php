@@ -11,11 +11,17 @@
             </div>
         </div>
         <div class="gallery-grid">
-            @foreach(range(1,12) as $i)
+            @php
+                $galleryImages = \App\Models\GalleryImage::latest()->get();
+            @endphp
+            @forelse($galleryImages as $image)
                 <figure class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800&auto=format&fit=crop" alt="Gallery image {{ $i }}" loading="lazy">
+                    <img src="{{ asset($image->image_path) }}" alt="{{ $image->title ?? 'Gallery image' }}" loading="lazy">
                 </figure>
-            @endforeach
+            @empty
+                <!-- Fallback to static if no images in DB yet, or just show empty -->
+                <p class="text-muted col-12 text-center">No images uploaded yet.</p>
+            @endforelse
         </div>
     </div>
 </section>

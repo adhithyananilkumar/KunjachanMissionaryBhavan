@@ -191,6 +191,8 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::post('guardians/{guardian}/messages', [\App\Http\Controllers\SystemAdmin\GuardianController::class,'replyMessage'])->name('guardians.messages.reply');
     // Blog Management
     Route::resource('blogs', AdminBlogController::class);
+    // Gallery Management
+    Route::resource('gallery', \App\Http\Controllers\SystemAdmin\GalleryController::class)->only(['index', 'store', 'destroy']);
 });
 
 Route::middleware('auth')->group(function () {
@@ -331,11 +333,13 @@ Route::middleware(['auth','verified','role:admin'])->prefix('admin')->name('admi
     Route::get('inmates/{inmate}/pdf', [AdminInmateController::class, 'downloadPdf'])->name('inmates.pdf');
     // Blog Management
     Route::resource('blogs', AdminBlogController::class);
-
     // User Documents & PDF
     Route::post('/user/documents', [UserDocumentController::class, 'store'])->name('user.documents.store');
     Route::get('/user/documents/{document}', [UserDocumentController::class, 'download'])->name('user.documents.download');
     Route::get('/registration/pdf/{user?}', [RegistrationPDFController::class, 'download'])->name('registration.pdf.download');
+
+    // Gallery Management
+    Route::resource('gallery', \App\Http\Controllers\Admin\GalleryController::class)->only(['index', 'store', 'destroy']);
 });
 
 // Staff routes

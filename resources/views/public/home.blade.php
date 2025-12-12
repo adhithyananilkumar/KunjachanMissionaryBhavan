@@ -80,19 +80,36 @@
         </div>
         <div class="marquee surface" onmouseenter="this.classList.add('paused')" onmouseleave="this.classList.remove('paused')">
             <div class="marquee__track">
-                @php($pics = [
-                    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?q=80&w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=1200&auto=format&fit=crop'
-                ])
-                @foreach(array_merge($pics,$pics) as $src)
-                <div class="marquee__item">
-                    <img src="{{ $src }}" alt="Moments from our home" loading="lazy">
-                </div>
-                @endforeach
+                @php
+                    $galleryImages = \App\Models\GalleryImage::inRandomOrder()->limit(10)->get();
+                @endphp
+                @if($galleryImages->count() > 0)
+                    @foreach($galleryImages as $image)
+                    <div class="marquee__item">
+                        <img src="{{ asset($image->image_path) }}" alt="{{ $image->title ?? 'Moments from our home' }}" loading="lazy">
+                    </div>
+                    @endforeach
+                    {{-- Duplicate for marquee effect --}}
+                    @foreach($galleryImages as $image)
+                    <div class="marquee__item">
+                        <img src="{{ asset($image->image_path) }}" alt="{{ $image->title ?? 'Moments from our home' }}" loading="lazy">
+                    </div>
+                    @endforeach
+                @else
+                     {{-- Fallback static images if DB is empty --}}
+                    @php($pics = [
+                        asset('assets/gallery/chappel.jpg'),
+                        asset('assets/gallery/img4.jpeg'),
+                        asset('assets/gallery/img5.jpeg'),
+                        asset('assets/gallery/img6.jpeg'),
+                        asset('assets/gallery/img7.jpeg')
+                    ])
+                    @foreach(array_merge($pics,$pics) as $src)
+                    <div class="marquee__item">
+                        <img src="{{ $src }}" alt="Moments from our home" loading="lazy">
+                    </div>
+                    @endforeach
+                @endif
             </div>
         </div>
     </div>
