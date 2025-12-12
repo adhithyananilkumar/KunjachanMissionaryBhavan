@@ -74,7 +74,7 @@
     <body class="font-sans antialiased bg-light" @auth data-auth="{{ auth()->id() }}" @endauth>
     <div class="d-flex min-vh-100 w-100">
         <!-- Desktop Sidebar (locked/fixed) -->
-        <div class="d-none d-lg-block position-fixed h-100" style="width:260px; left:0; top:0; z-index:1030;">
+        <div class="d-none d-lg-block position-fixed h-100 overflow-y-auto" style="width:260px; left:0; top:0; z-index:1030; scrollbar-width: thin;">
             @include('layouts.partials.sidebar')
         </div>
         <!-- Content wrapper: no fixed margin here; handled via CSS so mobile isn't squashed -->

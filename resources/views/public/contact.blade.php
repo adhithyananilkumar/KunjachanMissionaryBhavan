@@ -35,7 +35,7 @@
                                 <textarea class="form-control" rows="4" placeholder="How can we help?"></textarea>
                             </div>
                             <div class="col-12">
-                                <button class="btn btn-kb rounded-pill px-3" type="submit" disabled>Send (static demo)</button>
+                                <button class="btn btn-kb rounded-pill px-3" type="submit" disabled>Send</button>
                             </div>
                         </div>
                     </form>
