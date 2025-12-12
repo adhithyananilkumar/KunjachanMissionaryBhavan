@@ -60,7 +60,10 @@ Route::view('/timeline', 'public.timeline')->name('timeline');
 Route::get('/institutions', [PublicInstitutionController::class, 'index'])->name('institutions.index');
 Route::get('/institutions/{id}', [PublicInstitutionController::class, 'show'])->name('institutions.show');
 
-Route::view('/gallery', 'public.gallery')->name('gallery');
+Route::get('/gallery', function() {
+    $images = \App\Models\GalleryImage::latest()->get();
+    return view('public.gallery', compact('images'));
+})->name('gallery');
 Route::view('/contact', 'public.contact')->name('contact');
 Route::get('/donate', [PublicDonationController::class, 'index'])->name('donate');
 
@@ -195,6 +198,8 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::post('guardians/{guardian}/messages', [\App\Http\Controllers\SystemAdmin\GuardianController::class,'replyMessage'])->name('guardians.messages.reply');
     // Blog Management
     Route::resource('blogs', AdminBlogController::class);
+    // Gallery Management
+    Route::resource('gallery', \App\Http\Controllers\SystemAdmin\GalleryController::class)->except(['create','edit','show','update']);
 });
 
 Route::middleware('auth')->group(function () {
@@ -333,6 +338,8 @@ Route::middleware(['auth','verified','role:admin'])->prefix('admin')->name('admi
     Route::post('inmates/{inmate}/documents/{document}/toggle-share', [AdminInmateController::class,'toggleDocumentShare'])->name('inmates.documents.toggle-share');
     // Blog Management
     Route::resource('blogs', AdminBlogController::class);
+    // Gallery Management
+    Route::resource('gallery', \App\Http\Controllers\Admin\GalleryController::class)->except(['create','edit','show','update']);
 });
 
 // Staff routes
