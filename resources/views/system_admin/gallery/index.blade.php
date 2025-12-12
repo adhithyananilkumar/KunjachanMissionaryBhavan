@@ -36,6 +36,10 @@
         </div>
         @endforelse
     </div>
+
+    <div class="mt-4">
+        {{ $images->links() }}
+    </div>
 </div>
 
 <!-- Upload Modal -->
