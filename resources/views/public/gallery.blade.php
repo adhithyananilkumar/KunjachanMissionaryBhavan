@@ -11,9 +11,15 @@
             </div>
         </div>
         <div class="gallery-grid">
-            @foreach(range(1,12) as $i)
+            @if($images->isEmpty())
+                <div class="text-center w-100 py-5 text-muted">No images available yet.</div>
+            @endif
+            @foreach($images as $image)
                 <figure class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800&auto=format&fit=crop" alt="Gallery image {{ $i }}" loading="lazy">
+                    <img src="{{ asset('assets/gallery/' . $image->image_path) }}" alt="{{ $image->caption ?? 'Gallery image' }}" loading="lazy">
+                    @if($image->caption)
+                        <figcaption class="text-center mt-2 small text-muted">{{ $image->caption }}</figcaption>
+                    @endif
                 </figure>
             @endforeach
         </div>
