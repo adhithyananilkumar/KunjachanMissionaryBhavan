@@ -82,6 +82,7 @@
 					<th>Status</th>
 					<th>Method</th>
 					<th>Reference</th>
+					<th>Bill</th>
 				</tr>
 			</thead>
 			<tbody class="small">
@@ -93,6 +94,9 @@
 						<td><span class="badge bg-{{ $p->status === 'paid' ? 'success' : ($p->status === 'pending' ? 'warning text-dark' : 'secondary') }}">{{ ucfirst($p->status) }}</span></td>
 						<td>{{ $p->method ?: '—' }}</td>
 						<td>{{ $p->reference ?: '—' }}</td>
+						<td>
+							<a href="{{ route('system_admin.payments.receipt', $p) }}" class="btn btn-outline-secondary btn-sm">Download</a>
+						</td>
 					</tr>
 				@empty
 					<tr><td colspan="6" class="text-center text-muted py-4">No payments recorded.</td></tr>

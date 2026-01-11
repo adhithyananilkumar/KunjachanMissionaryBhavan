@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Inmate;
 use App\Models\InmatePayment;
 use App\Models\Institution;
+use App\Services\Pdf\PdfManager;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class InmatePaymentController extends Controller
@@ -51,9 +53,17 @@ class InmatePaymentController extends Controller
         $inmatesForSelect = Inmate::orderBy('first_name')->orderBy('id')
             ->get(['id','first_name','last_name','admission_number']);
 
+        $basePaid = (clone $query)->where('status', 'paid');
+
+        $now = Carbon::now();
+        $monthPaid = (clone $basePaid)
+            ->whereBetween('payment_date', [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()]);
+
         $summary = [
-            'total_amount' => (clone $query)->where('status','paid')->sum('amount'),
-            'count' => (clone $query)->count(),
+            'total_amount' => $monthPaid->sum('amount'),
+            'count' => (clone $monthPaid)->count(),
+            'all_time_total' => $basePaid->sum('amount'),
+            'all_time_count' => (clone $query)->count(),
         ];
 
         return view('system_admin.payments.index', compact(
@@ -92,5 +102,55 @@ class InmatePaymentController extends Controller
         return redirect()
             ->route('system_admin.inmates.show', $inmate)
             ->with('success','Payment recorded successfully.');
+    }
+
+    public function downloadReceipt(InmatePayment $payment, PdfManager $pdf)
+    {
+        $payment->loadMissing(['inmate.institution', 'institution']);
+
+        return $pdf->downloadTemplate('payment_receipt', [
+            'payment' => $payment,
+        ]);
+    }
+
+    public function downloadReport(Request $request, PdfManager $pdf)
+    {
+        $data = $request->validate([
+            'from_date' => ['nullable', 'date'],
+            'to_date' => ['nullable', 'date'],
+            'method' => ['nullable', 'string', 'max:50'],
+            'mode' => ['nullable', 'in:summary,detailed'],
+        ]);
+
+        $mode = $data['mode'] ?? 'detailed';
+
+        $query = InmatePayment::with(['inmate.institution', 'institution'])
+            ->where('status', 'paid');
+
+        if (! empty($data['from_date'])) {
+            $query->whereDate('payment_date', '>=', $data['from_date']);
+        }
+        if (! empty($data['to_date'])) {
+            $query->whereDate('payment_date', '<=', $data['to_date']);
+        }
+        if (! empty($data['method']) && $data['method'] !== 'all') {
+            $query->where('method', $data['method']);
+        }
+
+        $payments = $query->orderBy('payment_date')->orderBy('id')->get();
+
+        $summary = [
+            'total_amount' => $payments->sum('amount'),
+            'count' => $payments->count(),
+            'from_date' => ! empty($data['from_date']) ? Carbon::parse($data['from_date']) : null,
+            'to_date' => ! empty($data['to_date']) ? Carbon::parse($data['to_date']) : null,
+            'method' => $data['method'] ?? 'all',
+        ];
+
+        return $pdf->downloadTemplate('payments_report', [
+            'payments' => $payments,
+            'summary' => $summary,
+            'mode' => $mode,
+        ]);
     }
 }

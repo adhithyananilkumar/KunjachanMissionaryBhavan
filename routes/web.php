@@ -132,6 +132,8 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::get('inmates-search', SystemAdminInmateSearchController::class)->name('inmates.search');
     // Payments
     Route::get('payments', [SystemAdminInmatePaymentController::class,'index'])->name('payments.index');
+    Route::get('payments/{payment}/receipt', [SystemAdminInmatePaymentController::class,'downloadReceipt'])->name('payments.receipt');
+    Route::get('payments-report', [SystemAdminInmatePaymentController::class,'downloadReport'])->name('payments.report');
     Route::post('inmates/{inmate}/payments', [SystemAdminInmatePaymentController::class,'storeForInmate'])->name('inmates.payments.store');
     Route::resource('users', SystemAdminUserController::class);
     Route::post('users/{user}/toggle-bug-reporting', [SystemAdminUserController::class,'toggleBugReporting'])->name('users.toggle-bug-reporting');

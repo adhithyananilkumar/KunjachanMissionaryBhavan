@@ -63,18 +63,39 @@
 		<div class="col-md-4">
 			<div class="card shadow-sm h-100">
 				<div class="card-body">
-					<div class="text-muted small mb-1">Total collected (paid)</div>
-					<div class="h5 mb-0">₹ {{ number_format($summary['total_amount'] ?? 0, 2) }}</div>
+					<div class="text-muted small mb-1">This month collected (paid)</div>
+					<div class="h5 mb-1">₹ {{ number_format($summary['total_amount'] ?? 0, 2) }}</div>
+					<div class="small text-muted">Current month based on payment date.</div>
 				</div>
 			</div>
 		</div>
 		<div class="col-md-4">
 			<div class="card shadow-sm h-100">
 				<div class="card-body">
-					<div class="text-muted small mb-1">Payments count</div>
-					<div class="h5 mb-0">{{ $summary['count'] ?? 0 }}</div>
+					<div class="text-muted small mb-1">Payments this month</div>
+					<div class="h5 mb-1">{{ $summary['count'] ?? 0 }}</div>
+					<div class="small text-muted">Number of payments in the current month.</div>
 				</div>
 			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card shadow-sm h-100">
+				<div class="card-body d-flex flex-column">
+					<div class="text-muted small mb-1">All-time summary</div>
+					<div class="small mb-1">Total collected: ₹ {{ number_format($summary['all_time_total'] ?? 0, 2) }}</div>
+					<div class="small mb-3">Payments count: {{ $summary['all_time_count'] ?? 0 }}</div>
+					<div class="mt-auto d-flex gap-2">
+						<button type="button" id="paymentsSummaryToggle" class="btn btn-outline-secondary btn-sm flex-grow-1">Summary details</button>
+						<a href="{{ route('system_admin.payments.report', ['mode' => 'detailed']) }}" class="btn btn-primary btn-sm">Download report</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card shadow-sm mb-3" id="paymentsSummaryDetailsCard" style="display:none;">
+		<div class="card-body small text-muted">
+			<strong>Summary details:</strong> Total collected across all time is ₹ {{ number_format($summary['all_time_total'] ?? 0, 2) }}, with {{ $summary['all_time_count'] ?? 0 }} payments recorded (respecting current filters).
 		</div>
 	</div>
 
@@ -91,6 +112,7 @@
 						<th>Status</th>
 						<th>Method</th>
 						<th>Reference</th>
+						<th>Bill</th>
 					</tr>
 				</thead>
 				<tbody class="small">
@@ -111,9 +133,12 @@
 							</td>
 							<td>{{ $p->method ?: '—' }}</td>
 							<td>{{ $p->reference ?: '—' }}</td>
+							<td>
+								<a href="{{ route('system_admin.payments.receipt', $p) }}" class="btn btn-outline-secondary btn-sm">Download</a>
+							</td>
 						</tr>
 					@empty
-						<tr><td colspan="8" class="text-center text-muted py-4">No payments found.</td></tr>
+						<tr><td colspan="9" class="text-center text-muted py-4">No payments found.</td></tr>
 					@endforelse
 				</tbody>
 			</table>
@@ -208,6 +233,19 @@
 			const receiverGroup = document.getElementById('payReceiverGroup');
 			const referenceGroup = document.getElementById('payReferenceGroup');
 			const notesGroup = document.getElementById('payNotesGroup');
+			const summaryToggle = document.getElementById('paymentsSummaryToggle');
+			const summaryCard = document.getElementById('paymentsSummaryDetailsCard');
+
+			if(summaryToggle && summaryCard){
+				summaryToggle.addEventListener('click', function(e){
+					e.preventDefault();
+					if(summaryCard.style.display === 'none' || summaryCard.style.display === ''){
+						summaryCard.style.display = 'block';
+					} else {
+						summaryCard.style.display = 'none';
+					}
+				});
+			}
 
 			if(!searchInput || !results || !form || !submitBtn) return;
 
@@ -257,7 +295,7 @@
 			submitBtn.addEventListener('click', function(){
 				if(!inmateIdField.value){ return; }
 				// build action URL for selected inmate and submit
-				form.action = "{{ url('system-admin/inmates') }}/" + inmateIdField.value + "/payments";
+				form.action = "{{ url('system-admin/inmates') }}" + '/' + inmateIdField.value + '/payments';
 				form.submit();
 			});
 
