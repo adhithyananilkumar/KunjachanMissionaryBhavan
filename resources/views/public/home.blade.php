@@ -18,7 +18,7 @@
         <div class="container">
             <div class="row align-items-center g-4">
                 <div class="col-lg-7">
-                    <div class="surface">
+					<div class="surface hero-card">
                         <div class="section-heading">Welcome</div>
                         <h1 class="display-5 fw-semibold mb-3">Compassion. Dignity. Community.</h1>
                         <p class="lead muted">Kunjachan Missionary Bhavan is a place of care and belonging. We serve with
@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <div class="col-lg-5">
-                    <div class="surface h-100">
+                        <div class="surface hero-highlights h-100">
                         <div class="section-heading mb-2">Highlights</div>
                         <ul class="list-check">
                             <li>Resident-centered care</li>
