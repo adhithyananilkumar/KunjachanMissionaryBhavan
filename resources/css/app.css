@@ -1,28 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-    body {
-        @apply bg-kb-bg text-kb-text antialiased font-sans;
-    }
-    h1, h2, h3, h4, h5, h6 {
-        @apply font-display font-semibold tracking-tight text-kb-primary;
-    }
-}
-
-@layer components {
-    .btn-kb {
-        @apply inline-flex items-center justify-center px-6 py-2.5 rounded-full font-medium transition-all duration-300
-        bg-kb-accent text-white border border-transparent shadow-sm hover:bg-kb-accent-soft hover:shadow-kb hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kb-accent;
-    }
-    .surface-card {
-        @apply bg-white/80 backdrop-blur-md border border-kb-border rounded-2xl shadow-kb p-8 transition-all duration-300 hover:shadow-kb-hover hover:border-kb-primary/20;
-    }
-    .modern-gradient {
-        @apply bg-gradient-to-br from-kb-primary/5 to-kb-accent/5;
-    }
-}
-
