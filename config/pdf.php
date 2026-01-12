@@ -14,6 +14,7 @@ return [
             'filename' => 'inmate_{admission_number}_profile',
             'filename_params' => ['admission_number'],
         ],
+<<<<<<< HEAD
         'payment_receipt' => [
             'view' => 'pdf.payments.receipt',
             'description' => 'Single inmate payment receipt',
@@ -24,5 +25,7 @@ return [
             'description' => 'Payments summary or detailed report',
             'filename' => 'inmate_payments_report',
         ],
+=======
+>>>>>>> 3e03daa29128f97355c96e657850f19885d91155
     ],
 ];

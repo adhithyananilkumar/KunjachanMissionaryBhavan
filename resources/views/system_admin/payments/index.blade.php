@@ -63,15 +63,21 @@
 		<div class="col-md-4">
 			<div class="card shadow-sm h-100">
 				<div class="card-body">
+<<<<<<< HEAD
 					<div class="text-muted small mb-1">This month collected (paid)</div>
 					<div class="h5 mb-1">₹ {{ number_format($summary['total_amount'] ?? 0, 2) }}</div>
 					<div class="small text-muted">Current month based on payment date.</div>
+=======
+					<div class="text-muted small mb-1">Total collected (paid)</div>
+					<div class="h5 mb-0">₹ {{ number_format($summary['total_amount'] ?? 0, 2) }}</div>
+>>>>>>> 3e03daa29128f97355c96e657850f19885d91155
 				</div>
 			</div>
 		</div>
 		<div class="col-md-4">
 			<div class="card shadow-sm h-100">
 				<div class="card-body">
+<<<<<<< HEAD
 					<div class="text-muted small mb-1">Payments this month</div>
 					<div class="h5 mb-1">{{ $summary['count'] ?? 0 }}</div>
 					<div class="small text-muted">Number of payments in the current month.</div>
@@ -97,6 +103,13 @@
 		<div class="card-body small text-muted">
 			<strong>Summary details:</strong> Total collected across all time is ₹ {{ number_format($summary['all_time_total'] ?? 0, 2) }}, with {{ $summary['all_time_count'] ?? 0 }} payments recorded (respecting current filters).
 		</div>
+=======
+					<div class="text-muted small mb-1">Payments count</div>
+					<div class="h5 mb-0">{{ $summary['count'] ?? 0 }}</div>
+				</div>
+			</div>
+		</div>
+>>>>>>> 3e03daa29128f97355c96e657850f19885d91155
 	</div>
 
 	<div class="card shadow-sm">
@@ -112,7 +125,10 @@
 						<th>Status</th>
 						<th>Method</th>
 						<th>Reference</th>
+<<<<<<< HEAD
 						<th>Bill</th>
+=======
+>>>>>>> 3e03daa29128f97355c96e657850f19885d91155
 					</tr>
 				</thead>
 				<tbody class="small">
@@ -133,12 +149,18 @@
 							</td>
 							<td>{{ $p->method ?: '—' }}</td>
 							<td>{{ $p->reference ?: '—' }}</td>
+<<<<<<< HEAD
 							<td>
 								<a href="{{ route('system_admin.payments.receipt', $p) }}" class="btn btn-outline-secondary btn-sm">Download</a>
 							</td>
 						</tr>
 					@empty
 						<tr><td colspan="9" class="text-center text-muted py-4">No payments found.</td></tr>
+=======
+						</tr>
+					@empty
+						<tr><td colspan="8" class="text-center text-muted py-4">No payments found.</td></tr>
+>>>>>>> 3e03daa29128f97355c96e657850f19885d91155
 					@endforelse
 				</tbody>
 			</table>
@@ -233,6 +255,7 @@
 			const receiverGroup = document.getElementById('payReceiverGroup');
 			const referenceGroup = document.getElementById('payReferenceGroup');
 			const notesGroup = document.getElementById('payNotesGroup');
+<<<<<<< HEAD
 			const summaryToggle = document.getElementById('paymentsSummaryToggle');
 			const summaryCard = document.getElementById('paymentsSummaryDetailsCard');
 
@@ -246,6 +269,8 @@
 					}
 				});
 			}
+=======
+>>>>>>> 3e03daa29128f97355c96e657850f19885d91155
 
 			if(!searchInput || !results || !form || !submitBtn) return;
 
@@ -295,7 +320,11 @@
 			submitBtn.addEventListener('click', function(){
 				if(!inmateIdField.value){ return; }
 				// build action URL for selected inmate and submit
+<<<<<<< HEAD
 				form.action = "{{ url('system-admin/inmates') }}" + '/' + inmateIdField.value + '/payments';
+=======
+				form.action = "{{ url('system-admin/inmates') }}/" + inmateIdField.value + "/payments";
+>>>>>>> 3e03daa29128f97355c96e657850f19885d91155
 				form.submit();
 			});
 

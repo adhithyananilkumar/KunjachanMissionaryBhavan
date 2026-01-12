@@ -20,6 +20,7 @@
             <div class="col-lg-6">
                 <div class="surface h-100">
                     <div class="section-heading">Send a message</div>
+<<<<<<< HEAD
                     @if(session('success'))
                         <div class="alert alert-success fs-sm mb-3">
                             {{ session('success') }}
@@ -45,6 +46,28 @@
                             </div>
                         </div>
                     </form>
+=======
+                    <form action="#" method="post" onsubmit="return false;">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label small">Name</label>
+                                <input type="text" class="form-control" placeholder="Your name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Email</label>
+                                <input type="email" class="form-control" placeholder="you@example.com">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small">Message</label>
+                                <textarea class="form-control" rows="4" placeholder="How can we help?"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-kb rounded-pill px-3" type="submit" disabled>Send</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="small text-muted mt-2">This is a static page. For real submissions, connect to a controller or form service.</div>
+>>>>>>> 3e03daa29128f97355c96e657850f19885d91155
                 </div>
             </div>
         </div>

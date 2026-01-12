@@ -35,8 +35,11 @@ class NotificationController extends Controller
                 'transfer_of_care' => 'Transfer of Care',
                 'emergency_appointment' => 'Emergency Appointment',
                 'inmate_birthday' => 'Inmate Birthday',
+<<<<<<< HEAD
                 'contact_submission' => 'New Contact Message',
                 'donation_request' => 'New Donation Request',
+=======
+>>>>>>> 3e03daa29128f97355c96e657850f19885d91155
                 default => 'Notification',
             };
             $message = $data['message'] ?? ($data['test_name'] ?? ($data['title'] ?? ''));

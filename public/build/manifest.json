@@ -1,6 +1,10 @@
 {
   "resources/css/app.css": {
+<<<<<<< HEAD
     "file": "assets/app-BwsS-3lo.css",
+=======
+    "file": "assets/app-DmE2t3Bm.css",
+>>>>>>> 3e03daa29128f97355c96e657850f19885d91155
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
