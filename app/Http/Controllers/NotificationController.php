@@ -35,20 +35,24 @@ class NotificationController extends Controller
                 'transfer_of_care' => 'Transfer of Care',
                 'emergency_appointment' => 'Emergency Appointment',
                 'inmate_birthday' => 'Inmate Birthday',
-<<<<<<< HEAD
                 'contact_submission' => 'New Contact Message',
                 'donation_request' => 'New Donation Request',
-=======
->>>>>>> 3e03daa29128f97355c96e657850f19885d91155
                 default => 'Notification',
             };
             $message = $data['message'] ?? ($data['test_name'] ?? ($data['title'] ?? ''));
+            $link = $data['link'] ?? ($data['url'] ?? null);
+            
+            // Fix: Override link for contact submissions for system admins to point to the correct controller
+            if($type === 'contact_submission' && $user->role === 'system_admin' && isset($data['submission_id'])){
+                $link = route('system_admin.contact-submissions.show', $data['submission_id']);
+            }
+
             return [
                 'id' => $n->id,
                 'type' => $type ?: null,
                 'title' => $title,
                 'message' => $message,
-                'link' => $data['link'] ?? ($data['url'] ?? null),
+                'link' => $link,
                 'created_at' => $n->created_at?->toIso8601String(),
                 'read' => (bool) $n->read_at,
             ];

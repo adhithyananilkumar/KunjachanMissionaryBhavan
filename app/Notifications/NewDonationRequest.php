@@ -51,7 +51,7 @@ class NewDonationRequest extends Notification
             'request_id' => $this->request->id,
             'title' => 'New Donation Request',
             'message' => '₹' . number_format($this->request->amount) . ' from ' . $this->request->donor_name,
-            'link' => route('system_admin.institutions.tabs.donations', ['institution' => $this->request->institution_id]), // Redirect to donations tab
+            'link' => route('system_admin.institutions.show', $this->request->institution_id) . '#donations',
         ];
     }
 }

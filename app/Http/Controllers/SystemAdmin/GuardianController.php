@@ -78,8 +78,22 @@ class GuardianController extends Controller
             'guardian' => $guardian,
             'inmate' => $guardian->inmate,
             'user' => $guardian->user,
+            'messages' => \App\Models\GuardianMessage::where('guardian_id',$guardian->id)->orderBy('created_at','asc')->get(),
         ]);
     }
     public function update(Request $request, Guardian $guardian){ $currentUserId = optional($guardian->user)->id; $data = $request->validate(['full_name' => ['required','string','max:255'],'phone_number' => ['nullable','string','max:50'],'address' => ['nullable','string','max:255'],'inmate_id' => ['nullable','exists:inmates,id'],'email' => ['nullable','email','max:255', Rule::unique('users','email')->ignore($currentUserId)],'password' => ['nullable','confirmed', Password::defaults()],]); try { DB::transaction(function() use ($guardian,$data) { $guardian->update(['full_name' => $data['full_name'],'phone_number' => $data['phone_number'] ?? null,'address' => $data['address'] ?? null,]); if(!empty($data['inmate_id'])){ \App\Models\Inmate::where('id',$data['inmate_id'])->update(['guardian_id'=>$guardian->id]); } $user = $guardian->user; if($user){ if(!empty($data['email'])){ $user->email = $data['email']; } if(!empty($data['password'])){ $user->password = $data['password']; } $user->save(); } else { if(!empty($data['email']) && !empty($data['password'])){ User::create(['name' => $guardian->full_name,'email' => $data['email'],'password' => $data['password'],'role' => 'guardian','guardian_id' => $guardian->id,]); } } }); } catch(\Exception $e) { if($request->wantsJson()){ return response()->json(['ok'=>false,'message'=>$e->getMessage()],422); } return back()->withInput()->with('error','Failed to update guardian: '.$e->getMessage()); } if($request->wantsJson()){ $guardian->load('user'); return response()->json(['ok'=>true,'guardian'=>$guardian]); } return redirect()->route('system_admin.guardians.show',$guardian)->with('success','Guardian (and user if provided) updated.'); }
-    public function destroy(Guardian $guardian){ $guardian->delete(); return redirect()->route('system_admin.guardians.index')->with('success','Guardian deleted.'); }
+    public function destroy(Guardian $guardian){ 
+        $guardian->delete(); 
+        return redirect()->route('system_admin.guardians.index')->with('success','Guardian deleted.'); 
+    }
+
+    public function replyMessage(Request $request, Guardian $guardian){
+        $request->validate(['message_text'=>'required|string|max:1000']);
+        \App\Models\GuardianMessage::create([
+            'guardian_id' => $guardian->id,
+            'message_text' => $request->message_text,
+            'sent_by_guardian' => false,
+        ]);
+        return back()->with('success', 'Reply sent.');
+    }
 }

@@ -125,11 +125,7 @@
 
 <section class="signature-block">
     <div class="small" style="color: #666;">This document is generated from the institutional case management system for
-<<<<<<< HEAD
         administrative use.</div>
-=======
-        internal administrative use.</div>
->>>>>>> 3e03daa29128f97355c96e657850f19885d91155
     <div class="signature-line"></div>
     <div class="small mt-1">Authorised signatory</div>
 </section>

@@ -10,7 +10,7 @@
           <div class="d-flex gap-2 flex-wrap">
             <button id="markAllBtn" class="btn btn-sm btn-outline-secondary">Mark all as read</button>
             <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="unreadOnly" checked>
+              <input class="form-check-input" type="checkbox" id="unreadOnly">
               <label class="form-check-label" for="unreadOnly">Unread only</label>
             </div>
           </div>
@@ -46,13 +46,7 @@
   let lastFetchedAt = null;
   let timer = null;
 
-  function render(items){
-    if(!items || items.length===0){
-      feedEl.innerHTML = '<div class="p-3 text-muted">No notifications</div>';
-      return;
-    }
-    feedEl.innerHTML = '';
-    items.forEach(item => {
+  function createItem(item){
       const a = document.createElement(item.link ? 'a' : 'div');
       if(item.link){ a.href = item.link; a.rel = 'noopener'; }
       a.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-start';
@@ -66,7 +60,6 @@
         <span class="badge rounded-pill ${item.read ? 'bg-secondary' : 'bg-primary'}">${item.read ? 'Read' : 'New'}</span>
       `;
       a.addEventListener('click', function(ev){
-        // Mark-read first, then navigate if this is a link
         ev.preventDefault();
         const href = a.getAttribute('href');
         fetch(`{{ url('/notifications') }}/${item.id}/mark-read`, {method:'POST', headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content}})
@@ -77,41 +70,87 @@
             const c1 = document.getElementById('notifCount');
             const c2 = document.getElementById('notifCountSidebar');
             [c1,c2].forEach(c=>{ if(c){ let n = parseInt(c.textContent||'0',10); if(n>0){ n--; c.textContent=String(n); if(n===0){ c.classList.add('d-none'); } } } });
+            
+            // If in unread-only mode, remove the item
+            if(unreadOnlyEl.checked){
+                a.remove();
+                if(feedEl.children.length === 0){
+                    feedEl.innerHTML = '<div class="p-3 text-muted">No notifications</div>';
+                }
+            }
+            
             if(href){ window.location.assign(href); }
           });
       });
-      feedEl.appendChild(a);
+      return a;
+  }
+
+  function render(items, isUpdate = false){
+    // If it's an update (polling) but no items, do nothing
+    if(isUpdate && (!items || items.length === 0)) return;
+
+    // If it's a full load and no items
+    if(!isUpdate && (!items || items.length === 0)){
+      feedEl.innerHTML = '<div class="p-3 text-muted">No notifications</div>';
+      return;
+    }
+
+    // If full load, clear first
+    if(!isUpdate) feedEl.innerHTML = '';
+    
+    // Remove "No notifications" message if we are adding items
+    const placeholder = feedEl.querySelector('.text-muted');
+    if(placeholder && placeholder.textContent.includes('No notifications')) placeholder.remove();
+
+    // Add items
+    // API returns newest first.
+    // For full load (isUpdate=false), we append them in order (Newest -> Oldest).
+    // For polling (isUpdate=true), we received items NEWER than what we have.
+    // So we prepend them. Since the array is [Newest, Newer], we iterate reverse to prepend properly?
+    // Actually if we prepend [Newest], then prepend [Newer], we get [Newer, Newest]. Wrong.
+    // We should prepend [Newer] then [Newest] (iterating reverse of the received array)
+    
+    const list = isUpdate ? items.slice().reverse() : items;
+    
+    list.forEach(item => {
+        const el = createItem(item);
+        if(isUpdate) feedEl.prepend(el);
+        else feedEl.appendChild(el);
     });
   }
 
   function load(){
     const params = new URLSearchParams();
     if (unreadOnlyEl.checked) params.set('unread_only','1');
-    if (lastFetchedAt) params.set('since', lastFetchedAt);
+    const isUpdate = !!lastFetchedAt;
+    if (isUpdate) params.set('since', lastFetchedAt);
+    
     fetch(`{{ route('notifications.feed') }}?${params.toString()}`, {headers:{'X-Requested-With':'XMLHttpRequest'}})
       .then(r=>r.json())
       .then(({items})=>{
+        // Only update timestamp if we successfully fetched
+        if(items.length > 0 || !isUpdate) { // if update and 0 items, don't move timestamp? No, move it so we don't query same range. But backend uses > since.
+             // Actually, strictly speaking we should track the max created_at. 
+             // But existing logic uses ISO string of fetch time.
+        }
         lastFetchedAt = new Date().toISOString();
-        render(items);
+        render(items, isUpdate);
       })
-      .catch(()=>{ /* keep silent on transient errors */ });
+      .catch(()=>{});
   }
 
   unreadOnlyEl.addEventListener('change', ()=>{ lastFetchedAt=null; load(); });
   markAllBtn.addEventListener('click', ()=>{
     fetch(`{{ route('notifications.mark-all') }}`, {method:'POST', headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content}})
       .then(()=>{ lastFetchedAt=null; load();
-        // Zero out badges
         const c1=document.getElementById('notifCount'); const c2=document.getElementById('notifCountSidebar');
         [c1,c2].forEach(c=>{ if(c){ c.textContent='0'; c.classList.add('d-none'); } });
       });
   });
 
-  // Pause polling while user is reading the list (hover)
   feedEl.addEventListener('mouseenter', ()=>{ if(timer){ clearInterval(timer); timer=null; } });
   feedEl.addEventListener('mouseleave', ()=>{ if(!timer){ timer=setInterval(load,6000); } });
 
-  // initial load and polling every 6s
   load();
   timer = setInterval(load, 6000);
   document.addEventListener('visibilitychange', function(){

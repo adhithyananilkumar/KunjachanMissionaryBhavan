@@ -29,11 +29,8 @@
                 <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}" id="pills-{{ $inst->id }}" role="tabpanel" aria-labelledby="pills-{{ $inst->id }}-tab">
                     @include('public.partials.donate-menu', [
                         'title' => $inst->name . " — Donate a Meal",
-<<<<<<< HEAD
                         'inst_id' => $inst->id,
                         'inst_name' => $inst->name,
-=======
->>>>>>> 3e03daa29128f97355c96e657850f19885d91155
                         'pricing' => [
                             ['₹'.number_format($breakfast), 'Breakfast'],
                             ['₹'.number_format($lunch), 'Lunch'],
@@ -43,7 +40,6 @@
                     ])
                     @if($other)
                          <div class="mt-3 text-center">
-<<<<<<< HEAD
                             <button class="btn btn-link text-muted small text-decoration-none" 
                                 data-bs-toggle="modal" 
                                 data-bs-target="#donationModal"
@@ -52,9 +48,6 @@
                                 data-amount="{{ $other }}"
                                 data-meal="Custom Amount"
                             >Or donate a custom amount (Default: ₹{{ number_format($other) }})</button>
-=======
-                            <p class="text-muted small">Or donate a custom amount (Default: ₹{{ number_format($other) }})</p>
->>>>>>> 3e03daa29128f97355c96e657850f19885d91155
                          </div>
                     @endif
                 </div>
@@ -82,7 +75,6 @@
         </div>
     </div>
 </section>
-<<<<<<< HEAD
 @endsection
 
 @push('styles')
@@ -193,6 +185,3 @@
     });
 </script>
 @endpush
-=======
-@endsection
->>>>>>> 3e03daa29128f97355c96e657850f19885d91155

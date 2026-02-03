@@ -50,7 +50,7 @@ class NewContactSubmission extends Notification
             'message' => $this->submission->message,
             'submission_id' => $this->submission->id,
             'title' => 'New Contact Message',
-            'link' => route('admin.guardian-messages.index'), // Link to messages index
+            'link' => route('system_admin.contact-submissions.show', $this->submission->id),
         ];
     }
 }

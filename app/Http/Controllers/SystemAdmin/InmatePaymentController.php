@@ -6,11 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Inmate;
 use App\Models\InmatePayment;
 use App\Models\Institution;
-<<<<<<< HEAD
 use App\Services\Pdf\PdfManager;
 use Carbon\Carbon;
-=======
->>>>>>> 3e03daa29128f97355c96e657850f19885d91155
 use Illuminate\Http\Request;
 
 class InmatePaymentController extends Controller
@@ -56,7 +53,6 @@ class InmatePaymentController extends Controller
         $inmatesForSelect = Inmate::orderBy('first_name')->orderBy('id')
             ->get(['id','first_name','last_name','admission_number']);
 
-<<<<<<< HEAD
         $basePaid = (clone $query)->where('status', 'paid');
 
         $now = Carbon::now();
@@ -68,11 +64,6 @@ class InmatePaymentController extends Controller
             'count' => (clone $monthPaid)->count(),
             'all_time_total' => $basePaid->sum('amount'),
             'all_time_count' => (clone $query)->count(),
-=======
-        $summary = [
-            'total_amount' => (clone $query)->where('status','paid')->sum('amount'),
-            'count' => (clone $query)->count(),
->>>>>>> 3e03daa29128f97355c96e657850f19885d91155
         ];
 
         return view('system_admin.payments.index', compact(
@@ -112,8 +103,6 @@ class InmatePaymentController extends Controller
             ->route('system_admin.inmates.show', $inmate)
             ->with('success','Payment recorded successfully.');
     }
-<<<<<<< HEAD
-
     public function downloadReceipt(InmatePayment $payment, PdfManager $pdf)
     {
         $payment->loadMissing(['inmate.institution', 'institution']);
@@ -163,6 +152,4 @@ class InmatePaymentController extends Controller
             'mode' => $mode,
         ]);
     }
-=======
->>>>>>> 3e03daa29128f97355c96e657850f19885d91155
 }

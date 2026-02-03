@@ -16,8 +16,6 @@ class DonationController extends Controller
         
         return view('public.donate', compact('institutions'));
     }
-<<<<<<< HEAD
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -46,6 +44,4 @@ class DonationController extends Controller
 
         return back()->with('success', 'Thank you for your generosity! We will contact you shortly to coordinate your donation.');
     }
-=======
->>>>>>> 3e03daa29128f97355c96e657850f19885d91155
 }

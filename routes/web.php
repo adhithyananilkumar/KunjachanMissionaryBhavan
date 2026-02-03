@@ -67,15 +67,10 @@ Route::get('/gallery', function() {
     $images = \App\Models\GalleryImage::latest()->get();
     return view('public.gallery', compact('images'));
 })->name('gallery');
-<<<<<<< HEAD
 Route::get('/contact', [\App\Http\Controllers\Public\ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [\App\Http\Controllers\Public\ContactController::class, 'store'])->name('contact.store');
 Route::get('/donate', [PublicDonationController::class, 'index'])->name('donate');
 Route::post('/donate', [PublicDonationController::class, 'store'])->name('donate.store');
-=======
-Route::view('/contact', 'public.contact')->name('contact');
-Route::get('/donate', [PublicDonationController::class, 'index'])->name('donate');
->>>>>>> 3e03daa29128f97355c96e657850f19885d91155
 
 // Blog (public, dynamic)
 Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
@@ -139,11 +134,8 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::get('inmates-search', SystemAdminInmateSearchController::class)->name('inmates.search');
     // Payments
     Route::get('payments', [SystemAdminInmatePaymentController::class,'index'])->name('payments.index');
-<<<<<<< HEAD
     Route::get('payments/{payment}/receipt', [SystemAdminInmatePaymentController::class,'downloadReceipt'])->name('payments.receipt');
     Route::get('payments-report', [SystemAdminInmatePaymentController::class,'downloadReport'])->name('payments.report');
-=======
->>>>>>> 3e03daa29128f97355c96e657850f19885d91155
     Route::post('inmates/{inmate}/payments', [SystemAdminInmatePaymentController::class,'storeForInmate'])->name('inmates.payments.store');
     Route::resource('users', SystemAdminUserController::class);
     Route::post('users/{user}/toggle-bug-reporting', [SystemAdminUserController::class,'toggleBugReporting'])->name('users.toggle-bug-reporting');
@@ -215,6 +207,8 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::resource('blogs', AdminBlogController::class);
     // Gallery Management
     Route::resource('gallery', \App\Http\Controllers\SystemAdmin\GalleryController::class)->except(['create','edit','show','update']);
+    // Contact Submissions
+    Route::resource('contact-submissions', \App\Http\Controllers\SystemAdmin\ContactSubmissionController::class)->only(['index','show','destroy']);
 });
 
 Route::middleware('auth')->group(function () {
