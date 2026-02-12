@@ -20,10 +20,6 @@
     <div id="page-loader" class="page-loader" aria-hidden="true">
         <div class="loader-inner">
             <div class="loader"></div>
-            <div class="loader-brand d-flex align-items-center gap-2 mt-2">
-                <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="{{ $appName }} Logo" height="28">
-                <span>{{ $appName }}</span>
-            </div>
         </div>
     </div>
     <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
