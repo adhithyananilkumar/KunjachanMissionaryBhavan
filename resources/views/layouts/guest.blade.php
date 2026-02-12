@@ -24,55 +24,103 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
         <style>
-            :root{ --aw-primary:#0f4f4b; --aw-accent:#0EA5A1; }
-            html, body { height: 100%; }
-            body { font-family: 'Figtree', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji'; }
-            .aw-hero {
-                background: radial-gradient(1200px 600px at 80% -10%, rgba(14,165,161,.20), transparent),
-                            radial-gradient(800px 500px at 0% 110%, rgba(15,79,75,.20), transparent),
-                            linear-gradient(160deg, #ffffff 0%, #f6fffd 100%);
-                min-height: 100vh;
+            :root{ 
+                --kb-bg: #fafaf9;
+                --kb-primary: #5a382f;
+                --kb-accent: #a0522d;
+                --kb-accent-soft: #c77952;
+                --kb-text: #292524;
+                --kb-text-dim: #78716c;
+                --kb-border: rgba(41, 37, 36, 0.10);
+                --kb-surface: #ffffff;
+                --kb-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+                --kb-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+                --kb-shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
             }
-            .aw-nav-brand img { height: 40px; width:auto; border-radius:50%; box-shadow:0 0 0 2px rgba(255,255,255,.9); }
-            .aw-card { backdrop-filter: blur(10px); background: rgba(255,255,255,.85); border: 1px solid rgba(15,79,75,.08); border-radius: 1rem; box-shadow: 0 12px 30px rgba(0,0,0,.08); }
-            .aw-btn-primary { background: var(--aw-primary); border-color: var(--aw-primary); }
-            .aw-btn-primary:hover { background: #0c4340; border-color: #0c4340; }
-            .form-control { border-radius: .75rem; padding: .75rem .9rem; }
-            .input-group-text { border-radius: .75rem; }
-            .aw-link { color: var(--aw-primary); text-decoration: none; }
-            .aw-link:hover { color: #0c4340; text-decoration: underline; }
+            html, body { height: 100%; }
+            body { 
+                font-family: 'Figtree', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
+                background: var(--kb-bg);
+                color: var(--kb-text);
+                -webkit-font-smoothing: antialiased;
+                line-height: 1.7;
+            }
+            .kb-hero {
+                background: linear-gradient(to bottom, rgba(250, 250, 249, 0.5), var(--kb-bg));
+                min-height: 100vh;
+                position: relative;
+            }
+            .kb-hero::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: 
+                    radial-gradient(circle at 85% 20%, rgba(160, 82, 45, .06), transparent 50%),
+                    radial-gradient(circle at 15% 80%, rgba(130, 96, 85, .08), transparent 55%);
+                pointer-events: none;
+            }
+            .kb-nav-brand img { height: 40px; width:auto; border-radius:50%; box-shadow:var(--kb-shadow); object-fit:cover; }
+            .kb-card { 
+                backdrop-filter: blur(10px); 
+                background: rgba(255,255,255,.95); 
+                border: 1px solid var(--kb-border); 
+                border-radius: 16px; 
+                box-shadow: var(--kb-shadow-md);
+            }
+            .kb-btn-primary { 
+                background: var(--kb-accent); 
+                border-color: var(--kb-accent);
+                font-weight: 600;
+                letter-spacing: .3px;
+                transition: all 0.2s ease;
+                box-shadow: var(--kb-shadow-sm);
+            }
+            .kb-btn-primary:hover { 
+                background: var(--kb-accent-soft); 
+                border-color: var(--kb-accent-soft);
+                transform: translateY(-1px);
+                box-shadow: var(--kb-shadow);
+            }
+            .form-control { border-radius: 12px; padding: .75rem .9rem; border-color: var(--kb-border); }
+            .form-control:focus { border-color: var(--kb-accent); box-shadow: 0 0 0 3px rgba(160, 82, 45, .2); }
+            .input-group-text { border-radius: 12px; background: var(--kb-surface); border-color: var(--kb-border); color: var(--kb-text-dim); }
+            .kb-link { color: var(--kb-accent); text-decoration: none; font-weight: 500; }
+            .kb-link:hover { color: var(--kb-accent-soft); text-decoration: underline; }
+            .navbar { background: rgba(255, 255, 255, .98) !important; backdrop-filter: blur(12px); border-bottom: 1px solid var(--kb-border); box-shadow: var(--kb-shadow-sm); }
+            .brand-title { font-weight: 600; letter-spacing: .5px; font-size: 0.95rem; line-height: 1.1; color: var(--kb-primary); text-transform: uppercase; }
+            .small-note { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--kb-text-dim); font-weight: 500; }
         </style>
         @stack('styles')
     </head>
-    <body class="aw-hero d-flex flex-column">
-        <nav class="navbar navbar-expand-md bg-transparent py-3">
+    <body class="kb-hero d-flex flex-column">
+        <nav class="navbar navbar-expand-md py-3">
             <div class="container">
-                <a href="{{ url('/') }}" class="navbar-brand d-flex align-items-center gap-2 aw-nav-brand">
+                <a href="{{ url('/') }}" class="navbar-brand d-flex align-items-center gap-2 kb-nav-brand">
                     <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="{{ $appName }} Logo">
-                    <span class="fw-semibold text-uppercase" style="letter-spacing:.05em;font-size:.9rem;line-height:1.2;">KUNJACHAN MISSIONARY<br>BHAVAN</span>
+                    <span class="brand-title">KUNJACHAN MISSIONARY<br>BHAVAN</span>
                 </a>
                 <div class="ms-auto d-none d-md-flex align-items-center gap-2">
                     @guest
-                        <a href="{{ route('login') }}" class="btn btn-outline-dark rounded-pill px-3">Log in</a>
+                        <a href="{{ route('login') }}" class="btn btn-outline-secondary rounded-pill px-3">Log in</a>
                         {{-- @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="btn aw-btn-primary text-white rounded-pill px-3">Create account</a>
+                            <a href="{{ route('register') }}" class="btn kb-btn-primary text-white rounded-pill px-3">Create account</a>
                         @endif --}}
                     @else
-                        <a href="{{ route('dashboard') }}" class="btn aw-btn-primary text-white rounded-pill px-3">Go to Dashboard</a>
+                        <a href="{{ route('dashboard') }}" class="btn kb-btn-primary text-white rounded-pill px-3">Go to Dashboard</a>
                     @endguest
                 </div>
             </div>
         </nav>
 
-        <main class="flex-grow-1 d-flex align-items-center">
+        <main class="flex-grow-1 d-flex align-items-center" style="position: relative; z-index: 1;">
             @yield('content')
         </main>
 
-        <footer class="py-4 text-center text-muted small">
+        <footer class="py-4 text-center text-muted small" style="position: relative; z-index: 1;">
             @yield('footer')
             @hasSection('footer')
             @else
-                <div>&copy; {{ date('Y') }} AJCE24BCA</div>
+                <div class="small-note">&copy; {{ date('Y') }} AJCE24BCA</div>
             @endif
         </footer>
 

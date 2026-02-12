@@ -6,12 +6,12 @@
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-12 col-md-8 col-lg-5">
-      <div class="aw-card p-4 p-md-5">
+      <div class="kb-card p-4 p-md-5">
         <div class="text-center mb-3">
-          <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="Kunjachan Missionary Bhavan" style="height:64px;width:64px;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.9);object-fit:cover;">
-          <div class="mt-2 fw-semibold text-uppercase" style="letter-spacing:.05em;font-size:.9rem;line-height:1.2;">KUNJACHAN MISSIONARY<br>BHAVAN</div>
+          <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="Kunjachan Missionary Bhavan" style="height:64px;width:64px;border-radius:50%;box-shadow:var(--kb-shadow);object-fit:cover;">
+          <div class="mt-2 fw-semibold text-uppercase brand-title">KUNJACHAN MISSIONARY<br>BHAVAN</div>
         </div>
-        <h1 class="h3 mb-2 text-center">Welcome back</h1>
+        <h1 class="h3 mb-2 text-center" style="color: var(--kb-primary);">Welcome back</h1>
         <p class="text-secondary mb-4 text-center">Sign in to continue.</p>
 
         @if ($errors->any())
@@ -47,10 +47,10 @@
               <input class="form-check-input" type="checkbox" name="remember" id="remember">
               <label class="form-check-label" for="remember">Remember me</label>
             </div>
-            <button type="button" class="btn btn-link p-0 aw-link" data-bs-toggle="modal" data-bs-target="#forgotModal">Forgot password?</button>
+            <button type="button" class="btn btn-link p-0 kb-link" data-bs-toggle="modal" data-bs-target="#forgotModal">Forgot password?</button>
           </div>
 
-          <button type="submit" class="btn aw-btn-primary text-white w-100 py-2 rounded-pill">
+          <button type="submit" class="btn kb-btn-primary text-white w-100 py-2 rounded-pill">
             <i class="bi bi-box-arrow-in-right me-1"></i> Log in
           </button>
         </form>
