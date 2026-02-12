@@ -10,9 +10,31 @@
 
 	<div class="card shadow-sm mb-3">
 		<div class="card-body">
-			<form method="GET" class="row g-2 align-items-end">
+			<form method="GET" class="row g-2 align-items-end" id="paymentsFilterForm">
+				<div class="col-md-4">
+					<label class="form-label small mb-1">Search inmate</label>
+					<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Name / Admission # / Reg #" />
+				</div>
 				<div class="col-md-3">
-					<label class="form-label small mb-1">Inmate (by name)</label>
+					<label class="form-label small mb-1">Institution</label>
+					<select name="institution_id" class="form-select form-select-sm">
+						<option value="">All institutions</option>
+						@foreach($institutions as $inst)
+							<option value="{{ $inst->id }}" @selected((int)($institutionId ?? 0) === (int)$inst->id)>{{ $inst->name }}</option>
+						@endforeach
+					</select>
+				</div>
+				<div class="col-md-3">
+					<label class="form-label small mb-1">Status</label>
+					<select name="status" class="form-select form-select-sm">
+						<option value="">All</option>
+						@foreach($statuses as $s)
+							<option value="{{ $s }}" @selected($status===$s)>{{ ucfirst($s) }}</option>
+						@endforeach
+					</select>
+				</div>
+				<div class="col-md-2">
+					<label class="form-label small mb-1">Inmate (exact)</label>
 					<select name="inmate_id" class="form-select form-select-sm">
 						<option value="">All inmates</option>
 						@foreach($inmatesForSelect as $i)
@@ -25,127 +47,74 @@
 						@endforeach
 					</select>
 				</div>
-				<div class="col-md-3">
-					<label class="form-label small mb-1">Institution</label>
-					<select name="institution_id" class="form-select form-select-sm">
-						<option value="">All institutions</option>
-						@foreach($institutions as $inst)
-							<option value="{{ $inst->id }}" @selected((int)($institutionId ?? 0) === (int)$inst->id)>{{ $inst->name }}</option>
-						@endforeach
-					</select>
-				</div>
-				<div class="col-md-2">
-					<label class="form-label small mb-1">Status</label>
-					<select name="status" class="form-select form-select-sm">
-						<option value="">All</option>
-						@foreach($statuses as $s)
-							<option value="{{ $s }}" @selected($status===$s)>{{ ucfirst($s) }}</option>
-						@endforeach
-					</select>
-				</div>
-				<div class="col-md-2">
-					<label class="form-label small mb-1">Period</label>
-					<input type="text" name="period" value="{{ $period }}" class="form-control form-control-sm" placeholder="e.g. Nov 2025" />
-				</div>
-				<div class="col-md-3">
-					<label class="form-label small mb-1">Search inmate</label>
-					<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Name / Admission # / Reg #" />
-				</div>
-				<div class="col-md-2 d-flex gap-2">
-					<button class="btn btn-primary btn-sm flex-grow-1" type="submit">Filter</button>
-					<a href="{{ route('system_admin.payments.index') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+
+				<div class="col-12 mt-1">
+					<div class="border rounded p-2">
+						<div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+							<div class="d-flex flex-wrap gap-2 align-items-center">
+								<div class="small text-muted">Date filter:</div>
+								<div class="btn-group btn-group-sm" role="group" aria-label="Date filter">
+									<input type="radio" class="btn-check" name="date_mode" id="pmDateAll" value="all" autocomplete="off" @checked(($dateMode ?? 'all')==='all')>
+									<label class="btn btn-outline-secondary" for="pmDateAll">All</label>
+									<input type="radio" class="btn-check" name="date_mode" id="pmDateMonth" value="month" autocomplete="off" @checked(($dateMode ?? '')==='month')>
+									<label class="btn btn-outline-secondary" for="pmDateMonth">Month</label>
+									<input type="radio" class="btn-check" name="date_mode" id="pmDateRange" value="range" autocomplete="off" @checked(($dateMode ?? '')==='range')>
+									<label class="btn btn-outline-secondary" for="pmDateRange">Date range</label>
+								</div>
+								<div class="d-flex flex-wrap gap-2 align-items-center" id="pmMonthWrap" style="display:none;">
+									<label class="form-label small mb-0">Month</label>
+									<input type="month" name="month" value="{{ $month ?? '' }}" class="form-control form-control-sm" style="max-width:180px;" />
+								</div>
+								<div class="d-flex flex-wrap gap-2 align-items-center" id="pmRangeWrap" style="display:none;">
+									<label class="form-label small mb-0">From</label>
+									<input type="date" name="from_date" value="{{ $fromDate ?? '' }}" class="form-control form-control-sm" style="max-width:180px;" />
+									<label class="form-label small mb-0">To</label>
+									<input type="date" name="to_date" value="{{ $toDate ?? '' }}" class="form-control form-control-sm" style="max-width:180px;" />
+								</div>
+							</div>
+							<div class="d-flex gap-2">
+								<button class="btn btn-primary btn-sm" type="submit">Apply</button>
+								<a href="{{ route('system_admin.payments.index') }}" class="btn btn-outline-secondary btn-sm" id="paymentsResetBtn">Reset</a>
+							</div>
+						</div>
+						<div class="collapse mt-2" id="paymentsAdvanced">
+							<div class="row g-2">
+								<div class="col-md-3">
+									<label class="form-label small mb-1">Period label (optional)</label>
+									<input type="text" name="period" value="{{ $period }}" class="form-control form-control-sm" placeholder="e.g. Nov 2025" />
+								</div>
+								<div class="col-md-3">
+									<label class="form-label small mb-1">Method (optional)</label>
+									<select name="method" class="form-select form-select-sm">
+										<option value="">All methods</option>
+										@foreach(($methods ?? []) as $m)
+											<option value="{{ $m }}" @selected(($method ?? '')===$m)>{{ ucfirst(str_replace('_',' ',$m)) }}</option>
+										@endforeach
+									</select>
+								</div>
+								<div class="col-md-3">
+									<label class="form-label small mb-1">Report type</label>
+									<select name="report_mode" class="form-select form-select-sm">
+										<option value="detailed" @selected(($reportMode ?? 'detailed')==='detailed')>Detailed</option>
+										<option value="summary" @selected(($reportMode ?? '')==='summary')>Summary</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="d-flex justify-content-end mt-2">
+							<button class="btn btn-link btn-sm text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#paymentsAdvanced" aria-expanded="false">
+								Advanced
+								<span class="bi bi-chevron-down ms-1"></span>
+							</button>
+						</div>
+					</div>
 				</div>
 			</form>
 		</div>
 	</div>
 
-	<div class="row g-3 mb-3">
-		<div class="col-md-4">
-			<div class="card shadow-sm h-100">
-				<div class="card-body">
-					<div class="text-muted small mb-1">This month collected (paid)</div>
-					<div class="h5 mb-1">₹ {{ number_format($summary['total_amount'] ?? 0, 2) }}</div>
-					<div class="small text-muted">Current month based on payment date.</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-4">
-			<div class="card shadow-sm h-100">
-				<div class="card-body">
-					<div class="text-muted small mb-1">Payments this month</div>
-					<div class="h5 mb-1">{{ $summary['count'] ?? 0 }}</div>
-					<div class="small text-muted">Number of payments in the current month.</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-4">
-			<div class="card shadow-sm h-100">
-				<div class="card-body d-flex flex-column">
-					<div class="text-muted small mb-1">All-time summary</div>
-					<div class="small mb-1">Total collected: ₹ {{ number_format($summary['all_time_total'] ?? 0, 2) }}</div>
-					<div class="small mb-3">Payments count: {{ $summary['all_time_count'] ?? 0 }}</div>
-					<div class="mt-auto d-flex gap-2">
-						<button type="button" id="paymentsSummaryToggle" class="btn btn-outline-secondary btn-sm flex-grow-1">Summary details</button>
-						<a href="{{ route('system_admin.payments.report', ['mode' => 'detailed']) }}" class="btn btn-primary btn-sm">Download report</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="card shadow-sm mb-3" id="paymentsSummaryDetailsCard" style="display:none;">
-		<div class="card-body small text-muted">
-			<strong>Summary details:</strong> Total collected across all time is ₹ {{ number_format($summary['all_time_total'] ?? 0, 2) }}, with {{ $summary['all_time_count'] ?? 0 }} payments recorded (respecting current filters).
-		</div>
-	</div>
-
-	<div class="card shadow-sm">
-		<div class="table-responsive">
-			<table class="table table-sm table-hover align-middle mb-0">
-				<thead class="table-light small">
-					<tr>
-						<th>Date</th>
-						<th>Inmate</th>
-						<th>Institution</th>
-						<th class="text-end">Amount</th>
-						<th>Period</th>
-						<th>Status</th>
-						<th>Method</th>
-						<th>Reference</th>
-						<th>Bill</th>
-					</tr>
-				</thead>
-				<tbody class="small">
-					@forelse($payments as $p)
-						<tr>
-							<td>{{ $p->payment_date?->format('d M Y') }}</td>
-							<td>
-								@if($p->inmate)
-									<a href="{{ route('system_admin.inmates.show',$p->inmate) }}" class="text-decoration-none">{{ $p->inmate->full_name }}</a>
-									<div class="text-muted">Adm # {{ $p->inmate->admission_number }}</div>
-								@endif
-							</td>
-							<td>{{ $p->institution?->name ?? '—' }}</td>
-							<td class="text-end">₹ {{ number_format($p->amount, 2) }}</td>
-							<td>{{ $p->period_label ?: '—' }}</td>
-							<td>
-								<span class="badge bg-{{ $p->status === 'paid' ? 'success' : ($p->status === 'pending' ? 'warning text-dark' : 'secondary') }}">{{ ucfirst($p->status) }}</span>
-							</td>
-							<td>{{ $p->method ?: '—' }}</td>
-							<td>{{ $p->reference ?: '—' }}</td>
-							<td>
-								<a href="{{ route('system_admin.payments.receipt', $p) }}" class="btn btn-outline-secondary btn-sm">Download</a>
-							</td>
-						</tr>
-					@empty
-						<tr><td colspan="9" class="text-center text-muted py-4">No payments found.</td></tr>
-					@endforelse
-				</tbody>
-			</table>
-		</div>
-		@if($payments->hasPages())
-			<div class="card-footer small">{{ $payments->links() }}</div>
-		@endif
+	<div id="paymentsResults">
+		@include('system_admin.payments._results', ['payments' => $payments, 'summary' => $summary, 'filters' => $filters ?? []])
 	</div>
 
 	<!-- Quick Pay Modal: search any inmate and record a payment -->
@@ -223,6 +192,93 @@
 
 	<script>
 		document.addEventListener('DOMContentLoaded', function(){
+			const filterForm = document.getElementById('paymentsFilterForm');
+			const resultsWrap = document.getElementById('paymentsResults');
+			const resetBtn = document.getElementById('paymentsResetBtn');
+			const monthWrap = document.getElementById('pmMonthWrap');
+			const rangeWrap = document.getElementById('pmRangeWrap');
+			let filterTimeout = null;
+
+			function getDateMode(){
+				const c = filterForm?.querySelector('input[name="date_mode"]:checked');
+				return c ? c.value : 'all';
+			}
+			function syncDateUI(){
+				if(!filterForm) return;
+				const mode = getDateMode();
+				if(monthWrap) monthWrap.style.display = mode==='month' ? '' : 'none';
+				if(rangeWrap) rangeWrap.style.display = mode==='range' ? '' : 'none';
+				// Disable inactive fields so they don't submit
+				const month = filterForm.querySelector('input[name="month"]');
+				const from = filterForm.querySelector('input[name="from_date"]');
+				const to = filterForm.querySelector('input[name="to_date"]');
+				if(month) month.disabled = mode !== 'month';
+				if(from) from.disabled = mode !== 'range';
+				if(to) to.disabled = mode !== 'range';
+			}
+
+			async function fetchResults(url){
+				if(!filterForm || !resultsWrap) return;
+				const params = new URLSearchParams(new FormData(filterForm));
+				// prune empties
+				for(const [k,v] of Array.from(params.entries())){
+					if(String(v).trim()==='') params.delete(k);
+				}
+				const finalUrl = url || (`{{ route('system_admin.payments.index') }}` + (params.toString() ? ('?' + params.toString()) : ''));
+				resultsWrap.style.opacity = '0.65';
+				try{
+					const res = await fetch(finalUrl, {headers:{'X-Requested-With':'XMLHttpRequest'}});
+					if(!res.ok) throw new Error('Failed');
+					const html = await res.text();
+					resultsWrap.innerHTML = html;
+					history.replaceState({},'', finalUrl);
+				}catch(e){
+					if(window.toastr) toastr.error('Failed to load payments');
+				}finally{
+					resultsWrap.style.opacity = '';
+				}
+			}
+
+			function scheduleFetch(immediate){
+				clearTimeout(filterTimeout);
+				if(immediate){ fetchResults(); return; }
+				filterTimeout = setTimeout(()=> fetchResults(), 280);
+			}
+
+			if(filterForm && resultsWrap){
+				syncDateUI();
+				filterForm.querySelectorAll('input[name="date_mode"]').forEach(r=> r.addEventListener('change', ()=>{ syncDateUI(); scheduleFetch(true); }));
+				filterForm.addEventListener('input', (e)=>{
+					const t = e.target;
+					if(!(t instanceof HTMLElement)) return;
+					if(t.matches('input[name="search"]')){ scheduleFetch(false); return; }
+					if(t.matches('input[name="period"]')){ scheduleFetch(false); return; }
+					if(t.matches('input[name="month"], input[name="from_date"], input[name="to_date"]')){ scheduleFetch(true); return; }
+				});
+				filterForm.addEventListener('change', (e)=>{
+					const t = e.target;
+					if(!(t instanceof HTMLElement)) return;
+					if(t.matches('select, input[type="radio"]')) scheduleFetch(true);
+				});
+				filterForm.addEventListener('submit', (e)=>{ e.preventDefault(); scheduleFetch(true); });
+				resetBtn?.addEventListener('click', (e)=>{
+					e.preventDefault();
+					filterForm.reset();
+					syncDateUI();
+					scheduleFetch(true);
+				});
+				resultsWrap.addEventListener('click', (e)=>{
+					const a = e.target.closest('a');
+					if(!a) return;
+					const href = a.getAttribute('href');
+					if(!href) return;
+					if(href.includes('page=')){
+						e.preventDefault();
+						fetchResults(href);
+					}
+				});
+			}
+
 			const searchInput = document.getElementById('paySearch');
 			const results = document.getElementById('payResults');
 			const inmateIdField = document.getElementById('payInmateId');
@@ -233,19 +289,7 @@
 			const receiverGroup = document.getElementById('payReceiverGroup');
 			const referenceGroup = document.getElementById('payReferenceGroup');
 			const notesGroup = document.getElementById('payNotesGroup');
-			const summaryToggle = document.getElementById('paymentsSummaryToggle');
-			const summaryCard = document.getElementById('paymentsSummaryDetailsCard');
 
-			if(summaryToggle && summaryCard){
-				summaryToggle.addEventListener('click', function(e){
-					e.preventDefault();
-					if(summaryCard.style.display === 'none' || summaryCard.style.display === ''){
-						summaryCard.style.display = 'block';
-					} else {
-						summaryCard.style.display = 'none';
-					}
-				});
-			}
 
 			if(!searchInput || !results || !form || !submitBtn) return;
 
