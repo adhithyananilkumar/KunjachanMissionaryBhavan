@@ -44,7 +44,7 @@
                     @if($blog->featured_image)
                         <div class="feed-media mt-3">
                             <a href="{{ route('blog.show', $blog->slug) }}">
-                                <img src="{{ asset('storage/' . $blog->featured_image) }}" alt="{{ $blog->title }}">
+                                <img src="{{ $blog->featured_image_url }}" alt="{{ $blog->title }}">
                             </a>
                         </div>
                     @endif

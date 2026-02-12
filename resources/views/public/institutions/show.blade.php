@@ -98,7 +98,7 @@
             <div class="gallery-grid">
                 @forelse($institution->galleryImages as $image)
                 <figure class="gallery-item">
-                    <img src="{{ asset('assets/gallery/' . $image->image_path) }}" alt="{{ $image->caption ?? $institution->name }}" loading="lazy">
+                    <img src="{{ $image->image_url }}" alt="{{ $image->caption ?? $institution->name }}" loading="lazy">
                 </figure>
                 @empty
                 <div class="muted small py-4">No gallery images available for this institution.</div>

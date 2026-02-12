@@ -17,7 +17,7 @@
         <div class="col-6 col-md-4 col-lg-3 col-xl-2">
             <div class="card h-100 shadow-sm">
                 <div class="position-relative" style="padding-top: 75%; overflow: hidden;">
-                    <img src="{{ asset('assets/gallery/'.$image->image_path) }}" class="card-img-top position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Gallery Image">
+                    <img src="{{ $image->image_url }}" class="card-img-top position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="Gallery Image">
                 </div>
                 <div class="card-body p-2 d-flex justify-content-between align-items-center">
                     <small class="text-muted text-truncate" title="{{ $image->caption }}">{{ $image->caption ?? 'No caption' }}</small>

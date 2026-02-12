@@ -64,6 +64,16 @@ class StoragePath
         return self::basePrefix()."/tickets/{$ticketId}/attachments";
     }
 
+    public static function blogFeaturedImageDir(): string
+    {
+        return self::basePrefix()."/blogs";
+    }
+
+    public static function galleryImageDir(): string
+    {
+        return self::basePrefix()."/gallery";
+    }
+
     public static function uniqueName(UploadedFile $file, int $keepSlugChars = 40): string
     {
         $orig = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) ?: 'file';

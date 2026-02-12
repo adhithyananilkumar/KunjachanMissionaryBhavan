@@ -16,7 +16,7 @@
             @endif
             @foreach($images as $image)
                 <figure class="gallery-item">
-                    <img src="{{ asset('assets/gallery/' . $image->image_path) }}" alt="{{ $image->caption ?? 'Gallery image' }}" loading="lazy">
+                    <img src="{{ $image->image_url }}" alt="{{ $image->caption ?? 'Gallery image' }}" loading="lazy">
                     @if($image->caption)
                         <figcaption class="text-center mt-2 small text-muted">{{ $image->caption }}</figcaption>
                     @endif

@@ -4,12 +4,44 @@ namespace App\Http\Controllers\SystemAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\GalleryImage;
+use App\Support\StoragePath;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class GalleryController extends Controller
 {
+    private function ensureMediaDir(string $dir): void
+    {
+        try {
+            Storage::makeDirectory($dir);
+        } catch (\Throwable $e) {
+            // Ignore directory marker failures (e.g. S3 compatibility)
+        }
+    }
+
+    private function safeDeleteGalleryPath(?string $imagePath): void
+    {
+        $imagePath = (string) $imagePath;
+        if ($imagePath === '') {
+            return;
+        }
+
+        if (str_contains($imagePath, '/')) {
+            try {
+                Storage::delete($imagePath);
+                return;
+            } catch (\Throwable $e) {
+                // continue
+            }
+        }
+
+        $legacyPath = public_path('assets/gallery/' . $imagePath);
+        if (file_exists($legacyPath) && is_file($legacyPath)) {
+            @unlink($legacyPath);
+        }
+    }
+
     public function index()
     {
         $images = GalleryImage::latest()->paginate(24);
@@ -26,11 +58,13 @@ class GalleryController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filename = 'gallery_' . time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('assets/gallery'), $filename);
+            $dir = StoragePath::galleryImageDir();
+            $this->ensureMediaDir($dir);
+            $filename = StoragePath::uniqueName($file);
+            $path = Storage::putFileAs($dir, $file, $filename);
 
             GalleryImage::create([
-                'image_path' => $filename,
+                'image_path' => $path,
                 'caption' => $request->caption,
                 'institution_id' => $request->institution_id,
             ]);
@@ -48,11 +82,7 @@ class GalleryController extends Controller
     public function destroy(GalleryImage $gallery)
     {
         $institutionId = $gallery->institution_id;
-        $path = public_path('assets/gallery/' . $gallery->image_path);
-        
-        if (!empty($gallery->image_path) && file_exists($path) && is_file($path)) {
-            unlink($path);
-        }
+        $this->safeDeleteGalleryPath($gallery->image_path);
 
         $gallery->delete();
 

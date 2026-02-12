@@ -23,7 +23,7 @@
                 </div>
                 @if($blog->featured_image)
                     <div class="mb-4">
-                        <img src="{{ asset('storage/' . $blog->featured_image) }}" alt="{{ $blog->title }}" class="img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;">
+                        <img src="{{ $blog->featured_image_url }}" alt="{{ $blog->title }}" class="img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;">
                     </div>
                 @endif
             </header>

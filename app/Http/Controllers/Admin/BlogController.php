@@ -6,12 +6,44 @@ use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Http\Requests\Admin\StoreBlogRequest;
 use App\Http\Requests\Admin\UpdateBlogRequest;
+use App\Support\StoragePath;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
+    private function ensureMediaDir(string $dir): void
+    {
+        try {
+            Storage::makeDirectory($dir);
+        } catch (\Throwable $e) {
+            // Ignore directory marker failures (e.g. S3 compatibility)
+        }
+    }
+
+    private function safeDelete(string $path): void
+    {
+        if ($path === '') {
+            return;
+        }
+
+        // Try default disk first
+        try {
+            Storage::delete($path);
+            return;
+        } catch (\Throwable $e) {
+            // continue to fallbacks
+        }
+
+        // Fallback: previous implementation stored on public disk
+        try {
+            Storage::disk('public')->delete($path);
+        } catch (\Throwable $e) {
+            // ignore
+        }
+    }
+
     private function getRoutePrefix()
     {
         return request()->routeIs('system_admin.*') ? 'system_admin.blogs.' : 'admin.blogs.';
@@ -50,7 +82,11 @@ class BlogController extends Controller
         // if system_admin, it's already in validated data if provided
         
         if ($request->hasFile('featured_image')) {
-            $data['featured_image'] = $request->file('featured_image')->store('blogs', 'public');
+            $dir = StoragePath::blogFeaturedImageDir();
+            $this->ensureMediaDir($dir);
+            $file = $request->file('featured_image');
+            $name = StoragePath::uniqueName($file);
+            $data['featured_image'] = Storage::putFileAs($dir, $file, $name);
         }
 
         if ($data['status'] === 'published') {
@@ -82,9 +118,13 @@ class BlogController extends Controller
 
         if ($request->hasFile('featured_image')) {
             if ($blog->featured_image) {
-                Storage::disk('public')->delete($blog->featured_image);
+                $this->safeDelete((string) $blog->featured_image);
             }
-            $data['featured_image'] = $request->file('featured_image')->store('blogs', 'public');
+            $dir = StoragePath::blogFeaturedImageDir();
+            $this->ensureMediaDir($dir);
+            $file = $request->file('featured_image');
+            $name = StoragePath::uniqueName($file);
+            $data['featured_image'] = Storage::putFileAs($dir, $file, $name);
         }
 
         if ($data['status'] === 'published' && $blog->status !== 'published') {
@@ -100,7 +140,7 @@ class BlogController extends Controller
     {
         $institutionId = $blog->institution_id;
         if ($blog->featured_image) {
-            Storage::disk('public')->delete($blog->featured_image);
+            $this->safeDelete((string) $blog->featured_image);
         }
         $blog->delete();
 

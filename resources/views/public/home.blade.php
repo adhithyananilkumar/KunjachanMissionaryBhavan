@@ -98,13 +98,13 @@
                         {{-- Loop twice for marquee effect --}}
                         @foreach($galleryImages as $image)
                             <div class="marquee__item">
-                                <img src="{{ asset('assets/gallery/' . $image->image_path) }}"
+                                <img src="{{ $image->image_url }}"
                                     alt="{{ $image->caption ?? 'Moments from our home' }}" loading="lazy">
                             </div>
                         @endforeach
                         @foreach($galleryImages as $image)
                             <div class="marquee__item">
-                                <img src="{{ asset('assets/gallery/' . $image->image_path) }}"
+                                <img src="{{ $image->image_url }}"
                                     alt="{{ $image->caption ?? 'Moments from our home' }}" loading="lazy">
                             </div>
                         @endforeach
