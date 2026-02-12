@@ -54,40 +54,35 @@
             <i class="bi bi-box-arrow-in-right me-1"></i> Log in
           </button>
         </form>
-
-        {{-- @if (Route::has('register'))
-        <div class="text-center mt-3">
-          <span class="text-muted">New here?</span>
-          <a class="btn btn-outline-dark rounded-pill ms-2 px-3" href="{{ route('register') }}">Create account</a>
-        </div>
-        @endif --}}
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Forgot password modal -->
-<div class="modal fade" id="forgotModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-question-circle me-1"></i> Forgot password</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p class="mb-2">Please contact your administrator to reset your account password.</p>
-        <ul class="mb-0 text-secondary">
-          <li>Email: kunjachanmissionary@gmail.com</li>
-          <li>Or reach out to your institution’s system admin.</li>
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Back</button>
       </div>
     </div>
   </div>
 </div>
 @endsection
+
+@push('modals')
+  <!-- Forgot password modal -->
+  <div class="modal fade" id="forgotModal" tabindex="-1" aria-hidden="true" data-bs-keyboard="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-question-circle me-1"></i> Forgot password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2">Please contact your administrator to reset your account password.</p>
+          <ul class="mb-0 text-secondary">
+            <li>Email: kunjachanmissionary@gmail.com</li>
+            <li>Or reach out to your institution's system admin.</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+@endpush
 
 @section('footer')
 <div>&copy; {{ date('Y') }} AJCE24BCA</div>

@@ -101,10 +101,9 @@
                 </a>
                 <div class="ms-auto d-none d-md-flex align-items-center gap-2">
                     @guest
-                        <a href="{{ route('login') }}" class="btn btn-outline-secondary rounded-pill px-3">Log in</a>
-                        {{-- @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="btn kb-btn-primary text-white rounded-pill px-3">Create account</a>
-                        @endif --}}
+                        <a href="{{ url('/') }}" class="btn btn-outline-secondary rounded-pill px-3">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Website
+                        </a>
                     @else
                         <a href="{{ route('dashboard') }}" class="btn kb-btn-primary text-white rounded-pill px-3">Go to Dashboard</a>
                     @endguest
@@ -124,6 +123,7 @@
             @endif
         </footer>
 
+        @stack('modals')
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         @stack('scripts')
     </body>

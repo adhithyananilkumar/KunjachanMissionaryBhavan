@@ -57,8 +57,10 @@
                         <li class="nav-item ms-lg-2"><a href="{{ route('dashboard') }}"
                                 class="btn btn-outline-secondary rounded-pill px-3">Dashboard</a></li>
                     @else
-                        <li class="nav-item ms-lg-2"><a href="{{ route('login') }}"
-                                class="btn btn-outline-secondary rounded-pill px-3">Login</a></li>
+                        @if (!request()->routeIs('login'))
+                            <li class="nav-item ms-lg-2"><a href="{{ route('login') }}"
+                                    class="btn btn-outline-secondary rounded-pill px-3">Login</a></li>
+                        @endif
                     @endauth
                 </ul>
             </div>

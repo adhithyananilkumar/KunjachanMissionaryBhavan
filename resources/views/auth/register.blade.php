@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title','Create account')
+@section('title','Registration disabled')
 
 @section('content')
 <div class="container py-5">
@@ -11,61 +11,17 @@
                     <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="Kunjachan Missionary Bhavan" style="height:64px;width:64px;border-radius:50%;box-shadow:var(--kb-shadow);object-fit:cover;">
                     <div class="mt-2 fw-semibold text-uppercase brand-title">KUNJACHAN MISSIONARY<br>BHAVAN</div>
                 </div>
-                <h1 class="h3 mb-2 text-center">Create your account</h1>
-                <p class="text-secondary mb-4 text-center">Set up your access to Kunjachan Missionary Bhavan.</p>
+                <div class="section-heading mb-2">Notice</div>
+                <h1 class="h3 mb-2 text-center" style="color: var(--kb-primary);">Registration is disabled</h1>
+                <p class="muted mb-4 text-center">
+                    Public account creation is not available. Accounts are created internally by authorized staff.
+                </p>
 
-                @if ($errors->any())
-                        <div class="alert alert-danger py-2">
-                                <ul class="mb-0 ps-3">
-                                        @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                        @endforeach
-                                </ul>
-                        </div>
-                @endif
-
-                <form method="POST" action="{{ route('register') }}" novalidate>
-                    @csrf
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Full name</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input id="name" type="text" name="name" class="form-control" value="{{ old('name') }}" required autofocus autocomplete="name">
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input id="email" type="email" name="email" class="form-control" value="{{ old('email') }}" required autocomplete="username">
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input id="password" type="password" name="password" class="form-control" required autocomplete="new-password">
-                        </div>
-                    </div>
-
-                        <div class="mb-3">
-                        <label for="password_confirmation" class="form-label">Confirm password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
-                            <input id="password_confirmation" type="password" name="password_confirmation" class="form-control" required autocomplete="new-password">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn kb-btn-primary text-white w-100 py-2 rounded-pill">
-                        <i class="bi bi-person-plus me-1"></i> Create account
-                    </button>
-                </form>
-
-                <div class="text-center mt-3">
-                    <span class="text-muted">Already have an account?</span>
-                    <a class="btn btn-outline-dark rounded-pill ms-2 px-3" href="{{ route('login') }}">Log in</a>
+                <div class="d-grid gap-2">
+                    <a class="btn btn-outline-secondary rounded-pill py-2" href="{{ route('login') }}">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Go to Login
+                    </a>
+                    <a class="btn btn-link kb-link text-center" href="{{ url('/') }}">Back to Website</a>
                 </div>
             </div>
         </div>
