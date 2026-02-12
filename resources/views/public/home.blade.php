@@ -3,7 +3,7 @@
 @section('title', 'Home')
 
 @section('content')
-    <section class="hero position-relative">
+    <section class="hero hero-home position-relative">
         <div class="vector-blob" aria-hidden="true">
             <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                 <defs>
@@ -16,58 +16,66 @@
             </svg>
         </div>
         <div class="container">
-            <div class="row align-items-center g-4">
-                <div class="col-lg-7">
-					<div class="surface hero-card">
-                        <div class="section-heading">Welcome</div>
-                        <h1 class="display-5 fw-semibold mb-3">Compassion. Dignity. Community.</h1>
-                        <p class="lead muted">Kunjachan Missionary Bhavan is a place of care and belonging. We serve with
-                            faith and love, supporting residents and families through every season.</p>
-                        <div class="d-flex flex-wrap gap-2 mt-3">
-                            <a href="{{ route('about') }}" class="btn btn-kb rounded-pill px-3">Learn more</a>
-                            <a href="{{ route('donate') }}" class="btn btn-outline-secondary rounded-pill px-3">Support our
-                                mission</a>
-                        </div>
+            <div class="hero-grid">
+                <div class="hero-copy">
+                    <div class="tagline mb-3">Welcome</div>
+                    <h1 class="hero-title">Compassion. Dignity. Community.</h1>
+                    <p class="hero-subtitle mt-3">Kunjachan Missionary Bhavan is a place of care and belonging. We serve with
+                        faith and love, supporting residents and families through every season.</p>
+                    <div class="hero-actions d-flex flex-wrap gap-2 mt-4">
+                        <a href="{{ route('about') }}" class="btn btn-kb rounded-pill px-3">Learn more</a>
+                        <a href="{{ route('donate') }}" class="btn btn-outline-secondary rounded-pill px-3">Support our
+                            mission</a>
                     </div>
                 </div>
-                <div class="col-lg-5">
-                        <div class="surface hero-highlights h-100">
-                        <div class="section-heading mb-2">Highlights</div>
-                        <ul class="list-check">
-                            <li>Resident-centered care</li>
-                            <li>Qualified, caring staff</li>
-                            <li>Spiritual support and guidance</li>
-                            <li>Safe, peaceful environment</li>
-                            <li>Community outreach</li>
-                            <li>Transparent governance</li>
-                        </ul>
-                    </div>
+
+                <div class="hero-aside">
+                    <div class="section-heading mb-2">Highlights</div>
+                    <ul class="list-check hero-list">
+                        <li>Resident-centered care</li>
+                        <li>Qualified, caring staff</li>
+                        <li>Spiritual support and guidance</li>
+                        <li>Safe, peaceful environment</li>
+                        <li>Community outreach</li>
+                        <li>Transparent governance</li>
+                    </ul>
                 </div>
             </div>
 
-            <div class="row mt-4 g-3">
+            <div class="hero-divider" aria-hidden="true"></div>
+
+            <div class="row g-4 mt-4 hero-features">
                 <div class="col-md-4">
-                    <div class="surface h-100">
-                        <div class="section-heading mb-2">Our Purpose</div>
-                        <h3 class="h5">Serving with love</h3>
-                        <p class="muted mb-0">Rooted in faith, we create a home where dignity and compassion guide every
-                            interaction.</p>
+                    <div class="hero-feature">
+                        <div class="hero-feature__icon"><i class="bi bi-heart-pulse"></i></div>
+                        <div>
+                            <div class="section-heading mb-1">Our Purpose</div>
+                            <h3 class="h5 mb-2">Serving with love</h3>
+                            <p class="muted mb-0">Rooted in faith, we create a home where dignity and compassion guide every
+                                interaction.</p>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="surface h-100">
-                        <div class="section-heading mb-2">Programs</div>
-                        <h3 class="h5">Care and activities</h3>
-                        <p class="muted mb-0">From daily care to community events, our programs foster connection and
-                            well-being.</p>
+                    <div class="hero-feature">
+                        <div class="hero-feature__icon"><i class="bi bi-calendar-heart"></i></div>
+                        <div>
+                            <div class="section-heading mb-1">Programs</div>
+                            <h3 class="h5 mb-2">Care and activities</h3>
+                            <p class="muted mb-0">From daily care to community events, our programs foster connection and
+                                well-being.</p>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="surface h-100">
-                        <div class="section-heading mb-2">Get Involved</div>
-                        <h3 class="h5">Volunteer & donate</h3>
-                        <p class="muted mb-0">Your support strengthens our mission. Join as a volunteer or make a
-                            contribution.</p>
+                    <div class="hero-feature">
+                        <div class="hero-feature__icon"><i class="bi bi-people"></i></div>
+                        <div>
+                            <div class="section-heading mb-1">Get Involved</div>
+                            <h3 class="h5 mb-2">Volunteer & donate</h3>
+                            <p class="muted mb-0">Your support strengthens our mission. Join as a volunteer or make a
+                                contribution.</p>
+                        </div>
                     </div>
                 </div>
             </div>
