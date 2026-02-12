@@ -107,7 +107,7 @@
                         crisis support, and vocational training.
                     </p>
                     <p class="mb-0">
-                        We strive to ensure quality care and a peaceful, homely environmentsupporting residents with medication,
+                        We strive to ensure quality care and a peaceful, homely environment — supporting residents with medication,
                         food, clothing, and ongoing guidance.
                     </p>
                 </div>
