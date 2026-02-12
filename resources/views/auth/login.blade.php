@@ -55,12 +55,12 @@
           </button>
         </form>
 
-        @if (Route::has('register'))
+        {{-- @if (Route::has('register'))
         <div class="text-center mt-3">
           <span class="text-muted">New here?</span>
           <a class="btn btn-outline-dark rounded-pill ms-2 px-3" href="{{ route('register') }}">Create account</a>
         </div>
-        @endif
+        @endif --}}
       </div>
     </div>
   </div>

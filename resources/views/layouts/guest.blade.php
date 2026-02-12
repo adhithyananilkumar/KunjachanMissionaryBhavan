@@ -54,9 +54,9 @@
                 <div class="ms-auto d-none d-md-flex align-items-center gap-2">
                     @guest
                         <a href="{{ route('login') }}" class="btn btn-outline-dark rounded-pill px-3">Log in</a>
-                        @if (Route::has('register'))
+                        {{-- @if (Route::has('register'))
                             <a href="{{ route('register') }}" class="btn aw-btn-primary text-white rounded-pill px-3">Create account</a>
-                        @endif
+                        @endif --}}
                     @else
                         <a href="{{ route('dashboard') }}" class="btn aw-btn-primary text-white rounded-pill px-3">Go to Dashboard</a>
                     @endguest

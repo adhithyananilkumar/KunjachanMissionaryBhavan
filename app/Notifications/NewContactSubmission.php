@@ -50,7 +50,9 @@ class NewContactSubmission extends Notification
             'message' => $this->submission->message,
             'submission_id' => $this->submission->id,
             'title' => 'New Contact Message',
-            'link' => route('system_admin.contact-submissions.show', $this->submission->id),
+            'link' => $notifiable->role === 'admin' 
+                ? route('admin.contact-submissions.show', $this->submission->id) 
+                : route('system_admin.contact-submissions.show', $this->submission->id),
         ];
     }
 }

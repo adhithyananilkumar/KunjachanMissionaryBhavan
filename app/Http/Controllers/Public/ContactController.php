@@ -27,15 +27,14 @@ class ContactController extends Controller
         $submission = ContactSubmission::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            // 'phone' => $request->input('phone'), // Add input to form if needed/desired
             'message' => $validated['message'],
             'ip_address' => $request->ip(),
         ]);
 
-        // Notify System Admins
-        $admins = User::where('role', 'system_admin')->get();
-        Notification::send($admins, new NewContactSubmission($submission));
+        // Notify System Admins and Admins
+        $recipients = User::whereIn('role', ['system_admin', 'admin'])->get();
+        Notification::send($recipients, new NewContactSubmission($submission));
 
-        return back()->with('success', 'Thanks for reaching out! We will get back to you shortly.');
+        return redirect()->back()->with('success', 'Thank you! Your message has been sent successfully.');
     }
 }

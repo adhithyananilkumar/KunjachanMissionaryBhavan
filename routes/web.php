@@ -67,8 +67,10 @@ Route::get('/gallery', function() {
     $images = \App\Models\GalleryImage::latest()->get();
     return view('public.gallery', compact('images'));
 })->name('gallery');
-Route::view('/contact', 'public.contact')->name('contact');
+Route::get('/contact', [\App\Http\Controllers\Public\ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [\App\Http\Controllers\Public\ContactController::class, 'store'])->name('contact.store');
 Route::get('/donate', [PublicDonationController::class, 'index'])->name('donate');
+Route::post('/donate', [PublicDonationController::class, 'store'])->name('donate.store');
 
 // Blog (public, dynamic)
 Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
@@ -120,6 +122,7 @@ Route::middleware(['auth','verified','role:admin'])->prefix('admin')->name('admi
 Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin')->name('system_admin.')->group(function(){
     Route::get('/dashboard', [SystemAdminDashboardController::class,'index'])->name('dashboard');
     Route::resource('institutions', SystemAdminInstitutionController::class);
+    Route::resource('contact-submissions', \App\Http\Controllers\SystemAdmin\ContactSubmissionController::class)->only(['index','show','destroy']);
     // Institution profile AJAX tabs
     Route::get('institutions/{institution}/tabs/overview', [SystemAdminInstitutionController::class,'show'])->name('institutions.tabs.overview');
     Route::get('institutions/{institution}/tabs/users', [SystemAdminInstitutionController::class,'tabUsers'])->name('institutions.tabs.users');
@@ -139,6 +142,8 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::post('users/{user}/toggle-bug-reporting', [SystemAdminUserController::class,'toggleBugReporting'])->name('users.toggle-bug-reporting');
     // Guardians (now with profile/show page)
     Route::resource('guardians', SystemAdminGuardianController::class);
+    // Donation Requests (System Admin)
+    Route::resource('donation-requests', \App\Http\Controllers\SystemAdmin\DonationRequestController::class)->except(['create','store','edit']);
     // Settings - medication windows
     Route::get('settings/medication-windows', [\App\Http\Controllers\SystemAdmin\SettingsController::class,'medicationWindows'])->name('settings.medication-windows');
     Route::post('settings/medication-windows', [\App\Http\Controllers\SystemAdmin\SettingsController::class,'saveMedicationWindows'])->name('settings.medication-windows.save');
@@ -260,6 +265,8 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth','verified','role:admin'])->prefix('admin')->name('admin.')->group(function() {
     Route::get('/dashboard', [AdminDashboardController::class,'index'])->name('dashboard');
     Route::resource('inmates', AdminInmateController::class);
+    Route::resource('contact-submissions', \App\Http\Controllers\Admin\ContactSubmissionController::class)->only(['index','show','destroy']);
+    Route::resource('donation-requests', \App\Http\Controllers\Admin\DonationRequestController::class)->only(['index','show','update']);    
     Route::post('inmates/{inmate}/assign-doctor', [AdminInmateController::class,'assignDoctor'])->name('inmates.assign-doctor');
     Route::post('inmates/{inmate}/transfer-doctor', [AdminInmateController::class,'transferDoctor'])->name('inmates.transfer-doctor');
     Route::post('inmates/{inmate}/assign-location', [AdminInmateController::class,'assignLocation'])->name('inmates.assign-location');
@@ -279,7 +286,10 @@ Route::middleware(['auth','verified','role:admin'])->prefix('admin')->name('admi
     Route::post('inmates/{inmate}/assign-doctor', [AdminInmateController::class,'assignDoctor'])->name('inmates.assign-doctor');
     // Admin users and institutions routes - use existing controllers to avoid duplicating logic
     Route::resource('users', \App\Http\Controllers\UserController::class);
-    Route::resource('institutions', DeveloperInstitutionController::class);
+    // Use new Admin controller for institution management
+    Route::get('institutions', [App\Http\Controllers\Admin\InstitutionController::class, 'index'])->name('institutions.index');
+    Route::get('institutions/{institution}', [App\Http\Controllers\Admin\InstitutionController::class, 'show'])->name('institutions.show');
+    Route::post('institutions/{institution}/donations', [App\Http\Controllers\Admin\InstitutionController::class,'updateDonationSettings'])->name('institutions.donations.update');
     Route::resource('staff', AdminStaffController::class);
     // Doctors management and schedule
     Route::get('doctors', [\App\Http\Controllers\Admin\DoctorController::class,'index'])->name('doctors.index');
