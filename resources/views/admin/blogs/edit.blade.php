@@ -68,7 +68,7 @@
                             <div class="card-body">
                                 @if($blog->featured_image)
                                     <div class="mb-2">
-                                        <img src="{{ asset('storage/' . $blog->featured_image) }}" alt="Current Image" class="img-fluid rounded">
+                                            <img src="{{ $blog->featured_image_url }}" alt="Current Image" class="img-fluid rounded">
                                     </div>
                                 @endif
                                 <input type="file" class="form-control @error('featured_image') is-invalid @enderror" id="featured_image" name="featured_image" accept="image/*">

@@ -20,7 +20,7 @@
             <article class="feed-item fade-in">
                 <div class="feed-avatar">
                     @if($blog->author && $blog->author->profile_picture_path)
-                        <img src="{{ asset('storage/' . $blog->author->profile_picture_path) }}" alt="{{ $blog->author->name }}" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="{{ $blog->author->avatar_url }}" alt="{{ $blog->author->name }}" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover;">
                     @else
                         {{ substr($blog->author->name ?? 'Admin', 0, 2) }}
                     @endif

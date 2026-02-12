@@ -26,6 +26,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \App\Console\Commands\NotifyInmateBirthdays::class,
+                \App\Console\Commands\S3Healthcheck::class,
+                \App\Console\Commands\MigratePublicMediaToBucket::class,
+            ]);
+        }
+
         // Use the app's compact, mobile-friendly pagination component as the default
         Paginator::defaultView('components.pagination.simple');
         Paginator::defaultSimpleView('components.pagination.simple');
@@ -36,6 +44,12 @@ class AppServiceProvider extends ServiceProvider
             'layouts.partials.sidebar',
             'layouts.app',
         ], NotificationComposer::class);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \App\Console\Commands\MigratePublicMediaToBucket::class,
+            ]);
+        }
     }
 
     protected function registerPdfBindings(): void

@@ -166,7 +166,7 @@
                                     @foreach($galleryImages as $image)
                                         <div class="col-md-4">
                                             <div class="card">
-                                                <img src="{{ asset('assets/gallery/' . $image->image_path) }}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                                                <img src="{{ $image->image_url }}" class="card-img-top" style="height: 150px; object-fit: cover;">
                                                 <div class="card-body p-2">
                                                     <p class="small mb-0 text-truncate">{{ $image->caption ?? 'No caption' }}</p>
                                                 </div>

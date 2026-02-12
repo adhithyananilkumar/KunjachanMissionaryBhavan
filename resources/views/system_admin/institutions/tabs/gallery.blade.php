@@ -11,7 +11,7 @@
             <div class="col-6 col-sm-4 col-md-3">
                 <div class="card h-100 border-0 shadow-sm overflow-hidden group">
                     <div class="position-relative">
-                        <img src="{{ asset('assets/gallery/' . $image->image_path) }}" class="card-img-top object-fit-cover" style="height: 140px;">
+                        <img src="{{ $image->image_url }}" class="card-img-top object-fit-cover" style="height: 140px;">
                         <div class="position-absolute top-0 end-0 p-2">
                             <form action="{{ route('system_admin.gallery.destroy', $image) }}" method="POST" onsubmit="return confirm('Delete this image?');">
                                 @csrf
