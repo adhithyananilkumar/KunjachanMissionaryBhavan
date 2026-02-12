@@ -20,26 +20,32 @@
             <div class="col-lg-6">
                 <div class="surface h-100">
                     <div class="section-heading">Send a message</div>
-                    <form action="#" method="post" onsubmit="return false;">
+                    @if(session('success'))
+                        <div class="alert alert-success mb-3">{{ session('success') }}</div>
+                    @endif
+                    <form action="{{ route('contact.store') }}" method="post">
+                        @csrf
                         <div class="row g-2">
                             <div class="col-md-6">
                                 <label class="form-label small">Name</label>
-                                <input type="text" class="form-control" placeholder="Your name">
+                                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Your name" value="{{ old('name') }}" required>
+                                @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small">Email</label>
-                                <input type="email" class="form-control" placeholder="you@example.com">
+                                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="you@example.com" value="{{ old('email') }}" required>
+                                @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-12">
                                 <label class="form-label small">Message</label>
-                                <textarea class="form-control" rows="4" placeholder="How can we help?"></textarea>
+                                <textarea name="message" class="form-control @error('message') is-invalid @enderror" rows="4" placeholder="How can we help?" required>{{ old('message') }}</textarea>
+                                @error('message')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-12">
-                                <button class="btn btn-kb rounded-pill px-3" type="submit" disabled>Send</button>
+                                <button class="btn btn-kb rounded-pill px-3" type="submit">Send</button>
                             </div>
                         </div>
                     </form>
-                    <div class="small text-muted mt-2">This is a static page. For real submissions, connect to a controller or form service.</div>
                 </div>
             </div>
         </div>
