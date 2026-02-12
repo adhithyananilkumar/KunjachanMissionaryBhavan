@@ -18,6 +18,7 @@ class Blog extends Model
         'content',
         'status',
         'author_id',
+        'institution_id',
         'published_at',
     ];
 
@@ -28,6 +29,11 @@ class Blog extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    public function institution(): BelongsTo
+    {
+        return $this->belongsTo(Institution::class);
     }
 
     public function scopePublished($query)

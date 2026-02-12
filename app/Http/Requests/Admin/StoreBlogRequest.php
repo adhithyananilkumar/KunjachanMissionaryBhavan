@@ -19,6 +19,7 @@ class StoreBlogRequest extends FormRequest
             'short_description' => ['nullable', 'string', 'max:500'],
             'content' => ['required', 'string'],
             'status' => ['required', 'in:draft,published'],
+            'institution_id' => ['nullable', 'exists:institutions,id'],
         ];
     }
 }

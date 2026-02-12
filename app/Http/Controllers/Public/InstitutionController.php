@@ -16,7 +16,14 @@ class InstitutionController extends Controller
 
     public function show($id)
     {
-        $institution = Institution::where('status', 'active')->findOrFail($id);
+        $institution = Institution::where('status', 'active')
+            ->with(['donationSetting', 'blogs' => function($q) {
+                $q->published()->latest()->take(3);
+            }, 'galleryImages' => function($q) {
+                $q->latest()->take(8);
+            }])
+            ->findOrFail($id);
+            
         return view('public.institutions.show', compact('institution'));
     }
 }

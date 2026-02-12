@@ -26,6 +26,8 @@
         <li class="nav-item" role="presentation"><button class="nav-link" data-tab="users" type="button" role="tab">Users</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" data-tab="inmates" type="button" role="tab">Inmates</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" data-tab="donations" type="button" role="tab"><span class="bi bi-currency-rupee me-1"></span>Donations</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-tab="blogs" type="button" role="tab"><span class="bi bi-newspaper me-1"></span>Blogs</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-tab="gallery" type="button" role="tab"><span class="bi bi-images me-1"></span>Gallery</button></li>
         <li class="nav-item ms-auto" role="presentation"><button class="nav-link" data-tab="settings" type="button" role="tab"><span class="bi bi-gear me-1"></span>Settings</button></li>
     </ul>
     <div id="tabContent" class="card card-body shadow-sm rounded-top-0" data-institution-id="{{ $institution->id }}">
@@ -51,6 +53,8 @@
                 users: '{{ route('system_admin.institutions.tabs.users', $institution) }}',
                 inmates: '{{ route('system_admin.institutions.tabs.inmates', $institution) }}',
                 donations: '{{ route('system_admin.institutions.tabs.donations', $institution) }}',
+                blogs: '{{ route('system_admin.institutions.tabs.blogs', $institution) }}',
+                gallery: '{{ route('system_admin.institutions.tabs.gallery', $institution) }}',
                 settings: '{{ route('system_admin.institutions.tabs.settings', $institution) }}',
             };
             const finalUrl = url || urlMap[tab];
@@ -110,7 +114,7 @@
         });
         // Restore active tab from hash
         const initial = (location.hash||'').replace('#','') || 'overview';
-        const allowed = ['overview','users','inmates','donations','settings'];
+        const allowed = ['overview','users','inmates','donations','blogs', 'gallery', 'settings'];
         load(allowed.includes(initial)?initial:'overview');
         // React to hash change (e.g., after refresh/back)
         window.addEventListener('hashchange', ()=>{

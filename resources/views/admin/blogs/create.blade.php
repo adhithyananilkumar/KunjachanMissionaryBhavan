@@ -14,6 +14,9 @@
         <div class="card-body">
             <form action="{{ route($prefix . 'store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                @if(request('institution_id'))
+                    <input type="hidden" name="institution_id" value="{{ request('institution_id') }}">
+                @endif
                 <div class="row">
                     <div class="col-md-8">
                         <div class="mb-3">
