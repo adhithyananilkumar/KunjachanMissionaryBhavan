@@ -1,4 +1,4 @@
-@if($appName = 'Kunjachan Missionary Bhavan')@endif
+@php($appName = 'Kunjachan Missionary Bhavan')
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -64,6 +64,7 @@
             </div>
         </div>
     </nav>
+
     <div class="header-accent" aria-hidden="true">
         <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
             <defs>

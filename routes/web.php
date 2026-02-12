@@ -67,10 +67,8 @@ Route::get('/gallery', function() {
     $images = \App\Models\GalleryImage::latest()->get();
     return view('public.gallery', compact('images'));
 })->name('gallery');
-Route::get('/contact', [\App\Http\Controllers\Public\ContactController::class, 'index'])->name('contact');
-Route::post('/contact', [\App\Http\Controllers\Public\ContactController::class, 'store'])->name('contact.store');
+Route::view('/contact', 'public.contact')->name('contact');
 Route::get('/donate', [PublicDonationController::class, 'index'])->name('donate');
-Route::post('/donate', [PublicDonationController::class, 'store'])->name('donate.store');
 
 // Blog (public, dynamic)
 Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
@@ -207,8 +205,6 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::resource('blogs', AdminBlogController::class);
     // Gallery Management
     Route::resource('gallery', \App\Http\Controllers\SystemAdmin\GalleryController::class)->except(['create','edit','show','update']);
-    // Contact Submissions
-    Route::resource('contact-submissions', \App\Http\Controllers\SystemAdmin\ContactSubmissionController::class)->only(['index','show','destroy']);
 });
 
 Route::middleware('auth')->group(function () {

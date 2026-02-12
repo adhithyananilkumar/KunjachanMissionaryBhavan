@@ -98,10 +98,7 @@ class InstitutionController extends Controller
     }
     public function tabDonations(Institution $institution){
         $settings = $institution->donationSetting ?? new \App\Models\DonationSetting(['institution_id'=>$institution->id]);
-        $donations = \App\Models\DonationRequest::where('institution_id', $institution->id)
-            ->latest()
-            ->paginate(10);
-        return view('system_admin.institutions.tabs.donations', compact('institution','settings', 'donations'));
+        return view('system_admin.institutions.tabs.donations', compact('institution','settings'));
     }
     public function updateDonationSettings(Request $request, Institution $institution){
         $validated = $request->validate([

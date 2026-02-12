@@ -103,6 +103,7 @@ class InmatePaymentController extends Controller
             ->route('system_admin.inmates.show', $inmate)
             ->with('success','Payment recorded successfully.');
     }
+
     public function downloadReceipt(InmatePayment $payment, PdfManager $pdf)
     {
         $payment->loadMissing(['inmate.institution', 'institution']);

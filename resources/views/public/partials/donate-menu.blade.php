@@ -6,14 +6,7 @@
             <div class="surface text-center">
                 <div class="h4 mb-0">{{ $amount }}</div>
                 <div class="small muted">{{ $label }}</div>
-                <button class="btn btn-kb btn-sm rounded-pill px-3 mt-2" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#donationModal" 
-                        data-inst-id="{{ $inst_id }}" 
-                        data-inst-name="{{ $inst_name }}" 
-                        data-amount="{{ $amount }}" 
-                        data-meal="{{ $label }}"
-                >Donate</button>
+                <button class="btn btn-kb btn-sm rounded-pill px-3 mt-2" disabled>Donate (demo)</button>
             </div>
         </div>
         @endforeach

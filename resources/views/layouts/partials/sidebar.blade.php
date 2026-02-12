@@ -87,7 +87,6 @@
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.gallery.*') ? 'active' : '' }}" href="{{ route('system_admin.gallery.index') }}"><span class="bi bi-images me-2"></span>Gallery</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.blocks.*') ? 'active' : '' }}" href="{{ route('system_admin.blocks.index') }}"><span class="bi bi-grid-3x3-gap me-2"></span>Allocation</a></li>
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.guardians.*') ? 'active' : '' }}" href="{{ route('system_admin.guardians.index') }}"><span class="bi bi-people-fill me-2"></span>Guardians</a></li>
-                    <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('system_admin.contact-submissions.*') ? 'active' : '' }}" href="{{ route('system_admin.contact-submissions.index') }}"><span class="bi bi-envelope-paper me-2"></span>Contact Msgs</a></li>
                 @elseif($role==='guardian')
                     <li class="nav-item"><a class="nav-link aw-link {{ request()->routeIs('guardian.dashboard') ? 'active' : '' }}" href="{{ route('guardian.dashboard') }}"><span class="bi bi-speedometer2 me-2"></span>Overview</a></li>
                 @endif

@@ -20,31 +20,26 @@
             <div class="col-lg-6">
                 <div class="surface h-100">
                     <div class="section-heading">Send a message</div>
-                    @if(session('success'))
-                        <div class="alert alert-success fs-sm mb-3">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-                    <form action="{{ route('contact.store') }}" method="post">
-                        @csrf
+                    <form action="#" method="post" onsubmit="return false;">
                         <div class="row g-2">
                             <div class="col-md-6">
                                 <label class="form-label small">Name</label>
-                                <input type="text" name="name" class="form-control" placeholder="Your name" required>
+                                <input type="text" class="form-control" placeholder="Your name">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small">Email</label>
-                                <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+                                <input type="email" class="form-control" placeholder="you@example.com">
                             </div>
                             <div class="col-12">
                                 <label class="form-label small">Message</label>
-                                <textarea name="message" class="form-control" rows="4" placeholder="How can we help?" required></textarea>
+                                <textarea class="form-control" rows="4" placeholder="How can we help?"></textarea>
                             </div>
                             <div class="col-12">
-                                <button class="btn btn-kb rounded-pill px-3" type="submit">Send Message</button>
+                                <button class="btn btn-kb rounded-pill px-3" type="submit" disabled>Send</button>
                             </div>
                         </div>
                     </form>
+                    <div class="small text-muted mt-2">This is a static page. For real submissions, connect to a controller or form service.</div>
                 </div>
             </div>
         </div>
