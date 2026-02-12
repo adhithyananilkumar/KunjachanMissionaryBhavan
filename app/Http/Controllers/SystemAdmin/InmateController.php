@@ -77,6 +77,11 @@ class InmateController extends Controller
         $inmates = $query->paginate(15)->appends($request->only('search','institution_id','type','sort'));
         $institutions = Institution::orderBy('name')->get(['id','name']);
         $types = Inmate::select('type')->whereNotNull('type')->where('type','!=','')->distinct()->orderBy('type')->pluck('type');
+
+        if ($request->ajax()) {
+            return view('system_admin.inmates._list', compact('inmates'));
+        }
+
         return view('system_admin.inmates.index', compact('inmates','institutions','institutionId','types','type','sort','search'));
     }
 

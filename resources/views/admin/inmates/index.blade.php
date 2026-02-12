@@ -11,7 +11,7 @@
         </button>
     </div>
     <div class="collapse d-lg-block" id="inmateFilters">
-        <form method="GET" action="{{ route('admin.inmates.index') }}" class="card card-body mb-3 shadow-sm small border-0">
+        <form method="GET" action="{{ route('admin.inmates.index') }}" class="card card-body mb-3 shadow-sm small border-0" id="adminInmateFilterForm">
             <div class="row g-2 align-items-end">
                 <div class="col-md-4">
                     <label class="form-label mb-0">Search</label>
@@ -48,42 +48,78 @@
         .inmate-item:hover{background:#f8f9fa; box-shadow:0 2px 6px rgba(0,0,0,0.08); transform:translateY(-2px);} 
         .inmate-avatar{width:52px;height:52px;object-fit:cover;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.1);} 
     </style>
-    <div class="list-group shadow-sm mb-4">
-        @forelse($inmates as $inmate)
-            <div class="list-group-item inmate-item d-flex gap-3 align-items-center position-relative py-3">
-                <a href="{{ route('admin.inmates.show',$inmate) }}" class="position-absolute top-0 start-0 w-100 h-100" style="z-index:1;" aria-label="Open inmate"></a>
-                <img src="{{ $inmate->avatar_url }}" alt="avatar" class="rounded-circle inmate-avatar shadow-sm" loading="lazy">
-                <div class="flex-grow-1" style="min-width:0;">
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                        <span class="fw-semibold text-truncate d-inline-block" style="max-width:100%">{{ $inmate->full_name }}</span>
-                        <span class="badge bg-secondary">ID {{ $inmate->id }}</span>
-                        @if($inmate->admission_date)
-                            <span class="badge bg-info text-dark">Admitted {{ $inmate->admission_date->format('Y-m-d') }}</span>
-                        @endif
-                    </div>
-                    <div class="text-muted small d-flex flex-wrap gap-3 inmate-meta">
-                        <span class="hide-xs"><span class="bi bi-calendar-event me-1"></span>DOB {{ $inmate->date_of_birth?->format('Y-m-d') ?? '—' }}</span>
-                        @if($inmate->gender)
-                            <span class="hide-xs"><span class="bi bi-person-badge me-1"></span>{{ $inmate->gender }}</span>
-                        @endif
-                    </div>
-                </div>
-                <div class="ms-auto position-relative d-flex align-items-center gap-1" style="z-index:2;">
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary border-0" data-bs-toggle="dropdown" type="button"><span class="bi bi-three-dots"></span></button>
-                        <div class="dropdown-menu dropdown-menu-end shadow-sm">
-                            <a class="dropdown-item" href="{{ route('admin.inmates.edit',$inmate) }}"><span class="bi bi-pencil-square me-2"></span>Edit</a>
-                            <form action="{{ route('admin.inmates.destroy',$inmate) }}" method="POST" onsubmit="return confirm('Delete this inmate?');">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="dropdown-item text-danger"><span class="bi bi-trash me-2"></span>Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class="list-group-item text-center text-muted py-5">No inmates found.</div>
-        @endforelse
+    <div id="adminInmatesResults">
+        @include('admin.inmates._list', ['inmates' => $inmates])
     </div>
-    <div class="d-flex justify-content-center">{{ $inmates->links() }}</div>
+
+    @push('scripts')
+    <script>
+    (function(){
+        const form = document.getElementById('adminInmateFilterForm');
+        const results = document.getElementById('adminInmatesResults');
+        if(!form || !results) return;
+
+        let timeout = null;
+        let activeController = null;
+
+        function buildUrl(baseUrl){
+            const url = new URL(baseUrl || form.action, window.location.origin);
+            const fd = new FormData(form);
+            fd.delete('page');
+            url.search = new URLSearchParams(fd).toString();
+            return url;
+        }
+
+        async function load(url){
+            if(activeController){ activeController.abort(); }
+            activeController = new AbortController();
+            results.classList.add('opacity-50');
+            try{
+                const res = await fetch(url.toString(), {headers:{'X-Requested-With':'XMLHttpRequest'}, signal: activeController.signal});
+                if(!res.ok){ throw new Error('Request failed'); }
+                results.innerHTML = await res.text();
+                history.replaceState(null,'',url.toString());
+            }catch(e){
+                if(e.name === 'AbortError') return;
+                results.innerHTML = '<div class="alert alert-warning small mb-0">Unable to load results. Please try again.</div>';
+            }finally{
+                results.classList.remove('opacity-50');
+            }
+        }
+
+        form.addEventListener('submit', function(e){
+            e.preventDefault();
+            load(buildUrl());
+        });
+
+        const searchInput = form.querySelector('input[name="search"]');
+        if(searchInput){
+            searchInput.addEventListener('input', function(){
+                clearTimeout(timeout);
+                timeout = setTimeout(function(){ load(buildUrl()); }, 250);
+            });
+        }
+
+        const resetLink = form.querySelector('a.btn-light');
+        resetLink?.addEventListener('click', function(e){
+            e.preventDefault();
+            if(searchInput){ searchInput.value = ''; }
+            form.querySelectorAll('select').forEach(function(sel){ sel.selectedIndex = 0; });
+            load(new URL(form.action, window.location.origin));
+        });
+        form.querySelectorAll('select').forEach(function(sel){
+            sel.addEventListener('change', function(){ load(buildUrl()); });
+        });
+
+        results.addEventListener('click', function(e){
+            const a = e.target.closest('a');
+            if(!a) return;
+            if(a.getAttribute('href') && a.getAttribute('href').includes('page=')){
+                e.preventDefault();
+                load(new URL(a.getAttribute('href'), window.location.origin));
+            }
+        });
+    })();
+    </script>
+    @endpush
 </x-app-layout>

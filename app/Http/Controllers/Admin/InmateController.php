@@ -11,14 +11,73 @@ use App\Models\Location;
 use App\Models\LocationAssignment;
 use App\Models\InmateDocument;
 use App\Models\InmateDocumentArchive;
+use Illuminate\Database\Eloquent\Builder;
 
 class InmateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $inmates = Inmate::where('institution_id', Auth::user()->institution_id)
-            ->with('institution')
-            ->paginate(15);
+        $institutionId = Auth::user()->institution_id;
+
+        $query = Inmate::query()
+            ->where('institution_id', $institutionId)
+            ->with('institution');
+
+        $search = trim((string) $request->get('search', ''));
+        $type = $request->get('type');
+        $sort = $request->get('sort', 'created_desc');
+
+        if ($search !== '') {
+            $query->where(function (Builder $q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhereRaw("CONCAT(first_name,' ',COALESCE(last_name,'')) like ?", ["%{$search}%"])
+                    ->orWhere('admission_number', 'like', "%{$search}%")
+                    ->orWhere('registration_number', 'like', "%{$search}%");
+
+                if (ctype_digit($search)) {
+                    $q->orWhere('id', (int) $search);
+                }
+            });
+
+            $safe = str_replace(['%', '_'], ['\\%', '\\_'], $search);
+            $prefix = $safe . '%';
+            $contains = '%' . $safe . '%';
+
+            $query->orderByRaw(
+                "CASE\n"
+                . " WHEN CONCAT(first_name,' ',COALESCE(last_name,'')) LIKE ? THEN 1\n"
+                . " WHEN first_name LIKE ? THEN 2\n"
+                . " WHEN last_name LIKE ? THEN 3\n"
+                . " WHEN admission_number LIKE ? THEN 4\n"
+                . " WHEN registration_number LIKE ? THEN 5\n"
+                . " WHEN CAST(id AS CHAR) = ? THEN 6\n"
+                . " WHEN CONCAT(first_name,' ',COALESCE(last_name,'')) LIKE ? THEN 7\n"
+                . " WHEN first_name LIKE ? THEN 8\n"
+                . " WHEN last_name LIKE ? THEN 9\n"
+                . " ELSE 10\n"
+                . "END",
+                [$prefix, $prefix, $prefix, $prefix, $prefix, $safe, $contains, $contains, $contains]
+            );
+        }
+
+        if ($type) {
+            $query->where('type', $type);
+        }
+
+        match ($sort) {
+            'name_asc' => $query->orderBy('first_name', 'asc')->orderBy('id', 'asc'),
+            'name_desc' => $query->orderBy('first_name', 'desc')->orderBy('id', 'asc'),
+            'created_asc' => $query->orderBy('id', 'asc'),
+            default => $query->orderBy('id', 'desc'),
+        };
+
+        $inmates = $query->paginate(15)->appends($request->only('search', 'type', 'sort'));
+
+        if ($request->ajax()) {
+            return view('admin.inmates._list', compact('inmates'));
+        }
+
         return view('admin.inmates.index', compact('inmates'));
     }
 

@@ -4,9 +4,19 @@ class UserController extends Controller
 {
     public function index(Request $request){
         $query = User::query()->with('institution')->where('role','!=','developer');
+        $search = trim((string)$request->get('search',''));
         $institutionId = $request->get('institution_id');
         $role = $request->get('role');
         $sort = $request->get('sort','name_asc');
+        if($search !== ''){
+            $query->where(function($q) use ($search){
+                $q->where('name','like','%'.$search.'%')
+                  ->orWhere('email','like','%'.$search.'%');
+                if(ctype_digit($search)){
+                    $q->orWhere('id',(int)$search);
+                }
+            });
+        }
         if($institutionId){ $query->where('institution_id',$institutionId); }
         if($role){ $query->where('role',$role); }
         match($sort){
@@ -15,10 +25,15 @@ class UserController extends Controller
             'created_desc' => $query->orderBy('id','desc'),
             default => $query->orderBy('name','asc'),
         };
-        $users = $query->paginate(15)->appends($request->only('institution_id','role','sort'));
+        $users = $query->paginate(15)->appends($request->only('search','institution_id','role','sort'));
         $institutions = Institution::orderBy('name')->get(['id','name']);
         $roles=['system_admin','admin','doctor','nurse','staff','guardian'];
-        return view('system_admin.users.index', compact('users','institutions','institutionId','roles','role','sort'));
+
+        if($request->ajax()){
+            return view('system_admin.users._list', compact('users'));
+        }
+
+        return view('system_admin.users.index', compact('users','institutions','institutionId','roles','role','sort','search'));
     }
     public function create(){ $institutions=Institution::orderBy('name')->get(); $roles=['system_admin','admin','doctor','nurse','staff','guardian']; return view('system_admin.users.create', compact('institutions','roles')); }
     public function store(Request $request){ $allowedRoles=['system_admin','admin','doctor','nurse','staff','guardian']; $validated=$request->validate(['name'=>'required|string|max:255','email'=>'required|email|unique:users,email','role'=>'required|string|in:'.implode(',',$allowedRoles),'password'=>'required|string|min:8|confirmed','institution_id'=>'nullable|exists:institutions,id']); if($validated['role']!=='system_admin'){ $validated['institution_id']=$validated['institution_id']??null; } else { $validated['institution_id']=null; } $validated['password']=bcrypt($validated['password']); User::create($validated); return redirect()->route('system_admin.users.index')->with('success','User created successfully!'); }

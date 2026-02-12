@@ -56,41 +56,9 @@
 		.user-item:hover{background:#f8f9fa; box-shadow:0 2px 6px rgba(0,0,0,0.08); transform:translateY(-2px);} 
 		.user-avatar{width:52px;height:52px;object-fit:cover;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.1);} 
 	</style>
-	<div class="list-group shadow-sm mb-3">
-		@forelse($users as $user)
-			<div class="list-group-item user-item d-flex align-items-center gap-3 py-3 position-relative">
-				<a href="{{ route('system_admin.users.show',$user) }}" class="position-absolute top-0 start-0 w-100 h-100" style="z-index:1;" aria-label="Open user" ></a>
-				<img src="{{ $user->avatar_url }}" class="rounded-circle flex-shrink-0 user-avatar" alt="avatar" loading="lazy">
-				<div class="flex-grow-1">
-					<div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-						<span class="fw-semibold">{{ $user->name }}</span>
-						<span class="badge bg-secondary text-capitalize">{{ $user->role }}</span>
-					</div>
-					<div class="text-muted small d-flex flex-wrap gap-3">
-						<span><span class="bi bi-envelope me-1"></span>{{ $user->email }}</span>
-						@if($user->institution_id)
-							<span><span class="bi bi-building me-1"></span>{{ $user->institution?->name }}</span>
-						@endif
-						<span><span class="bi bi-hash me-1"></span>ID {{ $user->id }}</span>
-					</div>
-				</div>
-				<div class="dropdown ms-1 position-relative" style="z-index:2;">
-					<button class="btn btn-sm btn-outline-secondary border-0" data-bs-toggle="dropdown" aria-expanded="false" type="button"><span class="bi bi-three-dots"></span></button>
-					<div class="dropdown-menu dropdown-menu-end shadow-sm">
-						<a class="dropdown-item" href="{{ route('system_admin.users.edit',$user) }}"><span class="bi bi-pencil-square me-2"></span>Edit</a>
-						@if($user->role !== 'developer')
-							<button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal" data-user-id="{{ $user->id }}" data-user-name="{{ $user->name }}">
-								<span class="bi bi-trash me-2"></span>Delete
-							</button>
-						@endif
-					</div>
-				</div>
-			</div>
-		@empty
-			<div class="list-group-item text-center text-muted py-5">No users found.</div>
-		@endforelse
+	<div id="usersResults">
+		@include('system_admin.users._list', ['users' => $users])
 	</div>
-	<div class="d-flex justify-content-center">{{ $users->links('components.pagination.simple') }}</div>
 </x-app-layout>
 <!-- Delete User Modal -->
 <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-hidden="true">
@@ -129,5 +97,71 @@ document.addEventListener('DOMContentLoaded', function(){
 	});
 
 	// No admin bug toggles here
+
+	// Live filter + AJAX pagination
+	const form = document.getElementById('userFilters');
+	const results = document.getElementById('usersResults');
+	if(form && results){
+		let timeout = null;
+		let activeController = null;
+
+		function buildUrl(baseUrl){
+			const url = new URL(baseUrl || form.action, window.location.origin);
+			const fd = new FormData(form);
+			fd.delete('page');
+			url.search = new URLSearchParams(fd).toString();
+			return url;
+		}
+
+		async function load(url){
+			if(activeController){ activeController.abort(); }
+			activeController = new AbortController();
+			results.classList.add('opacity-50');
+			try{
+				const res = await fetch(url.toString(), {headers:{'X-Requested-With':'XMLHttpRequest'}, signal: activeController.signal});
+				if(!res.ok){ throw new Error('Request failed'); }
+				results.innerHTML = await res.text();
+				history.replaceState(null,'',url.toString());
+			}catch(e){
+				if(e.name === 'AbortError') return;
+				results.innerHTML = '<div class="alert alert-warning small mb-0">Unable to load results. Please try again.</div>';
+			}finally{
+				results.classList.remove('opacity-50');
+			}
+		}
+
+		form.addEventListener('submit', function(e){
+			e.preventDefault();
+			load(buildUrl());
+		});
+
+		const searchInput = form.querySelector('input[name="search"]');
+		if(searchInput){
+			searchInput.addEventListener('input', function(){
+				clearTimeout(timeout);
+				timeout = setTimeout(function(){ load(buildUrl()); }, 250);
+			});
+		}
+
+		const resetLink = form.querySelector('a.btn-light');
+		resetLink?.addEventListener('click', function(e){
+			e.preventDefault();
+			if(searchInput){ searchInput.value = ''; }
+			form.querySelectorAll('select').forEach(function(sel){ sel.selectedIndex = 0; });
+			load(new URL(form.action, window.location.origin));
+		});
+		form.querySelectorAll('select').forEach(function(sel){
+			sel.addEventListener('change', function(){ load(buildUrl()); });
+		});
+
+		results.addEventListener('click', function(e){
+			const a = e.target.closest('a');
+			if(!a) return;
+			if(a.getAttribute('href') && a.getAttribute('href').includes('page=')){
+				e.preventDefault();
+				load(new URL(a.getAttribute('href'), window.location.origin));
+			}
+		});
+	}
 });
 </script>
