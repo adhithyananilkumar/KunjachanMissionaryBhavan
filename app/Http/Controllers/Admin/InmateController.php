@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Location;
 use App\Models\LocationAssignment;
 use App\Models\InmateDocument;
+use App\Models\InmateDocumentArchive;
 
 class InmateController extends Controller
 {
@@ -23,22 +24,22 @@ class InmateController extends Controller
 
     public function create()
     {
-        $institution = Auth::user()->institution; $features = $institution->enabled_features ?? [];
+        $institution = Auth::user()->institution;
+        $features = $institution->enabled_features ?? [];
+
         $types = [];
-        if(in_array('orphan_care',$features)){
-            $types[] = ['value'=>'child_resident','label'=>'Child Resident'];
+        if (in_array('orphan_care', $features)) {
+            $types[] = ['value' => 'child_resident', 'label' => 'Child Resident'];
         }
-        if(in_array('elderly_care',$features)){
-            $types[] = ['value'=>'elderly_resident','label'=>'Elderly Resident'];
+        if (in_array('elderly_care', $features)) {
+            $types[] = ['value' => 'elderly_resident', 'label' => 'Elderly Resident'];
         }
-        if(in_array('mental_health',$features)){
-            $types[] = ['value'=>'mental_health_patient','label'=>'Mental Health Patient'];
+        if (in_array('mental_health', $features)) {
+            $types[] = ['value' => 'mental_health_patient', 'label' => 'Mental Health Patient'];
         }
-        if(in_array('rehabilitation',$features)){
-            $types[] = ['value'=>'rehabilitation_patient','label'=>'Rehabilitation Patient'];
-        }
-        if(in_array('undefined_inmate',$features)){
-            $types[] = ['value'=>'undefined','label'=>'Other / Undefined'];
+
+        if (empty($types)) {
+            $types[] = ['value' => 'undefined', 'label' => 'Other / Undefined'];
         }
         return view('admin.inmates.create', compact('types'));
     }
@@ -304,9 +305,21 @@ class InmateController extends Controller
         ];
         $column = $map[$field];
 
-        // Remove old file if present
+        // Archive old file if present (keep history)
         if (!empty($inmate->{$column})) {
-            Storage::delete($inmate->{$column});
+            try {
+                InmateDocumentArchive::create([
+                    'inmate_id' => $inmate->id,
+                    'source_type' => 'core',
+                    'source_key' => $field,
+                    'document_name' => str_replace('_', ' ', ucfirst($field)),
+                    'file_path' => $inmate->{$column},
+                    'archived_by' => auth()->id(),
+                    'archived_at' => now(),
+                ]);
+            } catch (\Throwable $e) {
+                // best-effort archival
+            }
         }
         $file = $request->file('file');
         $dir = $field === 'photo'
@@ -344,15 +357,17 @@ class InmateController extends Controller
             'document_name' => 'required|string|max:255',
             'doc_file' => 'required|file|max:8192',
         ]);
-    $file = $request->file('doc_file');
-    $dir = \App\Support\StoragePath::inmateDocDir($inmate->id);
-    $name = \App\Support\StoragePath::uniqueName($file);
-    $path = \Storage::putFileAs($dir, $file, $name);
+        $file = $request->file('doc_file');
+        $dir = \App\Support\StoragePath::inmateDocDir($inmate->id);
+        $name = \App\Support\StoragePath::uniqueName($file);
+        $path = \Storage::putFileAs($dir, $file, $name);
+
         $doc = InmateDocument::create([
             'inmate_id' => $inmate->id,
             'document_name' => $data['document_name'],
             'file_path' => $path,
         ]);
+
         $disk = \Storage::disk(config('filesystems.default'));
         try {
             $url = config('filesystems.default') === 's3'
@@ -361,12 +376,69 @@ class InmateController extends Controller
         } catch (\Throwable $e) {
             $url = null;
         }
+
         return response()->json([
             'ok' => true,
             'document' => [
                 'id' => $doc->id,
                 'name' => $doc->document_name,
                 'url' => $url,
+            ]
+        ]);
+    }
+
+    /**
+     * Replace an existing extra document file and archive the previous file.
+     */
+    public function replaceDocument(Request $request, Inmate $inmate, InmateDocument $document)
+    {
+        $this->authorizeAccess($inmate);
+        abort_unless($document->inmate_id === $inmate->id, 404);
+
+        $request->validate([
+            'doc_file' => 'required|file|max:8192',
+        ]);
+
+        if (!empty($document->file_path)) {
+            try {
+                InmateDocumentArchive::create([
+                    'inmate_id' => $inmate->id,
+                    'source_type' => 'extra',
+                    'source_key' => null,
+                    'inmate_document_id' => $document->id,
+                    'document_name' => $document->document_name,
+                    'file_path' => $document->file_path,
+                    'archived_by' => auth()->id(),
+                    'archived_at' => now(),
+                ]);
+            } catch (\Throwable $e) {
+                // best-effort archival
+            }
+        }
+
+        $file = $request->file('doc_file');
+        $dir = \App\Support\StoragePath::inmateDocDir($inmate->id);
+        $name = \App\Support\StoragePath::uniqueName($file);
+        $path = \Storage::putFileAs($dir, $file, $name);
+        $document->file_path = $path;
+        $document->save();
+
+        $disk = \Storage::disk(config('filesystems.default'));
+        try {
+            $url = config('filesystems.default') === 's3'
+                ? $disk->temporaryUrl($document->file_path, now()->addMinutes(5))
+                : $disk->url($document->file_path);
+        } catch (\Throwable $e) {
+            $url = null;
+        }
+
+        return response()->json([
+            'ok' => true,
+            'document' => [
+                'id' => $document->id,
+                'name' => $document->document_name,
+                'url' => $url,
+                'path' => $document->file_path,
             ]
         ]);
     }
@@ -427,7 +499,19 @@ class InmateController extends Controller
         foreach ($fileMap as $input => $column) {
             if ($request->hasFile($input)) {
                 if ($inmate->{$column}) {
-                    Storage::delete($inmate->{$column});
+                    try {
+                        InmateDocumentArchive::create([
+                            'inmate_id' => $inmate->id,
+                            'source_type' => 'core',
+                            'source_key' => $input,
+                            'document_name' => str_replace('_', ' ', ucfirst($input)),
+                            'file_path' => $inmate->{$column},
+                            'archived_by' => auth()->id(),
+                            'archived_at' => now(),
+                        ]);
+                    } catch (\Throwable $e) {
+                        // best-effort archival
+                    }
                 }
                 $file = $request->file($input);
                 $dir = $input === 'photo'

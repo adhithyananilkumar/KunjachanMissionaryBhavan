@@ -204,6 +204,7 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::post('inmates/{inmate}/assign-location', [SystemAdminInmateController::class,'assignLocation'])->name('inmates.assign-location');
     Route::post('inmates/{inmate}/upload-file', [SystemAdminInmateController::class,'uploadFile'])->name('inmates.upload-file');
     Route::post('inmates/{inmate}/documents', [SystemAdminInmateController::class,'storeDocument'])->name('inmates.documents.store');
+    Route::post('inmates/{inmate}/documents/{document}/replace', [SystemAdminInmateController::class,'replaceDocument'])->name('inmates.documents.replace');
     // Toggle guardian sharing for a document
     Route::post('inmates/{inmate}/documents/{document}/toggle-share', [SystemAdminInmateController::class,'toggleDocumentShare'])->name('inmates.documents.toggle-share');
     // Guardian messages (reply within guardian show)
@@ -274,6 +275,7 @@ Route::middleware(['auth','verified','role:admin'])->prefix('admin')->name('admi
     Route::post('inmates/{inmate}/assign-location', [AdminInmateController::class,'assignLocation'])->name('inmates.assign-location');
     Route::post('inmates/{inmate}/upload-file', [AdminInmateController::class,'uploadFile'])->name('inmates.upload-file');
     Route::post('inmates/{inmate}/documents', [AdminInmateController::class,'storeDocument'])->name('inmates.documents.store');
+    Route::post('inmates/{inmate}/documents/{document}/replace', [AdminInmateController::class,'replaceDocument'])->name('inmates.documents.replace');
     // Allocation API for cascading selects
     Route::get('allocation/api/blocks/{block}/types', function(\App\Models\Block $block){
         abort_unless($block->institution_id === auth()->user()->institution_id, 403);

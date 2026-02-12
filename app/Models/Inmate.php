@@ -97,6 +97,11 @@ class Inmate extends Model
         return $this->hasMany(InmateDocument::class);
     }
 
+    public function documentArchives()
+    {
+        return $this->hasMany(InmateDocumentArchive::class);
+    }
+
     public function medications()
     {
         return $this->hasMany(Medication::class);

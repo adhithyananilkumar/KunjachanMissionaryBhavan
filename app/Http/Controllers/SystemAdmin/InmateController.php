@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Inmate;
 use App\Models\Institution;
 use App\Models\InmateDocument;
+use App\Models\InmateDocumentArchive;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreInmateRequest;
@@ -363,9 +364,21 @@ class InmateController extends Controller
         ];
         $column = $map[$field];
 
-        // Remove old file if present
+        // Archive old file if present (keep history)
         if (!empty($inmate->{$column})) {
-            Storage::delete($inmate->{$column});
+            try {
+                InmateDocumentArchive::create([
+                    'inmate_id' => $inmate->id,
+                    'source_type' => 'core',
+                    'source_key' => $field,
+                    'document_name' => str_replace('_', ' ', ucfirst($field)),
+                    'file_path' => $inmate->{$column},
+                    'archived_by' => auth()->id(),
+                    'archived_at' => now(),
+                ]);
+            } catch (\Throwable $e) {
+                // best-effort archival
+            }
         }
         $file = $request->file('file');
         $dir = $field === 'photo'
@@ -428,6 +441,62 @@ class InmateController extends Controller
         ]);
     }
 
+    /**
+     * Replace an existing extra document file and archive the previous file.
+     */
+    public function replaceDocument(Request $request, Inmate $inmate, InmateDocument $document)
+    {
+        abort_unless($document->inmate_id === $inmate->id, 404);
+
+        $request->validate([
+            'doc_file' => 'required|file|max:8192',
+        ]);
+
+        if (!empty($document->file_path)) {
+            try {
+                InmateDocumentArchive::create([
+                    'inmate_id' => $inmate->id,
+                    'source_type' => 'extra',
+                    'source_key' => null,
+                    'inmate_document_id' => $document->id,
+                    'document_name' => $document->document_name,
+                    'file_path' => $document->file_path,
+                    'archived_by' => auth()->id(),
+                    'archived_at' => now(),
+                ]);
+            } catch (\Throwable $e) {
+                // best-effort archival
+            }
+        }
+
+        $storageDisk = \Storage::disk(config('filesystems.default'));
+        $file = $request->file('doc_file');
+        $dir = \App\Support\StoragePath::inmateDocDir($inmate->id);
+        $name = \App\Support\StoragePath::uniqueName($file);
+        $path = $storageDisk->putFileAs($dir, $file, $name);
+        $document->file_path = $path;
+        $document->save();
+
+        $disk = \Storage::disk(config('filesystems.default'));
+        try {
+            $url = config('filesystems.default') === 's3'
+                ? $disk->temporaryUrl($document->file_path, now()->addMinutes(5))
+                : $disk->url($document->file_path);
+        } catch (\Throwable $e) {
+            $url = null;
+        }
+
+        return response()->json([
+            'ok' => true,
+            'document' => [
+                'id' => $document->id,
+                'name' => $document->document_name,
+                'url' => $url,
+                'path' => $document->file_path,
+            ]
+        ]);
+    }
+
     public function update(UpdateInmateRequest $request, Inmate $inmate){
         $data = $request->validated();
 
@@ -443,7 +512,19 @@ class InmateController extends Controller
         foreach ($fileMap as $input => $column) {
             if ($request->hasFile($input)) {
                 if ($inmate->{$column}) {
-                    Storage::delete($inmate->{$column});
+                    try {
+                        InmateDocumentArchive::create([
+                            'inmate_id' => $inmate->id,
+                            'source_type' => 'core',
+                            'source_key' => $input,
+                            'document_name' => str_replace('_', ' ', ucfirst($input)),
+                            'file_path' => $inmate->{$column},
+                            'archived_by' => auth()->id(),
+                            'archived_at' => now(),
+                        ]);
+                    } catch (\Throwable $e) {
+                        // best-effort archival
+                    }
                 }
                 $file = $request->file($input);
                 $dir = $input === 'photo'

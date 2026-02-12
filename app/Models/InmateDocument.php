@@ -9,7 +9,14 @@ class InmateDocument extends Model
     use HasFactory;
 
     protected $fillable = [
-        'inmate_id','document_name','file_path'
+        'inmate_id',
+        'document_name',
+        'file_path',
+        'is_sharable_with_guardian',
+    ];
+
+    protected $casts = [
+        'is_sharable_with_guardian' => 'boolean',
     ];
 
     public function inmate(){

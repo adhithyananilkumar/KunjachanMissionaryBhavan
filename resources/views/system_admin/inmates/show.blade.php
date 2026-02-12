@@ -164,9 +164,67 @@
 					panes.forEach(p=>{ const on = p.getAttribute('data-pane')===name; p.classList.toggle('show', on); });
 				}
 				tabs.forEach(b=> b.addEventListener('click', ()=> showPane(b.getAttribute('data-subtab'))));
-				// clickable rows
-				root.querySelectorAll('.doc-row.clickable').forEach(row=>{
-					row.addEventListener('click', ()=>{ const url = row.getAttribute('data-doc-url'); if(url) window.open(url,'_blank'); });
+				function openDocPreview(url, name){
+					if(!url) return;
+					const modalEl = document.getElementById('docPreviewModal');
+					const body = document.getElementById('docPreviewBody');
+					const title = document.getElementById('docPreviewTitle');
+					if(title){ title.textContent = name || 'Document'; }
+					const clean = (url.split('?')[0] || '');
+					const ext = (clean.split('.').pop()||'').toLowerCase();
+					let content = '';
+					if(['jpg','jpeg','png','gif','webp'].includes(ext)){
+						content = `<img src="${url}" alt="${name||'Document'}" style="max-width:100%;max-height:75vh;object-fit:contain;" />`;
+					} else if(ext==='pdf'){
+						content = `<iframe src="${url}" style="width:100%;height:75vh;border:0;" title="${name||'Document'}"></iframe>`;
+					} else {
+						content = `<div class='text-center p-3 small'><a href='${url}' target='_blank' rel='noopener'>Open File</a></div>`;
+					}
+					if(body){ body.innerHTML = content; }
+					if(modalEl && typeof bootstrap !== 'undefined'){
+						bootstrap.Modal.getOrCreateInstance(modalEl).show();
+					} else {
+						window.open(url,'_blank');
+					}
+				}
+				// Document click preview (event delegation)
+				root.addEventListener('click', (e)=>{
+					const openBtn = e.target.closest('.doc-open-btn');
+					if(openBtn){
+						e.preventDefault();
+						e.stopPropagation();
+						openDocPreview(openBtn.getAttribute('data-doc-url'), openBtn.getAttribute('data-doc-name') || 'Document');
+						return;
+					}
+					if(e.target.closest('button, a, input, label, select, textarea, form')) return;
+					const row = e.target.closest('.doc-row.clickable');
+					if(!row) return;
+					const url = row.getAttribute('data-doc-url');
+					const name = row.getAttribute('data-doc-name') || row.querySelector('.fw-semibold')?.textContent || 'Document';
+					openDocPreview(url, name);
+				});
+				// Pick file buttons
+				root.addEventListener('click', (e)=>{
+					const btn = e.target.closest('.doc-pick-btn');
+					if(!btn) return;
+					e.preventDefault();
+					e.stopPropagation();
+					const form = btn.closest('form');
+					const input = form?.querySelector('input[type="file"]');
+					if(input) input.click();
+				});
+				// Auto-submit when a file is picked
+				root.addEventListener('change', (e)=>{
+					const input = e.target;
+					if(!(input instanceof HTMLInputElement) || input.type !== 'file') return;
+					const form = input.closest('form');
+					if(!form) return;
+					if(!form.classList.contains('upload-core-form') && !form.classList.contains('replace-extra-form') && form.id !== 'upload-photo-form') return;
+					if(form.requestSubmit){
+						form.requestSubmit(form.querySelector('[type="submit"]') || undefined);
+					} else {
+						form.submit();
+					}
 				});
 				async function postForm(form, url){
 					const fd = new FormData(form);
@@ -186,11 +244,25 @@
 						if(btn){ btn.disabled = false; btn.innerHTML = prev; }
 					}
 				}
-				const photoForm = root.querySelector('#upload-photo-form');
-				if(photoForm){ photoForm.addEventListener('submit', e=>{ e.preventDefault(); postForm(photoForm, uploadUrl); }); }
-				root.querySelectorAll('.upload-core-form').forEach(f=> f.addEventListener('submit', e=>{ e.preventDefault(); postForm(f, uploadUrl); }));
-				const addForm = root.querySelector('#add-extra-doc-form');
-				if(addForm){ addForm.addEventListener('submit', e=>{ e.preventDefault(); postForm(addForm, addUrl); }); }
+				root.addEventListener('submit', (e)=>{
+					const form = e.target;
+					if(!(form instanceof HTMLFormElement)) return;
+					if(form.id === 'upload-photo-form' || form.classList.contains('upload-core-form')){
+						e.preventDefault();
+						postForm(form, uploadUrl);
+						return;
+					}
+					if(form.id === 'add-extra-doc-form'){
+						e.preventDefault();
+						postForm(form, addUrl);
+						return;
+					}
+					if(form.classList.contains('replace-extra-form')){
+						e.preventDefault();
+						postForm(form, form.action);
+						return;
+					}
+				});
 				// default pane stays 'available'; ensure transition classes are applied already
 				showPane('available');
 			}
