@@ -100,6 +100,20 @@ class InstitutionController extends Controller
         $settings = $institution->donationSetting ?? new \App\Models\DonationSetting(['institution_id'=>$institution->id]);
         return view('system_admin.institutions.tabs.donations', compact('institution','settings'));
     }
+    public function tabBlogs(Request $request, Institution $institution){
+        $q = trim((string)$request->get('q'));
+        $blogs = \App\Models\Blog::where('institution_id',$institution->id)
+            ->when($q, fn($qry)=>$qry->where('title','like','%'.$q.'%'))
+            ->orderBy('created_at','desc')
+            ->paginate(10);
+        return view('system_admin.institutions.tabs.blogs', compact('institution','blogs','q'));
+    }
+    public function tabGallery(Institution $institution){
+        $images = \App\Models\GalleryImage::where('institution_id',$institution->id)
+            ->orderBy('created_at','desc')
+            ->get();
+        return view('system_admin.institutions.tabs.gallery', compact('institution','images'));
+    }
     public function updateDonationSettings(Request $request, Institution $institution){
         $validated = $request->validate([
             'breakfast_amount' => 'required|numeric|min:0',

@@ -54,4 +54,20 @@ class Institution extends Model
     {
         return $this->hasOne(DonationSetting::class);
     }
+
+    /**
+     * Get the blogs for the institution.
+     */
+    public function blogs(): HasMany
+    {
+        return $this->hasMany(Blog::class);
+    }
+
+    /**
+     * Get the gallery images for the institution.
+     */
+    public function galleryImages(): HasMany
+    {
+        return $this->hasMany(GalleryImage::class);
+    }
 }

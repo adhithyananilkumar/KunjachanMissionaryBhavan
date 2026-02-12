@@ -128,6 +128,8 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::get('institutions/{institution}/tabs/users', [SystemAdminInstitutionController::class,'tabUsers'])->name('institutions.tabs.users');
     Route::get('institutions/{institution}/tabs/inmates', [SystemAdminInstitutionController::class,'tabInmates'])->name('institutions.tabs.inmates');
     Route::get('institutions/{institution}/tabs/donations', [SystemAdminInstitutionController::class,'tabDonations'])->name('institutions.tabs.donations');
+    Route::get('institutions/{institution}/tabs/blogs', [SystemAdminInstitutionController::class,'tabBlogs'])->name('institutions.tabs.blogs');
+    Route::get('institutions/{institution}/tabs/gallery', [SystemAdminInstitutionController::class,'tabGallery'])->name('institutions.tabs.gallery');
     Route::post('institutions/{institution}/donations', [SystemAdminInstitutionController::class,'updateDonationSettings'])->name('institutions.donations.update');
     Route::get('institutions/{institution}/tabs/settings', [SystemAdminInstitutionController::class,'tabSettings'])->name('institutions.tabs.settings');
     Route::resource('inmates', SystemAdminInmateController::class);

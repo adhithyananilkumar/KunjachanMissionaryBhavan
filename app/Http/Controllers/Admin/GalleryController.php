@@ -12,7 +12,14 @@ class GalleryController extends Controller
 {
     public function index()
     {
-        $images = GalleryImage::latest()->paginate(24);
+        $query = GalleryImage::query();
+        
+        // If admin role, only show their institution's images
+        if (auth()->user()->role === 'admin') {
+            $query->where('institution_id', auth()->user()->institution_id);
+        }
+        
+        $images = $query->latest()->paginate(24);
         return view('admin.gallery.index', compact('images'));
     }
 
@@ -29,10 +36,17 @@ class GalleryController extends Controller
             
             $file->move(public_path('assets/gallery'), $filename);
 
-            GalleryImage::create([
+            $data = [
                 'image_path' => $filename,
                 'caption' => $request->caption,
-            ]);
+            ];
+            
+            // Assign institution_id for admin users
+            if (auth()->user()->role === 'admin') {
+                $data['institution_id'] = auth()->user()->institution_id;
+            }
+
+            GalleryImage::create($data);
 
             return redirect()->route('admin.gallery.index')->with('success', 'Image uploaded successfully.');
         }
