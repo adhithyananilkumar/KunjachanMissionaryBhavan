@@ -29,6 +29,23 @@ class InmatePaymentController extends Controller
         $fromDate = trim((string)$request->get('from_date', ''));
         $toDate = trim((string)$request->get('to_date', ''));
 
+        // Default view: show current month by default (elder-friendly)
+        $hasAnyFilters = $request->filled('institution_id')
+            || $request->filled('inmate_id')
+            || $request->filled('status')
+            || $request->filled('period')
+            || $request->filled('search')
+            || $request->filled('date_mode')
+            || $request->filled('month')
+            || $request->filled('from_date')
+            || $request->filled('to_date')
+            || $request->filled('method');
+
+        if (! $hasAnyFilters) {
+            $dateMode = 'month';
+            $month = Carbon::now()->format('Y-m');
+        }
+
         if ($institutionId) {
             $query->where('institution_id', $institutionId);
         }
@@ -88,19 +105,15 @@ class InmatePaymentController extends Controller
             'total_count' => (clone $query)->count(),
         ];
 
-        $filters = $request->only(
-            'institution_id',
-            'inmate_id',
-            'status',
-            'period',
-            'search',
-            'date_mode',
-            'month',
-            'from_date',
-            'to_date',
-            'method',
-            'report_mode'
-        );
+        $filters = [
+            'institution_id' => $institutionId,
+            'status' => $status,
+            'search' => $search,
+            'date_mode' => $dateMode,
+            'month' => $month,
+            'from_date' => $fromDate,
+            'to_date' => $toDate,
+        ];
 
         if ($request->ajax()) {
             return view('system_admin.payments._results', [

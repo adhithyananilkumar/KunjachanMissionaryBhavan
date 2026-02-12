@@ -11,11 +11,11 @@
 	<div class="card shadow-sm mb-3">
 		<div class="card-body">
 			<form method="GET" class="row g-2 align-items-end" id="paymentsFilterForm">
-				<div class="col-md-4">
+				<div class="col-md-5">
 					<label class="form-label small mb-1">Search inmate</label>
 					<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Name / Admission # / Reg #" />
 				</div>
-				<div class="col-md-3">
+				<div class="col-md-4">
 					<label class="form-label small mb-1">Institution</label>
 					<select name="institution_id" class="form-select form-select-sm">
 						<option value="">All institutions</option>
@@ -33,81 +33,31 @@
 						@endforeach
 					</select>
 				</div>
-				<div class="col-md-2">
-					<label class="form-label small mb-1">Inmate (exact)</label>
-					<select name="inmate_id" class="form-select form-select-sm">
-						<option value="">All inmates</option>
-						@foreach($inmatesForSelect as $i)
-							<option value="{{ $i->id }}" @selected((int)($inmateId ?? 0) === (int)$i->id)>
-								{{ $i->first_name }} {{ $i->last_name }}
-								@isset($i->admission_number)
-									- {{ $i->admission_number }}
-								@endisset
-							</option>
-						@endforeach
+
+				<div class="col-md-3">
+					<label class="form-label small mb-1">Date filter</label>
+					<select name="date_mode" class="form-select form-select-sm" id="pmDateMode">
+						<option value="all" @selected(($dateMode ?? 'all')==='all')>All time</option>
+						<option value="month" @selected(($dateMode ?? '')==='month')>Month</option>
+						<option value="range" @selected(($dateMode ?? '')==='range')>Date range</option>
 					</select>
 				</div>
+				<div class="col-md-3" id="pmMonthWrap" style="display:none;">
+					<label class="form-label small mb-1">Month</label>
+					<input type="month" name="month" value="{{ $month ?? '' }}" class="form-control form-control-sm" />
+				</div>
+				<div class="col-md-3" id="pmRangeWrap" style="display:none;">
+					<label class="form-label small mb-1">From</label>
+					<input type="date" name="from_date" value="{{ $fromDate ?? '' }}" class="form-control form-control-sm" />
+				</div>
+				<div class="col-md-3" id="pmRangeToWrap" style="display:none;">
+					<label class="form-label small mb-1">To</label>
+					<input type="date" name="to_date" value="{{ $toDate ?? '' }}" class="form-control form-control-sm" />
+				</div>
 
-				<div class="col-12 mt-1">
-					<div class="border rounded p-2">
-						<div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
-							<div class="d-flex flex-wrap gap-2 align-items-center">
-								<div class="small text-muted">Date filter:</div>
-								<div class="btn-group btn-group-sm" role="group" aria-label="Date filter">
-									<input type="radio" class="btn-check" name="date_mode" id="pmDateAll" value="all" autocomplete="off" @checked(($dateMode ?? 'all')==='all')>
-									<label class="btn btn-outline-secondary" for="pmDateAll">All</label>
-									<input type="radio" class="btn-check" name="date_mode" id="pmDateMonth" value="month" autocomplete="off" @checked(($dateMode ?? '')==='month')>
-									<label class="btn btn-outline-secondary" for="pmDateMonth">Month</label>
-									<input type="radio" class="btn-check" name="date_mode" id="pmDateRange" value="range" autocomplete="off" @checked(($dateMode ?? '')==='range')>
-									<label class="btn btn-outline-secondary" for="pmDateRange">Date range</label>
-								</div>
-								<div class="d-flex flex-wrap gap-2 align-items-center" id="pmMonthWrap" style="display:none;">
-									<label class="form-label small mb-0">Month</label>
-									<input type="month" name="month" value="{{ $month ?? '' }}" class="form-control form-control-sm" style="max-width:180px;" />
-								</div>
-								<div class="d-flex flex-wrap gap-2 align-items-center" id="pmRangeWrap" style="display:none;">
-									<label class="form-label small mb-0">From</label>
-									<input type="date" name="from_date" value="{{ $fromDate ?? '' }}" class="form-control form-control-sm" style="max-width:180px;" />
-									<label class="form-label small mb-0">To</label>
-									<input type="date" name="to_date" value="{{ $toDate ?? '' }}" class="form-control form-control-sm" style="max-width:180px;" />
-								</div>
-							</div>
-							<div class="d-flex gap-2">
-								<button class="btn btn-primary btn-sm" type="submit">Apply</button>
-								<a href="{{ route('system_admin.payments.index') }}" class="btn btn-outline-secondary btn-sm" id="paymentsResetBtn">Reset</a>
-							</div>
-						</div>
-						<div class="collapse mt-2" id="paymentsAdvanced">
-							<div class="row g-2">
-								<div class="col-md-3">
-									<label class="form-label small mb-1">Period label (optional)</label>
-									<input type="text" name="period" value="{{ $period }}" class="form-control form-control-sm" placeholder="e.g. Nov 2025" />
-								</div>
-								<div class="col-md-3">
-									<label class="form-label small mb-1">Method (optional)</label>
-									<select name="method" class="form-select form-select-sm">
-										<option value="">All methods</option>
-										@foreach(($methods ?? []) as $m)
-											<option value="{{ $m }}" @selected(($method ?? '')===$m)>{{ ucfirst(str_replace('_',' ',$m)) }}</option>
-										@endforeach
-									</select>
-								</div>
-								<div class="col-md-3">
-									<label class="form-label small mb-1">Report type</label>
-									<select name="report_mode" class="form-select form-select-sm">
-										<option value="detailed" @selected(($reportMode ?? 'detailed')==='detailed')>Detailed</option>
-										<option value="summary" @selected(($reportMode ?? '')==='summary')>Summary</option>
-									</select>
-								</div>
-							</div>
-						</div>
-						<div class="d-flex justify-content-end mt-2">
-							<button class="btn btn-link btn-sm text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#paymentsAdvanced" aria-expanded="false">
-								Advanced
-								<span class="bi bi-chevron-down ms-1"></span>
-							</button>
-						</div>
-					</div>
+				<div class="col-12 d-flex justify-content-end gap-2 mt-1">
+					<button class="btn btn-primary btn-sm" type="submit">Apply</button>
+					<a href="{{ route('system_admin.payments.index') }}" class="btn btn-outline-secondary btn-sm" id="paymentsResetBtn">Reset</a>
 				</div>
 			</form>
 		</div>
@@ -195,19 +145,18 @@
 			const filterForm = document.getElementById('paymentsFilterForm');
 			const resultsWrap = document.getElementById('paymentsResults');
 			const resetBtn = document.getElementById('paymentsResetBtn');
+			const dateModeSelect = document.getElementById('pmDateMode');
 			const monthWrap = document.getElementById('pmMonthWrap');
 			const rangeWrap = document.getElementById('pmRangeWrap');
+			const rangeToWrap = document.getElementById('pmRangeToWrap');
 			let filterTimeout = null;
 
-			function getDateMode(){
-				const c = filterForm?.querySelector('input[name="date_mode"]:checked');
-				return c ? c.value : 'all';
-			}
 			function syncDateUI(){
 				if(!filterForm) return;
-				const mode = getDateMode();
+				const mode = (dateModeSelect?.value || 'all');
 				if(monthWrap) monthWrap.style.display = mode==='month' ? '' : 'none';
 				if(rangeWrap) rangeWrap.style.display = mode==='range' ? '' : 'none';
+				if(rangeToWrap) rangeToWrap.style.display = mode==='range' ? '' : 'none';
 				// Disable inactive fields so they don't submit
 				const month = filterForm.querySelector('input[name="month"]');
 				const from = filterForm.querySelector('input[name="from_date"]');
@@ -247,12 +196,11 @@
 
 			if(filterForm && resultsWrap){
 				syncDateUI();
-				filterForm.querySelectorAll('input[name="date_mode"]').forEach(r=> r.addEventListener('change', ()=>{ syncDateUI(); scheduleFetch(true); }));
+				dateModeSelect?.addEventListener('change', ()=>{ syncDateUI(); scheduleFetch(true); });
 				filterForm.addEventListener('input', (e)=>{
 					const t = e.target;
 					if(!(t instanceof HTMLElement)) return;
 					if(t.matches('input[name="search"]')){ scheduleFetch(false); return; }
-					if(t.matches('input[name="period"]')){ scheduleFetch(false); return; }
 					if(t.matches('input[name="month"], input[name="from_date"], input[name="to_date"]')){ scheduleFetch(true); return; }
 				});
 				filterForm.addEventListener('change', (e)=>{
@@ -264,6 +212,14 @@
 				resetBtn?.addEventListener('click', (e)=>{
 					e.preventDefault();
 					filterForm.reset();
+					// Reset should go back to the default view: current month
+					if(dateModeSelect) dateModeSelect.value = 'month';
+					const monthInput = filterForm.querySelector('input[name="month"]');
+					if(monthInput){
+						const now = new Date();
+						const mm = String(now.getMonth()+1).padStart(2,'0');
+						monthInput.value = `${now.getFullYear()}-${mm}`;
+					}
 					syncDateUI();
 					scheduleFetch(true);
 				});

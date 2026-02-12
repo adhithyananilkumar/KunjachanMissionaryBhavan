@@ -7,7 +7,7 @@
     <style>
         @page {
             size: A4;
-            margin: 60mm 15mm 20mm 15mm;
+            margin: 48mm 12mm 16mm 12mm;
         }
 
         /* Global Reset & Base */
@@ -17,7 +17,7 @@
 
         body {
             font-family: sans-serif;
-            font-size: 10pt;
+            font-size: 9pt;
             color: #1f2933;
             line-height: 1.4;
             margin: 0;
@@ -26,14 +26,14 @@
 
         /* Typography */
         h1 {
-            font-size: 16pt;
-            font-weight: 700;
+            font-size: 13pt;
+            font-weight: 600;
             color: #111;
             margin: 0 0 4pt;
         }
 
         h2 {
-            font-size: 14pt;
+            font-size: 11pt;
             font-weight: 600;
             color: #333;
             margin: 10pt 0 4pt;
@@ -44,7 +44,7 @@
         }
 
         .small {
-            font-size: 8pt;
+            font-size: 7.5pt;
             color: #6b7280;
         }
 
@@ -67,8 +67,8 @@
 
         /* Section Styling */
         .section-title {
-            font-size: 9pt;
-            font-weight: 700;
+            font-size: 8pt;
+            font-weight: 600;
             letter-spacing: 0.05em;
             text-transform: uppercase;
             color: #4b2b24;
@@ -81,10 +81,10 @@
         /* Fixed Header & Footer */
         .page-header {
             position: fixed;
-            top: -45mm;
+            top: -36mm;
             left: 0;
             right: 0;
-            height: 40mm;
+            height: 32mm;
             font-size: 9pt;
             border-bottom: 1pt solid #ccc;
             padding-bottom: 5pt;
@@ -140,7 +140,7 @@
         .data-table td.value {
             width: 70%;
             color: #000;
-            font-weight: 500;
+            font-weight: 400;
         }
 
         .signature-block {
@@ -167,13 +167,13 @@
                 <td style="vertical-align: middle; padding: 0;">
                     <table style="border-collapse: collapse;">
                         <tr>
-                            <td style="width: 28mm; padding: 0; vertical-align: middle;">
+                            <td style="width: 26mm; padding: 0; vertical-align: middle;">
                                 <img src="{{ public_path('assets/kunjachanMissionaryLogo.png') }}" alt="Logo"
-                                    style="height: 24mm; width: auto; display: block; margin-right: -10mm;">
+                                    style="height: 21mm; width: auto; display: block; margin-right: -9mm;">
                             </td>
                             <td style="vertical-align: middle; padding-left: 0;">
                                 <div
-                                    style="font-weight: 700; font-size: 14pt; text-transform: uppercase; color: #4b2b24; line-height: 1.1; display:inline-block; transform: translateX(-10mm);">
+                                    style="font-weight: 600; font-size: 12pt; text-transform: uppercase; color: #4b2b24; line-height: 1.1; display:inline-block; transform: translateX(-8mm);">
                                     Kunjachan Missionary<br>Bhavan
                                 </div>
                             </td>
@@ -183,11 +183,11 @@
 
                 <!-- Contact: Fixed width to maintain alignment -->
                 <td
-                    style="width: 40%; vertical-align: middle; text-align: right; font-size: 9pt; color: #444; line-height: 1.4;">
+                    style="width: 40%; vertical-align: middle; text-align: right; font-size: 8pt; color: #444; line-height: 1.3;">
                     Ramapuram, Idiyanal P.O, Kottayam<br>
                     Kerala - 686576<br>
                     E-mail: kunjachanmissionary@gmail.com<br>
-                    Ph: 04822 260435, 260835 · Mob: 9048864128
+                    Ph: 04822 260435, 260835 | Mob: 9048864128
                 </td>
             </tr>
         </table>
@@ -215,9 +215,9 @@
         if (isset($pdf)) {
             $font = $fontMetrics->get_font('Helvetica', 'normal');
             $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
-            $y = $pdf->get_height() - 20; 
-            $x = $pdf->get_width() - 120; 
-            $pdf->page_text($x, $y, $text, $font, 9, array(0,0,0));
+            $y = $pdf->get_height() - 18;
+            $x = $pdf->get_width() - 112;
+            $pdf->page_text($x, $y, $text, $font, 8, array(0,0,0));
         }
     </script>
 </body>

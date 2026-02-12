@@ -5,7 +5,6 @@
 
 @section('content')
 <header class="mb-3">
-    <div class="section-title" style="margin-top: 0; border: none;">PAYMENT RECEIPT</div>
     <h1 class="mb-1">Payment receipt</h1>
     <p class="small mb-0">Receipt for inmate payment</p>
 </header>
@@ -23,7 +22,7 @@
     @endif
     <tr>
         <td class="label">Amount</td>
-        <td class="value">₹ {{ number_format($payment->amount, 2) }} {{ $payment->currency }}</td>
+        <td class="value">Rs. {{ number_format($payment->amount, 2) }}</td>
     </tr>
     <tr>
         <td class="label">Status</td>

@@ -1,6 +1,5 @@
 @php
   $filters = $filters ?? [];
-  $mode = $filters['report_mode'] ?? 'detailed';
 @endphp
 
 <div class="row g-3 mb-3">
@@ -29,7 +28,7 @@
         <div class="small text-muted mb-3">Download an enterprise report for the current filters.</div>
         <div class="mt-auto">
           <a
-            href="{{ route('system_admin.payments.report', array_merge($filters, ['mode' => $mode])) }}"
+            href="{{ route('system_admin.payments.report', array_merge($filters, ['mode' => 'detailed'])) }}"
             class="btn btn-primary btn-lg w-100 py-2">
             <span class="bi bi-download me-2"></span>Download custom report
           </a>
