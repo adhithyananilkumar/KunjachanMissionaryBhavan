@@ -63,7 +63,9 @@
         </div>
     </nav>
 
-    <div class="header-accent" aria-hidden="true"></div>
+    @if (request()->routeIs('home'))
+        <div class="header-accent" aria-hidden="true"></div>
+    @endif
 
     <main class="main">
         @yield('content')

@@ -222,10 +222,14 @@ main {
   padding: 5rem 0 4rem;
   position: relative;
   overflow: hidden;
+  background: var(--kb-bg);
+}
+
+.hero.hero-home {
   background: linear-gradient(to bottom, rgba(250, 250, 249, 0.5), var(--kb-bg));
 }
 
-.hero:before {
+.hero.hero-home:before {
   content: "";
   position: absolute;
   inset: 0;
