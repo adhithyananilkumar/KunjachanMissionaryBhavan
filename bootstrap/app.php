@@ -20,6 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', [
             'bugreply'
         ]);
+
+        // Trust reverse proxies (e.g., Cloudflare) so HTTPS and host
+        // are detected correctly when generating URLs and assets.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
