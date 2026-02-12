@@ -157,6 +157,12 @@
 				if(!root || root.dataset.bound==='1') return; root.dataset.bound='1';
 				const uploadUrl = root.getAttribute('data-upload-url');
 				const addUrl = root.getAttribute('data-add-url');
+				const toast = (type, msg)=>{
+					try{
+						if(window.toastr && typeof window.toastr[type]==='function') window.toastr[type](msg);
+						else if(window.AppNotice) window.AppNotice.show(type, msg);
+					}catch(e){}
+				};
 				const tabs = container.querySelectorAll('#docSubTabs [data-subtab]');
 				const panes = root.querySelectorAll('[data-pane]');
 				function showPane(name){
@@ -232,14 +238,25 @@
 					const prev = btn ? btn.innerHTML : '';
 					if(btn){ btn.disabled = true; btn.textContent = 'Uploading...'; }
 					try{
-						const res = await fetch(url, {method:'POST', headers:{'X-Requested-With':'XMLHttpRequest','X-CSRF-TOKEN':'{{ csrf_token() }}'}, body: fd});
+						const res = await fetch(url, {method:'POST', headers:{'X-Requested-With':'XMLHttpRequest','X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}, body: fd});
 						const d = await res.json().catch(()=>({}));
-						if(!res.ok || !d.ok){ throw new Error(d.message || 'Upload failed'); }
+						if(!res.ok || d.ok === false){
+							const firstErr = d && d.errors ? Object.values(d.errors).flat()[0] : null;
+							throw new Error(d.message || firstErr || 'Upload failed');
+						}
+						const isReplace = form.classList.contains('replace-extra-form') || form.classList.contains('upload-core-form') || form.id === 'upload-photo-form';
+						const docName = fd.get('document_name');
+						const field = fd.get('field');
+						const msg = d.message
+							|| (docName ? `Document "${docName}" added.` : null)
+							|| (field ? `${String(field).replace(/_/g,' ')} ${isReplace ? 'updated' : 'uploaded'}.` : null)
+							|| (isReplace ? 'Document updated.' : 'Document uploaded.');
+						toast('success', msg);
 						// Reload just the documents tab
 						showPane('available');
 						load('documents');
 					}catch(err){
-						const alert = document.createElement('div'); alert.className='alert alert-danger small mt-2'; alert.textContent = err.message || 'Upload failed'; form.appendChild(alert); setTimeout(()=>alert.remove(),3000);
+						toast('error', err.message || 'Upload failed');
 					}finally{
 						if(btn){ btn.disabled = false; btn.innerHTML = prev; }
 					}

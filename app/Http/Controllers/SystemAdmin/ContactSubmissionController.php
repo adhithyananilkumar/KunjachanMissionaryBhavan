@@ -22,6 +22,9 @@ class ContactSubmissionController extends Controller
     public function destroy(ContactSubmission $submission)
     {
         $submission->delete();
+        if (request()->ajax()) {
+            return response()->json(['ok' => true, 'id' => $submission->id, 'message' => 'Submission deleted.']);
+        }
         return redirect()->route('system_admin.contact-submissions.index')->with('success', 'Submission deleted.');
     }
 }

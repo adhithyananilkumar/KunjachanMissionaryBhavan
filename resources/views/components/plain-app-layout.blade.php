@@ -22,7 +22,7 @@
     <meta name="theme-color" content="#0f4f4b">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    {{-- App notices are injected via layouts.partials.app-notice-cards --}}
     <style>
       html { font-size: 17px; }
       body { line-height: 1.6; }
@@ -171,7 +171,7 @@
 
     <main class="py-4 px-3">
       {{ $slot }}
-      @include('layouts.partials.flash-messages')
+      @include('layouts.partials.app-notice-cards')
     </main>
 
     <!-- Desktop Offcanvas Sidebar (hidden by default; opened via menu button) -->
@@ -234,8 +234,7 @@
     @endif
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    {{-- Toastr is replaced by AppNotice (with back-compat stub). --}}
     <script>
     // Prevent accidental bug modal submissions via Enter; require explicit click
     (function(){

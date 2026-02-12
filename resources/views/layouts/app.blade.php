@@ -29,8 +29,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Toastr CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    {{-- App notices are injected via layouts.partials.app-notice-cards --}}
         <style>
             /* Global readability: slightly larger base font for middle-aged users */
             html { font-size: 17px; }
@@ -276,7 +275,7 @@
                 @else
                     @yield('content')
                 @endisset
-                @include('layouts.partials.flash-messages')
+                @include('layouts.partials.app-notice-cards')
             </main>
         </div>
     </div>
@@ -349,16 +348,7 @@
         @endif
 
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-                <!-- jQuery required for toastr (v2.x) -->
-                <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-                <script>
-                    // Fallback if toastr failed to attach (e.g., race condition)
-                    if(typeof toastr === 'undefined'){
-                        window.toastr = {success:console.log, error:console.error, info:console.log, warning:console.warn};
-                        console.warn('toastr library not loaded, using console fallback');
-                    }
-                </script>
+                {{-- Toastr is replaced by AppNotice (with back-compat stub). --}}
                 @vite(['resources/js/app.js'])
                 @stack('scripts')
     </body>

@@ -19,7 +19,7 @@
                     </thead>
                     <tbody>
                         @forelse($submissions as $s)
-                        <tr class="position-relative">
+                        <tr class="position-relative" id="contact-submission-row-{{ $s->id }}">
                             <td class="ps-4">
                                 <div class="fw-semibold">{{ $s->name }}</div>
                                 <div class="small text-muted">{{ $s->email }}</div>
@@ -31,7 +31,14 @@
                             </td>
                             <td class="small text-muted" style="white-space:nowrap">{{ $s->created_at->format('M d, Y') }}<br><span class="text-xs">{{ $s->created_at->format('h:i A') }}</span></td>
                             <td class="text-end pe-4 position-relative z-2">
-                                <form method="POST" action="{{ route('admin.contact-submissions.destroy', $s) }}" onsubmit="return confirm('Delete this message?');">
+                                <form method="POST"
+                                      action="{{ route('admin.contact-submissions.destroy', $s) }}"
+                                      data-confirm="Delete this message?"
+                                      data-confirm-title="Delete Message"
+                                      data-confirm-ok-text="Delete"
+                                      data-confirm-ok-class="btn-danger"
+                                      data-ajax-delete
+                                      data-row-selector="#contact-submission-row-{{ $s->id }}">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-trash"></i></button>
                                 </form>
