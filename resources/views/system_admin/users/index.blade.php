@@ -1,11 +1,10 @@
 <x-app-layout>
 	<x-slot name="header">
-		<h2 class="h5 mb-0">User Management</h2>
+		<div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+			<h2 class="h5 mb-0">Users</h2>
+			<a href="{{ route('system_admin.users.create') }}" class="btn btn-primary btn-sm">New User</a>
+		</div>
 	</x-slot>
-	<div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-3">
-		<h1 class="h4 mb-0">Users</h1>
-		<a href="{{ route('system_admin.users.create') }}" class="btn btn-primary btn-sm">New User</a>
-	</div>
 	<div class="d-lg-none d-flex justify-content-end mb-2">
 		<button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#userFilters"><span class="bi bi-funnel me-1"></span>Filters</button>
 	</div>

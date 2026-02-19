@@ -86,15 +86,27 @@
   const logsTBody = document.querySelector('#logsTableSA tbody');
   const logEntryList = document.getElementById('logEntryListSA');
 
+  const loaded = { live:false, logs:false, logEntry:false };
+  const stale = { live:true, logs:true, logEntry:true };
+
+  function isTabActive(tabId){
+    const el = document.querySelector(tabId);
+    return !!(el && el.classList.contains('active') && el.classList.contains('show'));
+  }
+
   function badgeFor(status){ const m={taken:'success',due:'warning',missable:'danger',waiting:'light'}; return `<span class="badge text-bg-${m[status]||'secondary'}">${status}</span>`; }
   function ensureJson(r){ if(!r.ok) throw new Error(''+r.status); return r.json().catch(()=>({})); }
 
-  function loadLive(){
+  function loadLive(opts){
+    const force = !!(opts && opts.force);
+    if(loaded.live && !stale.live && !force) return;
     if(!liveTBody) return;
     liveTBody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">Loading…</td></tr>';
     fetch('{{ route('system_admin.medicines.live') }}?t='+Date.now(), {headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}})
       .then(ensureJson)
       .then(rows=>{
+        loaded.live = true;
+        stale.live = false;
         liveTBody.innerHTML='';
         const inst = (document.getElementById('instFilterSA')?.value||'').toLowerCase();
         const list = (Array.isArray(rows)?rows:[])
@@ -110,13 +122,17 @@
       }).catch((e)=>{ liveTBody.innerHTML = '<tr><td colspan="9" class="text-center text-danger py-4">Failed to load</td></tr>'; console.error('sa live fetch failed', e); });
   }
 
-  function loadLogs(){
+  function loadLogs(opts){
+    const force = !!(opts && opts.force);
+    if(loaded.logs && !stale.logs && !force) return;
     if(!logsTBody) return;
     const days = document.getElementById('logsDaysSA')?.value || 7;
     logsTBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Loading…</td></tr>';
     fetch('{{ route('system_admin.medicines.logs') }}?days='+days, {headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}})
       .then(ensureJson)
       .then(rows=>{
+        loaded.logs = true;
+        stale.logs = false;
         logsTBody.innerHTML = '';
         if(!Array.isArray(rows) || rows.length===0){ logsTBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No logs</td></tr>'; return; }
         for(const r of rows){
@@ -127,12 +143,16 @@
       }).catch(()=>{ logsTBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">Failed</td></tr>'; });
   }
 
-  function loadLogEntry(){
+  function loadLogEntry(opts){
+    const force = !!(opts && opts.force);
+    if(loaded.logEntry && !stale.logEntry && !force) return;
     if(!logEntryList) return;
     logEntryList.innerHTML = '<div class="text-center text-muted py-4">Loading…</div>';
     fetch('{{ route('system_admin.medicines.live') }}?t='+Date.now(), {headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}})
       .then(ensureJson)
       .then(rows=>{
+        loaded.logEntry = true;
+        stale.logEntry = false;
         logEntryList.innerHTML='';
         const inst = (document.getElementById('instFilterSA')?.value||'').toLowerCase();
         const list = (Array.isArray(rows) ? rows : [])
@@ -191,7 +211,10 @@
         const row = btn.closest('tr');
         const who = row?.querySelector('td:nth-child(2)')?.textContent || 'Patient';
         toastr[resp && resp.duplicate ? 'info' : 'success'](resp && resp.duplicate ? 'Already logged today' : 'Marked TAKEN', who);
-        loadLive(); loadLogs(); loadLogEntry();
+        stale.live = true; stale.logs = true; stale.logEntry = true;
+        loadLive({force:true});
+        if(loaded.logs && isTabActive('#tab-logs-sa')) loadLogs({force:true});
+        if(loaded.logEntry && isTabActive('#tab-log-med-sa')) loadLogEntry({force:true});
       })
       .catch((e)=>{ toastr.error('Failed to log medication ('+(e?.message||'error')+')','Error'); });
   });
@@ -216,13 +239,33 @@
         const okCount = results.length - dupCount;
         if(okCount>0){ toastr.success(`${okCount} marked ${status.toUpperCase()}`, who); }
         if(dupCount>0){ toastr.info(`${dupCount} already logged today`, who); }
-        loadLive(); loadLogs(); loadLogEntry();
+        stale.live = true; stale.logs = true; stale.logEntry = true;
+        loadLive({force:true});
+        if(loaded.logs && isTabActive('#tab-logs-sa')) loadLogs({force:true});
+        if(loaded.logEntry && isTabActive('#tab-log-med-sa')) loadLogEntry({force:true});
       })
       .catch((e)=>{ toastr.error('Failed to log medication ('+(e?.message||'error')+')','Error'); })
       .finally(()=>{ btn.disabled=false; btn.classList.remove('disabled'); });
   });
 
-  document.getElementById('instFilterSA')?.addEventListener('change', ()=>{ loadLive(); loadLogEntry(); });
+  function ensureTabData(tabHref){
+    if(tabHref === '#tab-live-sa'){ loadLive(); }
+    if(tabHref === '#tab-logs-sa'){ loadLogs(); }
+    if(tabHref === '#tab-log-med-sa'){ loadLogEntry(); }
+  }
+
+  // Lazy-load tab content: fetch only when a tab is opened the first time,
+  // and afterwards only when marked stale (e.g., after logging).
+  document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(a=>{
+    a.addEventListener('click', ()=> ensureTabData(a.getAttribute('href')));
+    a.addEventListener('shown.bs.tab', ()=> ensureTabData(a.getAttribute('href')));
+  });
+
+  document.getElementById('instFilterSA')?.addEventListener('change', ()=>{
+    stale.live = true;
+    loadLive({force:true});
+    if(loaded.logEntry) loadLogEntry({force:true}); else stale.logEntry = true;
+  });
   const logSearch = document.getElementById('logSearchSA');
   logSearch?.addEventListener('input', ()=>{
     const s = (logSearch.value||'').toLowerCase();
@@ -233,10 +276,12 @@
       card.style.display = (!s || a.includes(s) || p.includes(s) || m.includes(s)) ? '' : 'none';
     });
   });
-  document.getElementById('logsDaysSA')?.addEventListener('change', loadLogs);
-  loadLive();
-  loadLogs();
-  loadLogEntry();
+  document.getElementById('logsDaysSA')?.addEventListener('change', ()=> loadLogs({force:true}));
+
+  // Load only the initially active tab.
+  if(isTabActive('#tab-live-sa')) loadLive();
+  if(isTabActive('#tab-logs-sa')) loadLogs();
+  if(isTabActive('#tab-log-med-sa')) loadLogEntry();
 })();
 </script>
 @endpush

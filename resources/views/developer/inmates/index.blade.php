@@ -1,11 +1,10 @@
 <x-app-layout>
 	<x-slot name="header">
-		<h2 class="h5 mb-0">Inmate Management</h2>
-	</x-slot>
-	<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
-		<h1 class="h4 mb-0">Inmates</h1>
+		<div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+			<h2 class="h5 mb-0">Inmates</h2>
 		<a href="{{ route('developer.inmates.create') }}" class="btn btn-primary btn-sm"><span class="bi bi-plus-lg me-1"></span>Register</a>
-	</div>
+		</div>
+	</x-slot>
 
 	<form method="GET" action="{{ route('developer.inmates.index') }}" class="card card-body mb-4 shadow-sm small">
 		<div class="row g-2 align-items-end">

@@ -29,6 +29,8 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    		@vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- App notices are injected via layouts.partials.app-notice-cards --}}
         <style>
             /* Global readability: slightly larger base font for middle-aged users */
@@ -349,7 +351,6 @@
 
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
                 {{-- Toastr is replaced by AppNotice (with back-compat stub). --}}
-                @vite(['resources/js/app.js'])
                 @stack('scripts')
     </body>
 </html>

@@ -3,9 +3,10 @@
 A Laravel-based web application.
 
 # Requirements
-- PHP 8.1 
+- PHP 8.1+
 - Composer 2.x
 - MySQL 8+ 
+- PHP extensions: `fileinfo`, `gd` (required for PDF reports)
 
 
 # Install backend deps

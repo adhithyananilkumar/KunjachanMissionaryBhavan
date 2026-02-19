@@ -22,6 +22,8 @@
     <meta name="theme-color" content="#0f4f4b">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- App notices are injected via layouts.partials.app-notice-cards --}}
     <style>
       html { font-size: 17px; }
@@ -249,7 +251,6 @@
       });
     })();
     </script>
-  @vite(['resources/js/app.js'])
     @stack('scripts')
   </body>
 </html>

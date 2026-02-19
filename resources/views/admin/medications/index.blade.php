@@ -61,10 +61,20 @@
     const logsTBody = document.querySelector('#logsTable tbody');
     const logEntryList = document.getElementById('logEntryList');
 
+    const loaded = { live:false, logs:false, logEntry:false };
+    const stale = { live:true, logs:true, logEntry:true };
+
+    function isTabActive(tabId){
+      const el = document.querySelector(tabId);
+      return !!(el && el.classList.contains('active') && el.classList.contains('show'));
+    }
+
     function badgeFor(status){ const map={taken:'success',due:'warning',missable:'danger',waiting:'light'}; return `<span class="badge text-bg-${map[status]||'secondary'}">${status}</span>`; }
     function ensureJson(r){ const ct=(r.headers.get('content-type')||'').toLowerCase(); if(!r.ok) throw new Error(''+r.status); if(!ct.includes('application/json')) throw new Error('Non-JSON'); return r.json(); }
 
-    function loadLive(){
+    function loadLive(opts){
+      const force = !!(opts && opts.force);
+      if(loaded.live && !stale.live && !force) return;
       if(!liveTBody) return;
       liveTBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Loading…</td></tr>';
       const timeout = setTimeout(()=>{ if(liveTBody && liveTBody.textContent.includes('Loading')) liveTBody.innerHTML = '<tr><td colspan="8" class="text-center text-warning py-4">Still loading… check network</td></tr>'; }, 6000);
@@ -72,6 +82,8 @@
         .then(ensureJson)
         .then(rows=>{
           clearTimeout(timeout);
+          loaded.live = true;
+          stale.live = false;
           liveTBody.innerHTML='';
           // Exclude anything already logged today (taken or missed)
           const list = (Array.isArray(rows)?rows:[]).filter(r=> !r.loggedToday && (r.status||'').toLowerCase()!=='taken');
@@ -85,7 +97,9 @@
         }).catch((e)=>{ clearTimeout(timeout); liveTBody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">Failed to load (${(e&&e.message)||'error'})</td></tr>`; console.error('admin live fetch failed', e); });
     }
 
-    function loadLogs(){
+    function loadLogs(opts){
+      const force = !!(opts && opts.force);
+      if(loaded.logs && !stale.logs && !force) return;
       if(!logsTBody) return;
       const days = document.getElementById('logsDays')?.value || 7;
       logsTBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Loading…</td></tr>';
@@ -94,6 +108,8 @@
         .then(ensureJson)
         .then(rows=>{
           clearTimeout(timeout);
+          loaded.logs = true;
+          stale.logs = false;
           logsTBody.innerHTML='';
           if(!Array.isArray(rows) || rows.length===0){ logsTBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No logs</td></tr>'; return; }
           for(const r of rows){
@@ -104,7 +120,9 @@
         }).catch((e)=>{ clearTimeout(timeout); logsTBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">Failed to load (${(e&&e.message)||'error'})</td></tr>`; console.error('admin logs fetch failed', e); });
     }
 
-    function loadLogEntry(){
+    function loadLogEntry(opts){
+      const force = !!(opts && opts.force);
+      if(loaded.logEntry && !stale.logEntry && !force) return;
       if(!logEntryList) return;
       logEntryList.innerHTML = '<div class="text-center text-muted py-4">Loading…</div>';
       const timeout = setTimeout(()=>{ if(logEntryList && logEntryList.textContent.includes('Loading')) logEntryList.innerHTML = '<div class="text-center text-warning py-4">Still loading… check network</div>'; }, 6000);
@@ -112,6 +130,8 @@
         .then(ensureJson)
         .then(rows=>{
           clearTimeout(timeout);
+          loaded.logEntry = true;
+          stale.logEntry = false;
           logEntryList.innerHTML='';
           const list = Array.isArray(rows) ? rows : [];
           // Only show items not logged today
@@ -187,7 +207,10 @@
           const okCount = results.length - dupCount;
           if(okCount>0){ toastr.success(`${okCount} marked ${status.toUpperCase()}`, patientName); }
           if(dupCount>0){ toastr.info(`${dupCount} already logged today`, patientName); }
-          loadLive(); loadLogs(); loadLogEntry();
+          stale.live = true; stale.logs = true; stale.logEntry = true;
+          if(loaded.live && isTabActive('#tab-live')) loadLive({force:true});
+          if(loaded.logs && isTabActive('#tab-logs')) loadLogs({force:true});
+          if(loaded.logEntry && isTabActive('#tab-log-med')) loadLogEntry({force:true});
         })
         .catch((e)=>{ console.error('admin log post failed', e); toastr.error('Failed to log medication ('+(e?.message||'error')+')','Error'); })
         .finally(()=>{ btn.disabled=false; btn.classList.remove('disabled'); });
@@ -202,11 +225,25 @@
         card.style.display = (!s || p.includes(s) || m.includes(s)) ? '' : 'none';
       });
     });
-    document.getElementById('logsDays')?.addEventListener('change', loadLogs);
+    function ensureTabData(tabHref){
+      if(tabHref === '#tab-live') loadLive();
+      if(tabHref === '#tab-logs') loadLogs();
+      if(tabHref === '#tab-log-med') loadLogEntry();
+    }
 
-    loadLive();
-    loadLogs();
-    loadLogEntry();
+    // Lazy-load tab content: fetch only when opened the first time, and afterwards
+    // only when marked stale.
+    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(a=>{
+      a.addEventListener('click', ()=> ensureTabData(a.getAttribute('href')));
+      a.addEventListener('shown.bs.tab', ()=> ensureTabData(a.getAttribute('href')));
+    });
+
+    document.getElementById('logsDays')?.addEventListener('change', ()=> loadLogs({force:true}));
+
+    // Load only the initially active tab.
+    if(isTabActive('#tab-log-med')) loadLogEntry();
+    if(isTabActive('#tab-live')) loadLive();
+    if(isTabActive('#tab-logs')) loadLogs();
   };
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

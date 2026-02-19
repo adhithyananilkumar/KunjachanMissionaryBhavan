@@ -1,9 +1,10 @@
 <x-app-layout>
-	<x-slot name="header"><h2 class="h5 mb-0">Inmate Management</h2></x-slot>
-	<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
-		<h1 class="h4 mb-0">Inmates</h1>
-		<a href="{{ route('system_admin.inmates.create') }}" class="btn btn-primary btn-sm"><span class="bi bi-plus-lg me-1"></span>Register</a>
-	</div>
+	<x-slot name="header">
+		<div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+			<h2 class="h5 mb-0">Inmates</h2>
+			<a href="{{ route('system_admin.inmates.create') }}" class="btn btn-primary btn-sm"><span class="bi bi-plus-lg me-1"></span>Register</a>
+		</div>
+	</x-slot>
 
 	<!-- Mobile: compact Filters button -->
 	<div class="d-lg-none mb-2">
