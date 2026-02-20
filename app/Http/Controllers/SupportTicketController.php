@@ -11,10 +11,18 @@ use App\Notifications\NewTicketReply;
 
 class SupportTicketController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tickets = SupportTicket::where('user_id', Auth::id())->latest('last_activity_at')->paginate(15);
-        return view('tickets.index', compact('tickets'));
+        $showHistory = (bool) $request->boolean('history');
+
+        $q = SupportTicket::where('user_id', Auth::id());
+        if (!$showHistory) {
+            $q->whereNull('archived_at')
+                ->whereNotIn('status', [SupportTicket::STATUS_RESOLVED, SupportTicket::STATUS_CLOSED]);
+        }
+
+        $tickets = $q->latest('last_activity_at')->paginate(15)->withQueryString();
+        return view('tickets.index', compact('tickets', 'showHistory'));
     }
 
     public function show(SupportTicket $ticket)
@@ -94,11 +102,16 @@ class SupportTicketController extends Controller
 
     public function reply(Request $request, SupportTicket $ticket)
     {
-        // Prevent any reply if ticket is closed
-        if ($ticket->status === SupportTicket::STATUS_CLOSED) {
-            abort(403, 'Ticket is closed. No further replies allowed.');
-        }
         abort_unless($ticket->user_id === Auth::id(), 403);
+
+        // Prevent replies once solved/resolved/closed (and also if archived)
+        if (
+            $ticket->status === SupportTicket::STATUS_RESOLVED
+            || $ticket->status === SupportTicket::STATUS_CLOSED
+            || $ticket->archived_at
+        ) {
+            return back()->with('error', 'This ticket is solved. Replies are disabled.');
+        }
 
         $request->validate([
             'message' => 'required|string',
@@ -130,18 +143,6 @@ class SupportTicketController extends Controller
             }
         }
 
-        $reopened = false;
-        if ($ticket->status === SupportTicket::STATUS_RESOLVED) {
-            $ticket->forceFill([
-                'status' => SupportTicket::STATUS_OPEN,
-                'resolved_at' => null,
-                'resolution_summary' => null,
-                'close_reason' => null,
-                'closed_at' => null,
-            ]);
-            $reopened = true;
-        }
-
         $reply = TicketReply::create([
             'support_ticket_id'=>$ticket->id,
             'user_id'=>Auth::id(),
@@ -151,15 +152,6 @@ class SupportTicketController extends Controller
         ]);
 
         $ticket->forceFill(['last_activity_at'=>now()])->save();
-
-        if ($reopened) {
-            SupportTicketActivity::create([
-                'support_ticket_id' => $ticket->id,
-                'actor_id' => Auth::id(),
-                'type' => 'reopened_by_user',
-                'meta' => null,
-            ]);
-        }
 
         SupportTicketActivity::create([
             'support_ticket_id' => $ticket->id,

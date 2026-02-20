@@ -46,8 +46,8 @@
           @endforelse
         </div>
         <div class="card-footer">
-          @if($ticket->status === 'closed')
-            <div class="text-muted small">This ticket is closed. Replies are disabled.</div>
+          @if(in_array($ticket->status, ['resolved','closed'], true) || $ticket->archived_at)
+            <div class="text-muted small">This ticket is solved. Replies are disabled.</div>
           @else
           <form method="POST" action="{{ route('tickets.reply',$ticket) }}" enctype="multipart/form-data" class="d-flex flex-column gap-2">
             @csrf

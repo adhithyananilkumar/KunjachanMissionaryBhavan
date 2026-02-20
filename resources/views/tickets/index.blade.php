@@ -1,6 +1,15 @@
 <x-app-layout>
   <x-slot name="header"><h2 class="h5 mb-0">My Support Tickets</h2></x-slot>
-  <div class="mb-3 text-end"><a href="#" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#newTicketModal">New Ticket</a></div>
+  <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      @if(!empty($showHistory))
+        <a href="{{ route('tickets.index.user') }}" class="btn btn-sm btn-outline-secondary">Hide History</a>
+      @else
+        <a href="{{ route('tickets.index.user', ['history' => 1]) }}" class="btn btn-sm btn-outline-secondary">Show History</a>
+      @endif
+    </div>
+    <div class="text-end"><a href="#" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#newTicketModal">New Ticket</a></div>
+  </div>
   <div class="card">
     <div class="table-responsive">
       <table class="table table-striped mb-0">
