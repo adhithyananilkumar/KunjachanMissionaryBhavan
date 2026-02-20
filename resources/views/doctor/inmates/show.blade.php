@@ -23,9 +23,7 @@
             <div>
                 <h2 class="h5 mb-1 d-flex align-items-center gap-2">
                     {{ $inmate->full_name }}
-                    @if($inmate->registration_number)
-                        <span class="badge text-bg-secondary ms-2">#{{ $inmate->registration_number }}</span>
-                    @endif
+                    <span class="badge text-bg-secondary ms-2">Adm No {{ $inmate->admission_number ?: '—' }}</span>
                 </h2>
                                 <div class="small text-muted d-flex flex-wrap gap-2">
                     @if($inmate->date_of_birth)

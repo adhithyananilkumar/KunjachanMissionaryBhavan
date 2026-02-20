@@ -14,9 +14,8 @@
     <form action="{{ route('system_admin.inmates.update',$inmate) }}" method="POST" enctype="multipart/form-data">@csrf @method('PUT')
       <div class="row g-3 mb-3">
         <div class="col-md-3">
-          <label class="form-label">Admission #</label>
-          <input name="admission_number" class="form-control form-control-sm" value="{{ old('admission_number',$inmate->admission_number) }}" placeholder="Auto / manual">
-          <div class="form-text small">Leave blank to keep current unless changing.</div>
+          <label class="form-label">Admission Number <span class="text-danger">*</span></label>
+          <input name="admission_number" class="form-control form-control-sm" value="{{ old('admission_number',$inmate->admission_number) }}" required>
         </div>
         <div class="col-md-3">
           <label class="form-label">Admission Date</label>
@@ -58,10 +57,6 @@
               <option value="{{ $v }}" @selected(old('type',$inmate->type)===$v)>{{ $l }}</option>
             @endforeach
           </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Registration #</label>
-          <input name="registration_number" class="form-control" value="{{ old('registration_number',$inmate->registration_number) }}">
         </div>
         <div class="col-md-3">
           <label class="form-label">Aadhaar Number</label>

@@ -27,7 +27,7 @@ return [
     'city' => 'City / നഗരം',
     'state' => 'State / സംസ്ഥാനം',
     'pincode' => 'Pincode / പിന്‍കോഡ്',
-    'registration_number' => 'Registration # / രജിസ്ട്രേഷൻ നമ്പർ',
+    'registration_number' => 'Admission Number / പ്രവേശന നമ്പർ',
     'inmate_type' => 'Inmate Type / താമസക്കാരന്റെ തരം',
     'child' => 'Child / കുട്ടി',
     'elderly' => 'Elderly / വയോധികൻ',

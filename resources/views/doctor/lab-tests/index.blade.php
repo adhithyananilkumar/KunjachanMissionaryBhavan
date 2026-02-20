@@ -11,7 +11,13 @@
               <div class="fw-semibold">{{ $t->test_name }}</div>
             </div>
             <div class="text-muted small d-flex flex-wrap gap-2">
-              <span>Patient: <a href="{{ route('doctor.inmates.show',$t->inmate_id) }}" class="text-decoration-none">{{ $t->inmate?->full_name ?? ('Patient #'.$t->inmate_id) }}</a></span>
+              <span>
+                Patient:
+                <a href="{{ route('doctor.inmates.show',$t->inmate_id) }}" class="text-decoration-none">
+                  {{ $t->inmate?->full_name ?? 'Patient' }}
+                </a>
+                <span class="ms-1">· Adm No {{ $t->inmate?->admission_number ?: '—' }}</span>
+              </span>
               <span>Ordered: {{ optional($t->ordered_date)->format('Y-m-d') ?: '—' }}</span>
               @if($t->completed_date)<span>Completed: {{ optional($t->completed_date)->format('Y-m-d') }}</span>@endif
             </div>

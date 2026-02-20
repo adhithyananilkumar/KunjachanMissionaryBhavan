@@ -18,12 +18,10 @@
         <td class="value">{{ $inmate->full_name }}</td>
     </tr>
 
-    @if($inmate->registration_number)
-        <tr>
-            <td class="label">Registration no.</td>
-            <td class="value">{{ $inmate->registration_number }}</td>
-        </tr>
-    @endif
+    <tr>
+        <td class="label">Admission no.</td>
+        <td class="value">{{ $inmate->admission_number ?: '—' }}</td>
+    </tr>
 
     @if($inmate->institution?->name)
         <tr>

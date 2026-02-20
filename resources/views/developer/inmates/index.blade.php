@@ -10,7 +10,7 @@
 		<div class="row g-2 align-items-end">
 			<div class="col-md-3">
 				<label class="form-label mb-0">Search</label>
-				<input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="name or id">
+				<input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="name or admission number">
 			</div>
 			<div class="col-md-2">
 				<label class="form-label mb-0">Type</label>
@@ -58,7 +58,7 @@
 				<div class="flex-grow-1">
 					<div class="d-flex flex-wrap align-items-center gap-2 mb-1">
 						<span class="fw-semibold">{{ $inmate->full_name }}</span>
-						<span class="badge bg-secondary">ID {{ $inmate->id }}</span>
+						<span class="badge bg-secondary">Adm No {{ $inmate->admission_number ?: '—' }}</span>
 						@if($inmate->admission_date)
 							<span class="badge bg-info text-dark">Admitted {{ $inmate->admission_date->format('Y-m-d') }}</span>
 						@endif

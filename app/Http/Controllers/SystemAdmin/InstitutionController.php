@@ -88,7 +88,11 @@ class InstitutionController extends Controller
     public function tabInmates(Request $request, Institution $institution){
         $q = trim((string)$request->get('q'));
         $inmates = \App\Models\Inmate::where('institution_id',$institution->id)
-            ->when($q, fn($qry)=>$qry->where(function($qq) use($q){ $qq->where('first_name','like','%'.$q.'%')->orWhere('last_name','like','%'.$q.'%'); }))
+            ->when($q, fn($qry)=>$qry->where(function($qq) use($q){
+                $qq->where('first_name','like','%'.$q.'%')
+                    ->orWhere('last_name','like','%'.$q.'%')
+                    ->orWhere('admission_number','like','%'.$q.'%');
+            }))
             ->orderBy('last_name')
             ->paginate(10);
         return view('system_admin.institutions.tabs.inmates', compact('institution','inmates','q'));

@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="row g-3">
-                <div class="col-md-4"><label class="form-label">Registration #</label><input name="registration_number" class="form-control" value="{{ old('registration_number') }}"></div>
+                <div class="col-md-4"><label class="form-label">Admission Number <span class="text-danger">*</span></label><input name="admission_number" class="form-control" required value="{{ old('admission_number') }}"></div>
                 <div class="col-md-4"><label class="form-label">First Name <span class="text-danger">*</span></label><input name="first_name" class="form-control" required value="{{ old('first_name') }}"></div>
                 <div class="col-md-4"><label class="form-label">Last Name</label><input name="last_name" class="form-control" value="{{ old('last_name') }}"></div>
             </div>

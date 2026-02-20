@@ -18,7 +18,7 @@
               <span class="badge text-bg-{{ $badge }} text-uppercase">{{ str_replace('_',' ',$status) }}</span>
             </div>
             <div class="text-muted small">
-              Inmate: {{ $t->inmate?->full_name ?? ('Inmate #'.$t->inmate_id) }}
+              Inmate: {{ $t->inmate?->full_name ?? 'Inmate' }} · Adm No {{ $t->inmate?->admission_number ?: '—' }}
               <span class="mx-2">•</span>
               Ordered: {{ optional($t->ordered_date)->format('Y-m-d') ?: '—' }}
             </div>

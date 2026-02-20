@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
   <h6 class="mb-0">Institution Inmates</h6>
   <form method="GET" class="d-flex gap-2" onsubmit="event.preventDefault(); this.closest('#tabContent') && window.tabSearchInmates && window.tabSearchInmates(this);">
-    <input type="text" name="q" value="{{ $q }}" class="form-control form-control-sm" placeholder="Search name" />
+    <input type="text" name="q" value="{{ $q }}" class="form-control form-control-sm" placeholder="name or admission number" />
     <button class="btn btn-sm btn-outline-secondary"><span class="bi bi-search"></span></button>
   </form>
 </div>
@@ -9,7 +9,7 @@
   @forelse($inmates as $inmate)
     <a href="{{ route('system_admin.inmates.show',$inmate) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
       <span><span class="bi bi-person-bounding-box me-2 text-muted"></span>{{ $inmate->last_name }}, {{ $inmate->first_name }}</span>
-      <span class="text-muted small">#{{ $inmate->id }}</span>
+      <span class="text-muted small">Adm No {{ $inmate->admission_number ?: '—' }}</span>
     </a>
   @empty
     <div class="list-group-item text-center text-muted">No inmates found.</div>

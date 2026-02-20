@@ -9,14 +9,14 @@ class InmateController extends Controller
     {
         $doctor = auth()->user();
         $query = Inmate::query()->where('institution_id', $doctor->institution_id);
-        // Search by name or registration number
+        // Search by name or admission number
         $q = request()->get('q');
         if($q){
             $term = '%'.trim($q).'%';
             $query->where(function($sub) use($term){
                 $sub->where('first_name','like',$term)
                     ->orWhere('last_name','like',$term)
-                    ->orWhere('registration_number','like',$term);
+                    ->orWhere('admission_number','like',$term);
             });
         }
         if ($doctor->institution && $doctor->institution->doctor_assignment_enabled) {

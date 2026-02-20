@@ -11,7 +11,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreInmateRequest;
 use App\Http\Requests\UpdateInmateRequest;
-use App\Services\AdmissionNumberGenerator;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Pdf\PdfManager;
 
@@ -28,11 +27,7 @@ class InmateController extends Controller
                 $q->where('first_name','like',"%{$search}%")
                   ->orWhere('last_name','like',"%{$search}%")
                   ->orWhereRaw("CONCAT(first_name,' ',COALESCE(last_name,'')) like ?", ["%{$search}%"])
-                  ->orWhere('admission_number','like',"%{$search}%")
-                  ->orWhere('registration_number','like',"%{$search}%");
-                if (ctype_digit($search)) {
-                    $q->orWhere('id',(int)$search);
-                }
+                  ->orWhere('admission_number','like',"%{$search}%");
             });
 
             // Relevance-based ordering: prefix and exact matches first, then others
@@ -46,20 +41,16 @@ class InmateController extends Controller
                     WHEN first_name LIKE ? THEN 2
                     WHEN last_name LIKE ? THEN 3
                     WHEN admission_number LIKE ? THEN 4
-                    WHEN registration_number LIKE ? THEN 5
-                    WHEN CAST(id AS CHAR) = ? THEN 6
-                    WHEN CONCAT(first_name,' ',COALESCE(last_name,'')) LIKE ? THEN 7
-                    WHEN first_name LIKE ? THEN 8
-                    WHEN last_name LIKE ? THEN 9
-                    ELSE 10
+                    WHEN CONCAT(first_name,' ',COALESCE(last_name,'')) LIKE ? THEN 5
+                    WHEN first_name LIKE ? THEN 6
+                    WHEN last_name LIKE ? THEN 7
+                    ELSE 8
                 END
             SQL, [
                 $prefix,
                 $prefix,
                 $prefix,
                 $prefix,
-                $prefix,
-                $safe,
                 $contains,
                 $contains,
                 $contains,
@@ -131,39 +122,12 @@ class InmateController extends Controller
             }
         }
 
-    // Admission number: allow manual override if provided & valid, else generate
         if (empty($data['admitted_by'])) { $data['admitted_by'] = auth()->id(); }
         // derive age from DOB if provided
         if (!empty($data['date_of_birth'])) {
             try { $data['age'] = \Carbon\Carbon::parse($data['date_of_birth'])->age; } catch (\Throwable $e) {}
         }
-        $manual = $request->input('admission_number');
-        if($manual){
-            // Basic format safeguard; accept if matches pattern else normalize error via validation later (skip here silently)
-            if(!preg_match('/^ADM\d{4}\d{6}$/', $manual)){
-                // If invalid pattern, ignore manual and proceed to generate
-                $manual = null;
-            } else {
-                $exists = Inmate::where('admission_number',$manual)->exists();
-                if($exists){ $manual = null; }
-            }
-        }
-        if($manual){
-            $data['admission_number'] = $manual;
-            $inmate = Inmate::create($data);
-        } else {
-            $inmate = null; $attempts = 0;
-            do {
-                $data['admission_number'] = AdmissionNumberGenerator::generate();
-                try {
-                    $inmate = Inmate::create($data);
-                } catch (\Illuminate\Database\QueryException $qe) {
-                    if (str_contains(strtolower($qe->getMessage()), 'unique') && $attempts < 3) { $attempts++; continue; }
-                    throw $qe;
-                }
-                break;
-            } while($attempts < 3);
-        }
+        $inmate = Inmate::create($data);
 
         // Store core files into final directories with unique names
         $docsMeta = [];
@@ -350,13 +314,19 @@ class InmateController extends Controller
         $rules = [
             'field' => 'required|in:photo,aadhaar_card,ration_card,panchayath_letter,disability_card,doctor_certificate,vincent_depaul_card',
         ];
+        $messages = [
+            'file.mimes' => 'Invalid file type. Allowed: PDF, JPG, JPEG, PNG, WEBP, HEIC, HEIF.',
+            'file.max' => 'File too large. Max allowed is 10 MB.',
+        ];
         // Conditional file validation based on field
         if ($field === 'photo') {
-            $rules['file'] = 'required|image|max:2048';
+            $rules['file'] = 'required|file|mimes:jpg,jpeg,png,webp,heic,heif|max:8192';
+            $messages['file.mimes'] = 'Invalid photo type. Allowed: JPG, JPEG, PNG, WEBP, HEIC, HEIF.';
+            $messages['file.max'] = 'Photo too large. Max allowed is 8 MB.';
         } else {
-            $rules['file'] = 'required|file|mimes:pdf,jpg,jpeg,png|max:4096';
+            $rules['file'] = 'required|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240';
         }
-        $data = $request->validate($rules);
+        $data = $request->validate($rules, $messages);
 
         $map = [
             'photo' => 'photo_path',

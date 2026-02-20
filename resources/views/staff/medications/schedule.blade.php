@@ -4,25 +4,26 @@
     <div class="card-header d-flex flex-wrap gap-2 align-items-center">
       <div class="small text-muted">Only showing items due in the current time window</div>
       <div class="ms-auto" style="min-width:220px">
-        <input type="search" id="medSearch" class="form-control form-control-sm" placeholder="Search patient name or ID…">
+        <input type="search" id="medSearch" class="form-control form-control-sm" placeholder="name or admission number">
       </div>
     </div>
   <div class="list-group list-group-flush" id="medList">
       @php $shownAny = false; @endphp
       @forelse($meds->groupBy('inmate_id') as $inmateId => $list)
         @php
-          $patientName = trim(($list->first()->inmate?->full_name) ?? ('Patient #'+$inmateId));
+          $patientName = trim(($list->first()->inmate?->full_name) ?? 'Patient');
+          $patientAdmissionNumber = $list->first()->inmate?->admission_number;
           $dueItems = $list->filter(function($m) use ($states){ $st = $states[$m->id] ?? null; return $st && ($st['dueNow'] ?? false); });
         @endphp
         @if($dueItems->count() > 0)
         @php $shownAny = true; @endphp
         @php $options = $dueItems->filter(function($m) use ($states){ $st = $states[$m->id] ?? []; return empty($st['taken']); }); @endphp
         @if($options->count() > 0)
-        <div class="list-group-item" data-patient="{{ Str::lower($patientName) }}" data-id="{{ $inmateId }}" data-medicine="{{ Str::lower($options->map(fn($m)=> $m->name)->implode(', ')) }}">
+        <div class="list-group-item" data-patient="{{ Str::lower($patientName) }}" data-id="{{ (string)($patientAdmissionNumber ?? '') }}" data-medicine="{{ Str::lower($options->map(fn($m)=> $m->name)->implode(', ')) }}">
           <div class="d-flex flex-wrap align-items-center gap-2">
             <div class="flex-grow-1">
               <div class="fw-semibold">{{ $patientName }}</div>
-              <small class="text-muted">ID: {{ $inmateId }}</small>
+              <small class="text-muted">Admission No : {{ $patientAdmissionNumber ?: '—' }}</small>
             </div>
             @php
               $size = min(5, $options->count());

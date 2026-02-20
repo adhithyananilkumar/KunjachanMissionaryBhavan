@@ -32,12 +32,7 @@ class InmateController extends Controller
                 $q->where('first_name', 'like', "%{$search}%")
                     ->orWhere('last_name', 'like', "%{$search}%")
                     ->orWhereRaw("CONCAT(first_name,' ',COALESCE(last_name,'')) like ?", ["%{$search}%"])
-                    ->orWhere('admission_number', 'like', "%{$search}%")
-                    ->orWhere('registration_number', 'like', "%{$search}%");
-
-                if (ctype_digit($search)) {
-                    $q->orWhere('id', (int) $search);
-                }
+                    ->orWhere('admission_number', 'like', "%{$search}%");
             });
 
             $safe = str_replace(['%', '_'], ['\\%', '\\_'], $search);
@@ -50,14 +45,12 @@ class InmateController extends Controller
                 . " WHEN first_name LIKE ? THEN 2\n"
                 . " WHEN last_name LIKE ? THEN 3\n"
                 . " WHEN admission_number LIKE ? THEN 4\n"
-                . " WHEN registration_number LIKE ? THEN 5\n"
-                . " WHEN CAST(id AS CHAR) = ? THEN 6\n"
-                . " WHEN CONCAT(first_name,' ',COALESCE(last_name,'')) LIKE ? THEN 7\n"
-                . " WHEN first_name LIKE ? THEN 8\n"
-                . " WHEN last_name LIKE ? THEN 9\n"
-                . " ELSE 10\n"
+                . " WHEN CONCAT(first_name,' ',COALESCE(last_name,'')) LIKE ? THEN 5\n"
+                . " WHEN first_name LIKE ? THEN 6\n"
+                . " WHEN last_name LIKE ? THEN 7\n"
+                . " ELSE 8\n"
                 . "END",
-                [$prefix, $prefix, $prefix, $prefix, $prefix, $safe, $contains, $contains, $contains]
+                [$prefix, $prefix, $prefix, $prefix, $contains, $contains, $contains]
             );
         }
 
@@ -107,7 +100,7 @@ class InmateController extends Controller
     {
         $data = $request->validate([
             'type' => 'nullable|string|max:50',
-            'registration_number' => 'nullable|string|max:100',
+            'admission_number' => ['required','string','max:32','regex:/^(ADM\d{10}|\d{1,20})$/','unique:inmates,admission_number'],
             'first_name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'date_of_birth' => 'required|date',
@@ -122,15 +115,15 @@ class InmateController extends Controller
             'guardian_phone' => 'nullable|string|max:50',
             'guardian_address' => 'nullable|string',
             'aadhaar_number' => 'nullable|string|max:100',
-            'photo' => 'nullable|image|max:2048',
-            'aadhaar_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'ration_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'panchayath_letter' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'disability_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'doctor_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'vincent_depaul_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,webp,heic,heif|max:8192',
+            'aadhaar_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'ration_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'panchayath_letter' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'disability_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'doctor_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'vincent_depaul_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
             'doc_names.*' => 'nullable|string|max:255',
-            'doc_files.*' => 'nullable|file|max:8192',
+            'doc_files.*' => 'nullable|file|max:10240',
         ]);
         $data['institution_id'] = Auth::user()->institution_id;
         $fileMap = [
@@ -345,13 +338,19 @@ class InmateController extends Controller
         $rules = [
             'field' => 'required|in:photo,aadhaar_card,ration_card,panchayath_letter,disability_card,doctor_certificate,vincent_depaul_card',
         ];
+        $messages = [
+            'file.mimes' => 'Invalid file type. Allowed: PDF, JPG, JPEG, PNG, WEBP, HEIC, HEIF.',
+            'file.max' => 'File too large. Max allowed is 10 MB.',
+        ];
         // Conditional file validation based on field
         if ($field === 'photo') {
-            $rules['file'] = 'required|image|max:2048';
+            $rules['file'] = 'required|file|mimes:jpg,jpeg,png,webp,heic,heif|max:8192';
+            $messages['file.mimes'] = 'Invalid photo type. Allowed: JPG, JPEG, PNG, WEBP, HEIC, HEIF.';
+            $messages['file.max'] = 'Photo too large. Max allowed is 8 MB.';
         } else {
-            $rules['file'] = 'required|file|mimes:pdf,jpg,jpeg,png|max:4096';
+            $rules['file'] = 'required|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240';
         }
-        $data = $request->validate($rules);
+        $data = $request->validate($rules, $messages);
 
         $map = [
             'photo' => 'photo_path',
@@ -521,7 +520,7 @@ class InmateController extends Controller
         $this->authorizeAccess($inmate);
         $data = $request->validate([
             'type' => 'nullable|string|max:50',
-            'registration_number' => 'nullable|string|max:100',
+            'admission_number' => ['required','string','max:32','regex:/^(ADM\d{10}|\d{1,20})$/','unique:inmates,admission_number,'.$inmate->id],
             'first_name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'date_of_birth' => 'required|date',
@@ -536,15 +535,15 @@ class InmateController extends Controller
             'guardian_phone' => 'nullable|string|max:50',
             'guardian_address' => 'nullable|string',
             'aadhaar_number' => 'nullable|string|max:100',
-            'photo' => 'nullable|image|max:2048',
-            'aadhaar_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'ration_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'panchayath_letter' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'disability_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'doctor_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'vincent_depaul_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,webp,heic,heif|max:8192',
+            'aadhaar_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'ration_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'panchayath_letter' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'disability_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'doctor_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'vincent_depaul_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
             'doc_names.*' => 'nullable|string|max:255',
-            'doc_files.*' => 'nullable|file|max:8192',
+            'doc_files.*' => 'nullable|file|max:10240',
         ]);
         $fileMap = [
             'photo' => 'photo_path',

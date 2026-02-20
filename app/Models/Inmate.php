@@ -18,7 +18,7 @@ class Inmate extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'admission_number','registration_number',
+        'admission_number',
         'first_name','last_name','date_of_birth','gender','admission_date','institution_id',
         'admitted_by','verified_by','consent_signed_at','room_location_id',
         'marital_status','blood_group','height','weight','identification_marks','religion','caste','nationality','address',

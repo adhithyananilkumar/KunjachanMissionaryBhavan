@@ -32,12 +32,8 @@
 					<!-- We will later reorganize; for now untouched -->
 					<div class="row g-3 mb-2">
 						<div class="col-md-3">
-							<label class="form-label">@lang('admission.admission_number')</label>
-							<div class="input-group input-group-sm">
-								<input name="admission_number" id="admissionNumber" class="form-control" value="{{ old('admission_number') }}" placeholder="Auto if blank">
-								<button class="btn btn-outline-secondary" type="button" id="clearAdmissionNumber" title="Clear">&times;</button>
-							</div>
-							<div class="form-text small">Leave empty to auto-generate (ADMYYYY######).</div>
+							<label class="form-label">@lang('admission.admission_number') <span class="text-danger">*</span></label>
+							<input name="admission_number" id="admissionNumber" class="form-control form-control-sm" value="{{ old('admission_number') }}" required placeholder="Enter admission number">
 						</div>
 						<div class="col-md-3">
 							<label class="form-label">@lang('admission.admission_date') <span class="text-danger">*</span></label>
@@ -63,8 +59,8 @@
 			<!-- Personal Information original card -->
 			<div class="card border-0 shadow-sm mt-3">
 				<div class="card-header py-2"><strong class="small text-uppercase">@lang('admission.personal_info')</strong></div>
-				<div class="card-body pt-3 pb-2">
-			<div class="row g-3"><div class="col-md-4"><label class="form-label">@lang('admission.registration_number')</label><input name="registration_number" class="form-control" value="{{ old('registration_number') }}"></div><div class="col-md-4"><label class="form-label">@lang('admission.first_name') <span class="text-danger">*</span></label><input name="first_name" class="form-control" required value="{{ old('first_name') }}"></div><div class="col-md-4"><label class="form-label">@lang('admission.last_name')</label><input name="last_name" class="form-control" value="{{ old('last_name') }}"></div></div>
+					<div class="card-body pt-3 pb-2">
+			<div class="row g-3"><div class="col-md-4"><label class="form-label">@lang('admission.first_name') <span class="text-danger">*</span></label><input name="first_name" class="form-control" required value="{{ old('first_name') }}"></div><div class="col-md-4"><label class="form-label">@lang('admission.last_name')</label><input name="last_name" class="form-control" value="{{ old('last_name') }}"></div></div>
 			<div class="row g-3 mt-1"><div class="col-md-3"><label class="form-label">@lang('admission.dob') <span class="text-danger">*</span></label><input type="date" name="date_of_birth" id="dob" class="form-control" required value="{{ old('date_of_birth') }}"><div class="form-text">@lang('admission.help_age_auto')</div></div><div class="col-md-2"><label class="form-label">@lang('admission.age')</label><input type="number" name="age" id="age" class="form-control" value="{{ old('age') }}" readonly></div><div class="col-md-3"><label class="form-label">@lang('admission.gender') <span class="text-danger">*</span></label><select name="gender" class="form-select" required><option value="" disabled selected>Select...</option>@foreach(['Male','Female','Other'] as $g)<option value="{{ $g }}" @selected(old('gender')===$g)>{{ $g }}</option>@endforeach</select></div><div class="col-md-2"><label class="form-label">@lang('admission.height')</label><input type="number" step="0.01" name="height" class="form-control" value="{{ old('height') }}"></div><div class="col-md-2"><label class="form-label">@lang('admission.weight')</label><input type="number" step="0.01" name="weight" class="form-control" value="{{ old('weight') }}"></div></div>
 			<div class="row g-3 mt-1">
 				<div class="col-md-3" id="marital_wrapper" data-marital-wrapper>

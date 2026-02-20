@@ -17,7 +17,7 @@
 				<img src="{{ $inmate->avatar_url }}" class="rounded-circle" style="width:56px;height:56px;object-fit:cover;" alt="avatar">
 				<div>
 					<div class="h5 mb-1">{{ $inmate->full_name }}</div>
-					<div class="text-muted small">Admission #: <strong>{{ $inmate->admission_number }}</strong> · Reg #: {{ $inmate->registration_number ?: '—' }}</div>
+					<div class="text-muted small">Admission No : <strong>{{ $inmate->admission_number }}</strong></div>
 					<div class="text-muted small">Institution: {{ $inmate->institution?->name ?: '—' }} · Type: {{ ucfirst(str_replace('_',' ',$inmate->type)) ?: '—' }}</div>
 					<div class="small mt-1">
 						<span class="text-muted">Allocation:</span>
@@ -239,10 +239,21 @@
 					if(btn){ btn.disabled = true; btn.textContent = 'Uploading...'; }
 					try{
 						const res = await fetch(url, {method:'POST', headers:{'X-Requested-With':'XMLHttpRequest','X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}, body: fd});
-						const d = await res.json().catch(()=>({}));
+						let d = {};
+						const ct = (res.headers.get('content-type')||'').toLowerCase();
+						if(ct.includes('application/json')){
+							d = await res.json().catch(()=>({}));
+						} else {
+							await res.text().catch(()=> '');
+						}
+						if(res.status === 413){
+							throw new Error(d.message || 'Upload too large. Try a smaller file (or increase server upload limits).');
+						}
 						if(!res.ok || d.ok === false){
-							const firstErr = d && d.errors ? Object.values(d.errors).flat()[0] : null;
-							throw new Error(d.message || firstErr || 'Upload failed');
+							const errs = d && d.errors ? Object.values(d.errors).flat().filter(Boolean) : [];
+							const firstErr = errs[0] || null;
+							const more = errs.length > 1 ? ` (and ${errs.length-1} more)` : '';
+							throw new Error(d.message || (firstErr ? `${firstErr}${more}` : `Upload failed (HTTP ${res.status})`));
 						}
 						const isReplace = form.classList.contains('replace-extra-form') || form.classList.contains('upload-core-form') || form.id === 'upload-photo-form';
 						const docName = fd.get('document_name');

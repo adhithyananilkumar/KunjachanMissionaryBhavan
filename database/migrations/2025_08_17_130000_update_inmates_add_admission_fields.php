@@ -11,7 +11,6 @@ return new class extends Migration {
                 $table->renameColumn('full_name','first_name');
             }
             if(!Schema::hasColumn('inmates','last_name')) $table->string('last_name')->nullable()->after('first_name');
-            if(!Schema::hasColumn('inmates','registration_number')) $table->string('registration_number')->nullable()->after('id');
             if(!Schema::hasColumn('inmates','photo_path')) $table->string('photo_path')->nullable()->after('gender');
             if(!Schema::hasColumn('inmates','guardian_relation')) $table->string('guardian_relation')->nullable()->after('guardian_id');
             if(!Schema::hasColumn('inmates','guardian_first_name')) $table->string('guardian_first_name')->nullable()->after('guardian_relation');
@@ -32,7 +31,7 @@ return new class extends Migration {
     {
         Schema::table('inmates', function(Blueprint $table){
             // Note: Not reverting rename for safety; only dropping added columns.
-            $cols = [ 'last_name','registration_number','photo_path','guardian_relation','guardian_first_name','guardian_last_name','guardian_email','guardian_phone','guardian_address','aadhaar_number','aadhaar_card_path','ration_card_path','panchayath_letter_path','disability_card_path','doctor_certificate_path','vincent_depaul_card_path'];
+            $cols = [ 'last_name','photo_path','guardian_relation','guardian_first_name','guardian_last_name','guardian_email','guardian_phone','guardian_address','aadhaar_number','aadhaar_card_path','ration_card_path','panchayath_letter_path','disability_card_path','doctor_certificate_path','vincent_depaul_card_path'];
             foreach($cols as $c){ if(Schema::hasColumn('inmates',$c)) $table->dropColumn($c); }
         });
     }

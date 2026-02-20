@@ -24,7 +24,7 @@
             <td>
               @if($activeAssignments->count())
                 @foreach($activeAssignments as $as)
-                  <a href="{{ route('system_admin.inmates.show', $as->inmate_id) }}" class="badge bg-secondary-subtle border text-secondary text-decoration-none me-1 mb-1">{{ $as->inmate?->full_name ?? ('Inmate #'.$as->inmate_id) }}</a>
+                  <a href="{{ route('system_admin.inmates.show', $as->inmate_id) }}" class="badge bg-secondary-subtle border text-secondary text-decoration-none me-1 mb-1">{{ $as->inmate?->full_name ?? 'Inmate' }} · Adm No {{ $as->inmate?->admission_number ?: '—' }}</a>
                 @endforeach
               @else
                 <span class="text-muted">—</span>
@@ -54,7 +54,7 @@
                 </form>
               @endif
               @if($activeAssignments->count())
-                <button class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#transferModal" data-inmate="{{ $activeAssignments->first()->inmate_id }}" data-inmate-name="{{ $activeAssignments->first()->inmate?->full_name ?? ('Inmate #'.$activeAssignments->first()->inmate_id) }}" data-institution="{{ $loc->institution_id }}">Transfer</button>
+                <button class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#transferModal" data-inmate="{{ $activeAssignments->first()->inmate_id }}" data-inmate-name="{{ ($activeAssignments->first()->inmate?->full_name ?? 'Inmate') . ' · Admission No : ' . ($activeAssignments->first()->inmate?->admission_number ?: '—') }}" data-institution="{{ $loc->institution_id }}">Transfer</button>
               @elseif($loc->status!=='maintenance')
                 <button class="btn btn-sm btn-outline-success ms-2" data-bs-toggle="modal" data-bs-target="#allocateModal" data-location="{{ $loc->id }}" data-institution="{{ $loc->institution_id }}" data-name="{{ $loc->name }}">Allocate</button>
               @endif
@@ -92,7 +92,7 @@
               @if($activeAssignments->count())
                 <div class="d-flex flex-wrap gap-1">
                   @foreach($activeAssignments as $as)
-                    <a href="{{ route('system_admin.inmates.show', $as->inmate_id) }}" class="badge bg-secondary-subtle border text-secondary text-decoration-none">{{ $as->inmate?->full_name ?? ('Inmate #'.$as->inmate_id) }}</a>
+                    <a href="{{ route('system_admin.inmates.show', $as->inmate_id) }}" class="badge bg-secondary-subtle border text-secondary text-decoration-none">{{ $as->inmate?->full_name ?? 'Inmate' }} · Adm No {{ $as->inmate?->admission_number ?: '—' }}</a>
                   @endforeach
                 </div>
               @else
@@ -101,7 +101,7 @@
             </div>
             <div class="mt-2 d-flex gap-2 flex-wrap">
               @if($activeAssignments->count())
-                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#transferModal" data-inmate="{{ $activeAssignments->first()->inmate_id }}" data-inmate-name="{{ $activeAssignments->first()->inmate?->full_name ?? ('Inmate #'.$activeAssignments->first()->inmate_id) }}" data-institution="{{ $loc->institution_id }}">Transfer</button>
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#transferModal" data-inmate="{{ $activeAssignments->first()->inmate_id }}" data-inmate-name="{{ ($activeAssignments->first()->inmate?->full_name ?? 'Inmate') . ' · Admission No : ' . ($activeAssignments->first()->inmate?->admission_number ?: '—') }}" data-institution="{{ $loc->institution_id }}">Transfer</button>
               @elseif($loc->status!=='maintenance')
                 <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#allocateModal" data-location="{{ $loc->id }}" data-institution="{{ $loc->institution_id }}" data-name="{{ $loc->name }}">Allocate</button>
               @endif
@@ -187,7 +187,7 @@
         <div class="modal-header"><h5 class="modal-title">Allocate inmate to <span id="allocateLocName">location</span></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
           <div class="mb-2 small text-muted">Search inmate</div>
-          <input type="text" id="allocateSearch" class="form-control form-control-sm" placeholder="Type a name or reg. no...">
+          <input type="text" id="allocateSearch" class="form-control form-control-sm" placeholder="name or admission number">
           <div id="allocateList" class="list-group small mt-2" style="max-height:260px; overflow:auto"></div>
           <input type="hidden" name="location_id" id="allocateLocationId">
         </div>
@@ -226,7 +226,7 @@
       modal.addEventListener('show.bs.modal', function(e){
         const btn = e.relatedTarget; if(!btn) return;
         inmateId = btn.getAttribute('data-inmate'); instId = btn.getAttribute('data-institution');
-        inmateNameOut.textContent = btn.getAttribute('data-inmate-name') || ('Inmate #'+inmateId);
+        inmateNameOut.textContent = btn.getAttribute('data-inmate-name') || 'Inmate';
         form.action = `{{ url('system-admin/inmates') }}/${inmateId}/assign-location`;
         document.getElementById('transferLocationId').value = '';
         transferSubmit.disabled = true;

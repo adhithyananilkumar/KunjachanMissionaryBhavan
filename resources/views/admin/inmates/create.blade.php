@@ -17,8 +17,8 @@
                     </div>
                     @endif
                     <div class="col-md-3">
-                        <label class="form-label">Registration #</label>
-                        <input name="registration_number" type="text" class="form-control" value="{{ old('registration_number') }}">
+                        <label class="form-label">Admission Number<span class="text-danger">*</span></label>
+                        <input name="admission_number" type="text" class="form-control" value="{{ old('admission_number') }}" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">First Name<span class="text-danger">*</span></label>

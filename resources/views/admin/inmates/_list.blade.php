@@ -6,7 +6,7 @@
 			<div class="flex-grow-1" style="min-width:0;">
 				<div class="d-flex flex-wrap align-items-center gap-2 mb-1">
 					<span class="fw-semibold text-truncate d-inline-block" style="max-width:100%">{{ $inmate->full_name }}</span>
-					<span class="badge bg-secondary">ID {{ $inmate->id }}</span>
+					<span class="badge bg-secondary">Adm No {{ $inmate->admission_number ?: '—' }}</span>
 					@if($inmate->admission_date)
 						<span class="badge bg-info text-dark">Admitted {{ $inmate->admission_date->format('Y-m-d') }}</span>
 					@endif

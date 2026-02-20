@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -26,5 +28,19 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (PostTooLargeException $e, Request $request) {
+            $maxPost = (string) ini_get('post_max_size');
+            $maxUpload = (string) ini_get('upload_max_filesize');
+            $message = "Upload too large. Server limits: post_max_size={$maxPost}, upload_max_filesize={$maxUpload}.";
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => $message,
+                    'errors' => ['file' => [$message]],
+                ], 413);
+            }
+
+            return back()->withErrors(['file' => $message]);
+        });
     })->create();

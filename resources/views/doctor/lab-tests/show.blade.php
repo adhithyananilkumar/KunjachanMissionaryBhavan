@@ -18,7 +18,10 @@
     <div class="card-body">
       <dl class="row mb-0">
         <dt class="col-sm-3">Patient</dt>
-        <dd class="col-sm-9"><a href="{{ route('doctor.inmates.show',$labTest->inmate_id) }}">{{ $labTest->inmate?->full_name ?? ('Inmate #'.$labTest->inmate_id) }}</a></dd>
+        <dd class="col-sm-9">
+          <a href="{{ route('doctor.inmates.show',$labTest->inmate_id) }}">{{ $labTest->inmate?->full_name ?? 'Patient' }}</a>
+          <span class="text-muted ms-1">· Admission No : {{ $labTest->inmate?->admission_number ?: '—' }}</span>
+        </dd>
         <dt class="col-sm-3">Test</dt><dd class="col-sm-9">{{ $labTest->test_name }}</dd>
         <dt class="col-sm-3">Ordered</dt><dd class="col-sm-9">{{ optional($labTest->ordered_date)->format('Y-m-d H:i') }} by {{ $labTest->orderedBy?->name }}</dd>
         <dt class="col-sm-3">Status</dt><dd class="col-sm-9 text-capitalize">{{ str_replace('_',' ',$labTest->status) }}</dd>

@@ -19,15 +19,14 @@ class InmateFactory extends Factory
         $gender = fake()->randomElement(['Male','Female']);
 
         return [
-            'admission_number' => 'ADM-'.fake()->unique()->numberBetween(1000,9999),
-            'registration_number' => 'REG-'.fake()->unique()->numberBetween(1000,9999),
+            'admission_number' => fake()->unique()->numerify('##########'),
             'first_name' => fake()->firstName($gender === 'Male' ? 'male' : 'female'),
             'last_name' => fake()->lastName(),
             'date_of_birth' => fake()->dateTimeBetween('-80 years','-18 years'),
             'gender' => $gender,
             'admission_date' => fake()->dateTimeBetween('-5 years','now'),
             'institution_id' => Institution::query()->inRandomOrder()->value('id'),
-            'type' => fake()->randomElement(['juvenile','adult','senior']),
+            'type' => fake()->randomElement(['child','elderly','mental_health','rehabilitation']),
             'notes' => fake()->optional()->paragraph(),
             'case_notes' => fake()->optional()->paragraph(),
             'health_info' => [

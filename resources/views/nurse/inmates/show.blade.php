@@ -9,7 +9,10 @@
             <div class="d-flex align-items-center gap-3 flex-wrap nurse-patient-header">
                 <img src="{{ $inmate->avatar_url }}" class="rounded-circle" alt="avatar">
                 <div class="flex-grow-1">
-                    <div class="fw-semibold">{{ $inmate->full_name }} @if($inmate->registration_number)<span class="badge bg-light text-dark border ms-2">#{{ $inmate->registration_number }}</span>@endif</div>
+                    <div class="fw-semibold">
+                        {{ $inmate->full_name }}
+                        <span class="badge bg-light text-dark border ms-2">Adm No {{ $inmate->admission_number ?: '—' }}</span>
+                    </div>
                     <div class="text-muted small">
                         @if($inmate->date_of_birth)
                             @php $ageYears = $inmate->date_of_birth->age; @endphp

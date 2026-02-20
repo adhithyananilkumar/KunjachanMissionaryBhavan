@@ -9,12 +9,13 @@ beforeEach(function(){
     Storage::fake('public');
 });
 
-it('stores new inmate with generated admission number', function(){
+it('stores new inmate with manual admission number', function(){
     $admin = User::factory()->create(['role' => 'system_admin']);
     $inst = Institution::factory()->create();
 
     $this->actingAs($admin)
         ->post(route('system_admin.inmates.store'), [
+            'admission_number' => '639',
             'institution_id' => $inst->id,
             'type' => 'elderly',
             'first_name' => 'John',
@@ -27,7 +28,7 @@ it('stores new inmate with generated admission number', function(){
 
     $inmate = \App\Models\Inmate::latest()->first();
     expect($inmate)->not->toBeNull();
-    expect($inmate->admission_number)->toStartWith('ADM'.now()->format('Y'));
+    expect($inmate->admission_number)->toBe('639');
     // Photo stored under admission-based dir
     if ($inmate->photo_path) {
         expect($inmate->photo_path)->toContain($inmate->admission_number);

@@ -60,8 +60,7 @@
           <div class="card-header">Demographics</div>
           <div class="card-body small">
             <dl class="row mb-0">
-              <dt class="col-5">Admission #</dt><dd class="col-7">{{ $inmate->admission_number ?: '—' }}</dd>
-              <dt class="col-5">Reg #</dt><dd class="col-7">{{ $inmate->registration_number ?: '—' }}</dd>
+              <dt class="col-5">Admission No :</dt><dd class="col-7">{{ $inmate->admission_number ?: '—' }}</dd>
               <dt class="col-5">Type</dt><dd class="col-7 text-capitalize">{{ $inmate->type ?: '—' }}</dd>
               <dt class="col-5">Institution</dt><dd class="col-7">{{ $inmate->institution?->name ?: '—' }}</dd>
               <dt class="col-5">Gender</dt><dd class="col-7">{{ $inmate->gender ?: '—' }}</dd>

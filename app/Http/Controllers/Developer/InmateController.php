@@ -15,9 +15,18 @@ class InmateController extends Controller
     public function index(Request $request)
     {
         $query = Inmate::with('institution');
+        $search = trim((string)$request->get('search',''));
         $institutionId = $request->get('institution_id');
         $type = $request->get('type');
         $sort = $request->get('sort','name_asc');
+        if($search !== ''){
+            $query->where(function($q) use ($search){
+                $q->where('first_name','like',"%{$search}%")
+                  ->orWhere('last_name','like',"%{$search}%")
+                  ->orWhereRaw("CONCAT(first_name,' ',COALESCE(last_name,'')) like ?", ["%{$search}%"])
+                  ->orWhere('admission_number','like',"%{$search}%");
+            });
+        }
         if($institutionId){ $query->where('institution_id',$institutionId); }
         if($type){ $query->where('type',$type); }
         match($sort){
@@ -26,10 +35,10 @@ class InmateController extends Controller
             'created_desc' => $query->orderBy('id','desc'),
             default => $query->orderBy('first_name','asc'),
         };
-        $inmates = $query->paginate(15)->appends($request->only('institution_id','type','sort'));
+        $inmates = $query->paginate(15)->appends($request->only('search','institution_id','type','sort'));
         $institutions = Institution::orderBy('name')->get(['id','name']);
         $types = Inmate::select('type')->whereNotNull('type')->where('type','!=','')->distinct()->orderBy('type')->pluck('type');
-        return view('developer.inmates.index', compact('inmates','institutions','institutionId','types','type','sort'));
+        return view('developer.inmates.index', compact('inmates','institutions','institutionId','types','type','sort','search'));
     }
 
     public function create()
@@ -48,7 +57,7 @@ class InmateController extends Controller
     {
         $data = $request->validate([
             'institution_id' => 'required|exists:institutions,id',
-            'registration_number' => 'nullable|string|max:100',
+            'admission_number' => ['required','string','max:32','regex:/^(ADM\d{10}|\d{1,20})$/','unique:inmates,admission_number'],
             'first_name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'date_of_birth' => 'required|date',
@@ -77,15 +86,15 @@ class InmateController extends Controller
             'mh_diagnosis' => 'nullable|string|max:255',
             'mh_therapy_frequency' => 'nullable|string|max:255',
             'mh_current_meds' => 'nullable|string',
-            'photo' => 'nullable|image|max:2048',
-            'aadhaar_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'ration_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'panchayath_letter' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'disability_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'doctor_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'vincent_depaul_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,webp,heic,heif|max:8192',
+            'aadhaar_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'ration_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'panchayath_letter' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'disability_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'doctor_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'vincent_depaul_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
             'doc_names.*' => 'nullable|string|max:255',
-            'doc_files.*' => 'nullable|file|max:8192',
+            'doc_files.*' => 'nullable|file|max:10240',
         ]);
 
     // Handle file uploads to default disk
@@ -186,7 +195,7 @@ class InmateController extends Controller
     public function update(Request $request, Inmate $inmate)
     {
         $data = $request->validate([
-            'registration_number' => 'nullable|string|max:100',
+            'admission_number' => ['required','string','max:32','regex:/^(ADM\d{10}|\d{1,20})$/','unique:inmates,admission_number,'.$inmate->id],
             'first_name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'date_of_birth' => 'required|date',
@@ -201,15 +210,15 @@ class InmateController extends Controller
             'guardian_phone' => 'nullable|string|max:50',
             'guardian_address' => 'nullable|string',
             'aadhaar_number' => 'nullable|string|max:100',
-            'photo' => 'nullable|image|max:2048',
-            'aadhaar_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'ration_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'panchayath_letter' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'disability_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'doctor_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
-            'vincent_depaul_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,webp,heic,heif|max:8192',
+            'aadhaar_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'ration_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'panchayath_letter' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'disability_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'doctor_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'vincent_depaul_card' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
             'doc_names.*' => 'nullable|string|max:255',
-            'doc_files.*' => 'nullable|file|max:8192',
+            'doc_files.*' => 'nullable|file|max:10240',
         ]);
 
         $fileMap = [

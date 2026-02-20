@@ -10,9 +10,9 @@
 				@method('PUT')
 				<div class="row g-3">
 					<div class="col-md-4">
-						<label for="registration_number" class="form-label">Registration #</label>
-						<input type="text" class="form-control @error('registration_number') is-invalid @enderror" id="registration_number" name="registration_number" value="{{ old('registration_number', $inmate->registration_number) }}">
-						@error('registration_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
+						<label for="admission_number" class="form-label">Admission Number <span class="text-danger">*</span></label>
+						<input type="text" class="form-control @error('admission_number') is-invalid @enderror" id="admission_number" name="admission_number" value="{{ old('admission_number', $inmate->admission_number) }}" required>
+						@error('admission_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
 					</div>
 					<div class="col-md-4">
 						<label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>

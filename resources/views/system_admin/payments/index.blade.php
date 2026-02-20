@@ -13,7 +13,7 @@
 			<form method="GET" class="row g-2 align-items-end" id="paymentsFilterForm">
 				<div class="col-md-5">
 					<label class="form-label small mb-1">Search inmate</label>
-					<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Name / Admission # / Reg #" />
+					<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="name or admission number" />
 				</div>
 				<div class="col-md-4">
 					<label class="form-label small mb-1">Institution</label>
@@ -78,7 +78,7 @@
 				<div class="modal-body">
 					<div class="mb-3">
 						<label class="form-label small mb-1">Search inmate</label>
-						<input type="text" class="form-control form-control-sm" id="paySearch" placeholder="Type name, admission # or registration #" autocomplete="off">
+						<input type="text" class="form-control form-control-sm" id="paySearch" placeholder="name or admission number" autocomplete="off">
 					</div>
 					<div class="list-group small mb-3" id="payResults" style="max-height:200px; overflow:auto;"></div>
 					<form method="POST" id="payForm" class="row g-2 small" action="" autocomplete="off">
@@ -260,11 +260,11 @@
 					const el = document.createElement('button');
 					el.type = 'button';
 					el.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
-					el.innerHTML = '<span>' + it.name + '<div class="text-muted small">Admission # ' + (it.admission_number || '—') + '</div></span>' +
+					el.innerHTML = '<span>' + it.name + '<div class="text-muted small">Admission No : ' + (it.admission_number || '—') + '</div></span>' +
 						'<span class="badge bg-light text-dark">' + (it.institution || '—') + '</span>';
 					el.addEventListener('click', function(){
 						inmateIdField.value = it.id;
-						selectedLabel.textContent = 'Selected: ' + it.name + ' (Adm # ' + (it.admission_number || '—') + ')';
+						selectedLabel.textContent = 'Selected: ' + it.name + ' (Admission No : ' + (it.admission_number || '—') + ')';
 						submitBtn.disabled = false;
 					});
 					results.appendChild(el);

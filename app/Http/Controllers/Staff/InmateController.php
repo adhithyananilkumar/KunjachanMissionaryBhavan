@@ -33,7 +33,7 @@ class InmateController extends Controller
     {
         $data = $request->validate([
             'institution_id' => 'required|exists:institutions,id',
-            'registration_number' => 'nullable|string|max:100',
+            'admission_number' => ['required','string','max:32','regex:/^(ADM\d{10}|\d{1,20})$/','unique:inmates,admission_number'],
             'first_name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'date_of_birth' => 'required|date',
@@ -59,15 +59,15 @@ class InmateController extends Controller
             'mh_diagnosis' => 'nullable|string|max:255',
             'mh_therapy_frequency' => 'nullable|string|max:255',
             'mh_current_meds' => 'nullable|string',
-            'photo' => 'nullable|image|max:2048',
-            'aadhaar_card' => 'nullable|file|max:8192',
-            'ration_card' => 'nullable|file|max:8192',
-            'panchayath_letter' => 'nullable|file|max:8192',
-            'disability_card' => 'nullable|file|max:8192',
-            'doctor_certificate' => 'nullable|file|max:8192',
-            'vincent_depaul_card' => 'nullable|file|max:8192',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,webp,heic,heif|max:8192',
+            'aadhaar_card' => 'nullable|file|max:10240',
+            'ration_card' => 'nullable|file|max:10240',
+            'panchayath_letter' => 'nullable|file|max:10240',
+            'disability_card' => 'nullable|file|max:10240',
+            'doctor_certificate' => 'nullable|file|max:10240',
+            'vincent_depaul_card' => 'nullable|file|max:10240',
             'doc_names.*' => 'nullable|string|max:255',
-            'doc_files.*' => 'nullable|file|max:8192',
+            'doc_files.*' => 'nullable|file|max:10240',
             'location_id' => 'nullable|integer',
         ]);
 

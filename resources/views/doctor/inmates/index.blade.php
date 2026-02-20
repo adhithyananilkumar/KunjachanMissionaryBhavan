@@ -8,7 +8,7 @@
                     <label class="form-label small text-muted">Search</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="search" class="form-control" name="q" value="{{ $search ?? request('q') }}" placeholder="Name or Registration #">
+                        <input type="search" class="form-control" name="q" value="{{ $search ?? request('q') }}" placeholder="name or admission number">
                     </div>
                 </div>
                 <div class="col-12 col-md-4 d-grid">
@@ -25,9 +25,7 @@
                 <div class="flex-grow-1">
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <span class="fw-semibold">{{ $inmate->full_name }}</span>
-                        @if($inmate->registration_number)
-                            <span class="badge bg-light border text-dark">#{{ $inmate->registration_number }}</span>
-                        @endif
+                        <span class="badge bg-light border text-dark">Adm No {{ $inmate->admission_number ?: '—' }}</span>
                     </div>
                     <div class="text-muted small">Admitted {{ optional($inmate->admission_date)->format('Y-m-d') ?: '—' }}</div>
                 </div>

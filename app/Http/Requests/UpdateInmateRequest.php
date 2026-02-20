@@ -17,7 +17,7 @@ class UpdateInmateRequest extends FormRequest
     {
         $rules = [
             // Allow legacy pattern or plain integer
-            'admission_number' => ['sometimes','nullable','regex:/^(ADM\d{10}|\d{1,20})$/', 'unique:inmates,admission_number,'.($this->route('inmate')?->id)],
+            'admission_number' => ['required','string','max:32','regex:/^(ADM\d{10}|\d{1,20})$/', 'unique:inmates,admission_number,'.($this->route('inmate')?->id)],
             'admission_date' => ['sometimes','date'],
             'institution_id' => ['sometimes','exists:institutions,id'],
             'type' => ['sometimes','in:child,elderly,mental_health,rehabilitation'],
@@ -47,16 +47,15 @@ class UpdateInmateRequest extends FormRequest
             'case_notes' => ['nullable','string'],
             'health_info' => ['nullable'],
             'aadhaar_number' => ['nullable','string','max:100'],
-            'registration_number' => ['nullable','string','max:100'],
-            'photo' => ['nullable','image','max:5120'],
-            'aadhaar_card' => ['nullable','file','mimes:pdf,jpg,jpeg,png','max:5120'],
-            'ration_card' => ['nullable','file','mimes:pdf,jpg,jpeg,png','max:5120'],
-            'panchayath_letter' => ['nullable','file','mimes:pdf,jpg,jpeg,png','max:5120'],
-            'disability_card' => ['nullable','file','mimes:pdf,jpg,jpeg,png','max:5120'],
-            'doctor_certificate' => ['nullable','file','mimes:pdf,jpg,jpeg,png','max:5120'],
-            'vincent_depaul_card' => ['nullable','file','mimes:pdf,jpg,jpeg,png','max:5120'],
+            'photo' => ['nullable','file','mimes:jpg,jpeg,png,webp,heic,heif','max:8192'],
+            'aadhaar_card' => ['nullable','file','mimes:pdf,jpg,jpeg,png,webp,heic,heif','max:10240'],
+            'ration_card' => ['nullable','file','mimes:pdf,jpg,jpeg,png,webp,heic,heif','max:10240'],
+            'panchayath_letter' => ['nullable','file','mimes:pdf,jpg,jpeg,png,webp,heic,heif','max:10240'],
+            'disability_card' => ['nullable','file','mimes:pdf,jpg,jpeg,png,webp,heic,heif','max:10240'],
+            'doctor_certificate' => ['nullable','file','mimes:pdf,jpg,jpeg,png,webp,heic,heif','max:10240'],
+            'vincent_depaul_card' => ['nullable','file','mimes:pdf,jpg,jpeg,png,webp,heic,heif','max:10240'],
             'doc_names.*' => ['nullable','string','max:255'],
-            'doc_files.*' => ['nullable','file','max:8192'],
+            'doc_files.*' => ['nullable','file','max:10240'],
             'location_id' => ['nullable','exists:locations,id'],
             'admitted_by' => ['nullable','exists:users,id'],
             'verified_by' => ['nullable','exists:users,id'],
@@ -71,5 +70,27 @@ class UpdateInmateRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    public function messages(): array
+    {
+        $docTypes = 'PDF, JPG, JPEG, PNG, WEBP, HEIC, HEIF';
+        return [
+            'photo.mimes' => 'Photo must be a JPG, JPEG, PNG, WEBP, HEIC, or HEIF file.',
+            'photo.max' => 'Photo must not be larger than 8 MB.',
+            'aadhaar_card.mimes' => "Aadhaar card must be one of: {$docTypes}.",
+            'ration_card.mimes' => "Ration card must be one of: {$docTypes}.",
+            'panchayath_letter.mimes' => "Panchayath letter must be one of: {$docTypes}.",
+            'disability_card.mimes' => "Disability card must be one of: {$docTypes}.",
+            'doctor_certificate.mimes' => "Doctor certificate must be one of: {$docTypes}.",
+            'vincent_depaul_card.mimes' => "Vincent DePaul card must be one of: {$docTypes}.",
+            'aadhaar_card.max' => 'Document must not be larger than 10 MB.',
+            'ration_card.max' => 'Document must not be larger than 10 MB.',
+            'panchayath_letter.max' => 'Document must not be larger than 10 MB.',
+            'disability_card.max' => 'Document must not be larger than 10 MB.',
+            'doctor_certificate.max' => 'Document must not be larger than 10 MB.',
+            'vincent_depaul_card.max' => 'Document must not be larger than 10 MB.',
+            'doc_files.*.max' => 'Each extra document must not be larger than 10 MB.',
+        ];
     }
 }

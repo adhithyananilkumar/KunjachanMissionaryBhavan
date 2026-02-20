@@ -61,7 +61,7 @@
             <td>
               @if($p->inmate)
                 <a href="{{ route('system_admin.inmates.show',$p->inmate) }}" class="text-decoration-none">{{ $p->inmate->full_name }}</a>
-                <div class="text-muted">Adm # {{ $p->inmate->admission_number }}</div>
+                <div class="text-muted">Admission No : {{ $p->inmate->admission_number ?: '—' }}</div>
               @endif
             </td>
             <td>{{ $p->institution?->name ?? '—' }}</td>

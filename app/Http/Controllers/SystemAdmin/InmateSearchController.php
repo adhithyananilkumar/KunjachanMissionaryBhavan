@@ -22,8 +22,7 @@ class InmateSearchController extends Controller
             $q->where('first_name', 'like', "%{$term}%")
               ->orWhere('last_name', 'like', "%{$term}%")
               ->orWhereRaw("CONCAT(first_name,' ',COALESCE(last_name,'')) like ?", ["%{$term}%"])
-              ->orWhere('admission_number', 'like', "%{$term}%")
-              ->orWhere('registration_number', 'like', "%{$term}%");
+              ->orWhere('admission_number', 'like', "%{$term}%");
         });
 
         $safe = str_replace(['%', '_'], ['\\%', '\\_'], $term);
@@ -36,11 +35,9 @@ class InmateSearchController extends Controller
                 WHEN first_name LIKE ? THEN 2
                 WHEN last_name LIKE ? THEN 3
                 WHEN admission_number LIKE ? THEN 4
-                WHEN registration_number LIKE ? THEN 5
                 ELSE 10
             END
         SQL, [
-            $prefix,
             $prefix,
             $prefix,
             $prefix,
@@ -52,7 +49,6 @@ class InmateSearchController extends Controller
                 'id' => $inmate->id,
                 'name' => $inmate->full_name,
                 'admission_number' => $inmate->admission_number,
-                'registration_number' => $inmate->registration_number,
                 'institution' => $inmate->institution?->name,
             ];
         });

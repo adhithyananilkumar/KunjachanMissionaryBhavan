@@ -119,13 +119,14 @@ class BlockController extends Controller
             $occupied = $active !== null || ($loc->computed_status === 'occupied');
             $occupantId = $active?->inmate_id;
             $occupantName = $active && $active->inmate ? $active->inmate->full_name : null;
+            $occupantAdmissionNumber = $active && $active->inmate ? $active->inmate->admission_number : null;
             return [
                 'id' => $loc->id,
                 'name' => $loc->name,
                 'status' => $loc->status,
                 'occupied' => (bool)$occupied,
                 'occupant_id' => $occupantId,
-                'occupant' => $occupantName ?: ($occupantId ? ('Inmate #'.$occupantId) : null),
+                'occupant' => $occupantName ?: ($occupantAdmissionNumber ? ('Adm No '.$occupantAdmissionNumber) : null),
                 'type' => $loc->type,
                 'number' => $loc->number,
             ];
@@ -144,7 +145,7 @@ class BlockController extends Controller
             $query->where(function($q) use($term){
                 $q->where('first_name','like',"%$term%")
                   ->orWhere('last_name','like',"%$term%")
-                  ->orWhere('registration_number','like',"%$term%");
+                  ->orWhere('admission_number','like',"%$term%");
             });
         }
         $inmates = $query->orderBy('first_name')->limit(20)->get(['id','first_name','last_name']);

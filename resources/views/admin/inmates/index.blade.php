@@ -16,7 +16,7 @@
             <div class="row g-2 align-items-end">
                 <div class="col-md-4">
                     <label class="form-label mb-0">Search</label>
-                    <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="name or id">
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="name or admission number">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label mb-0">Type</label>

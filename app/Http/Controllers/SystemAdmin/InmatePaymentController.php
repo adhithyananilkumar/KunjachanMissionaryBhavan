@@ -83,8 +83,7 @@ class InmatePaymentController extends Controller
                 $q->where('first_name','like',"%{$search}%")
                   ->orWhere('last_name','like',"%{$search}%")
                   ->orWhereRaw("CONCAT(first_name,' ',COALESCE(last_name,'')) like ?", ["%{$search}%"])
-                  ->orWhere('admission_number','like',"%{$search}%")
-                  ->orWhere('registration_number','like',"%{$search}%");
+                  ->orWhere('admission_number','like',"%{$search}%");
             });
         }
 
@@ -221,8 +220,7 @@ class InmatePaymentController extends Controller
                 $q->where('first_name','like',"%{$search}%")
                   ->orWhere('last_name','like',"%{$search}%")
                   ->orWhereRaw("CONCAT(first_name,' ',COALESCE(last_name,'')) like ?", ["%{$search}%"])
-                  ->orWhere('admission_number','like',"%{$search}%")
-                  ->orWhere('registration_number','like',"%{$search}%");
+                  ->orWhere('admission_number','like',"%{$search}%");
             });
         }
 
