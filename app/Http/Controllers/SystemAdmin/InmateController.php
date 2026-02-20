@@ -308,21 +308,55 @@ class InmateController extends Controller
         $data = $request->validate([
             'effective_at' => 'nullable|date',
             'reason' => 'required|string|min:3|max:5000',
-            'death_certificate' => 'required|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'certificate_pending' => 'nullable|boolean',
+            'death_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
             'attachments.*' => 'nullable|file|max:10240',
         ]);
 
+        $pending = (bool)($data['certificate_pending'] ?? false);
+        if (!$request->hasFile('death_certificate') && !$pending) {
+            return back()->withErrors([
+                'death_certificate' => 'Death certificate is required, or mark it as pending to upload later.',
+            ])->withInput();
+        }
+
         $attachments = $this->storeStatusAttachments($inmate, $request->file('attachments', []));
-        $deathCert = $this->storeStatusAttachments($inmate, [$request->file('death_certificate')], type: 'death_certificate');
+        $deathCert = $request->hasFile('death_certificate')
+            ? $this->storeStatusAttachments($inmate, [$request->file('death_certificate')], type: 'death_certificate')
+            : [];
         $attachments = array_values(array_merge($deathCert, $attachments));
 
         $lifecycle->markDeceased($inmate, auth()->id(), [
             'effective_at' => $data['effective_at'] ?? now(),
             'reason' => $data['reason'],
+            'meta' => [
+                'death_certificate_pending' => !$request->hasFile('death_certificate'),
+            ],
             'attachments' => $attachments,
         ]);
 
         return back()->with('success', 'Inmate marked as deceased.');
+    }
+
+    public function statusAddDeathCertificate(Request $request, Inmate $inmate, InmateLifecycleService $lifecycle)
+    {
+        $data = $request->validate([
+            'death_certificate' => 'required|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+        ]);
+
+        if (($inmate->status ?: Inmate::STATUS_PRESENT) !== Inmate::STATUS_DECEASED) {
+            return back()->with('error', 'Death certificate upload is only allowed after marking the inmate as deceased.');
+        }
+
+        $deathCert = $this->storeStatusAttachments($inmate, [$request->file('death_certificate')], type: 'death_certificate');
+
+        $lifecycle->addDeathCertificate($inmate, auth()->id(), [
+            'effective_at' => now(),
+            'reason' => 'Death certificate uploaded.',
+            'attachments' => $deathCert,
+        ]);
+
+        return back()->with('success', 'Death certificate uploaded.');
     }
 
     public function statusRejoin(Request $request, Inmate $inmate, InmateLifecycleService $lifecycle)

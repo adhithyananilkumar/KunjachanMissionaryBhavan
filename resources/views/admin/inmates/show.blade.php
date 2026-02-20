@@ -386,8 +386,13 @@
 					<div class="alert alert-warning small mb-2">This action permanently locks the inmate profile for edits.</div>
 					<div class="mb-2"><label class="form-label">Effective at (optional)</label><input type="datetime-local" name="effective_at" class="form-control"></div>
 					<div class="mb-2"><label class="form-label">Reason</label><textarea name="reason" class="form-control" rows="3" required></textarea></div>
-					<div class="mb-2"><label class="form-label">Death Certificate (required)</label><input type="file" name="death_certificate" class="form-control" required></div>
+					<div class="mb-2"><label class="form-label">Death Certificate</label><input type="file" name="death_certificate" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif"></div>
+					<div class="form-check mb-2">
+						<input class="form-check-input" type="checkbox" value="1" id="deceasedCertPending" name="certificate_pending">
+						<label class="form-check-label" for="deceasedCertPending">Death certificate not available now (upload later)</label>
+					</div>
 					<div class="mb-2"><label class="form-label">Other Attachments (optional)</label><input type="file" name="attachments[]" class="form-control" multiple></div>
+					<div class="text-muted small">If you mark as pending, only the death certificate upload will be allowed later (nothing else).</div>
 				</div>
 				<div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-danger" type="submit">Confirm Deceased</button></div>
 			</form>

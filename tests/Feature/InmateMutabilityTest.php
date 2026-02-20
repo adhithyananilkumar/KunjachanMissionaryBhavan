@@ -3,6 +3,8 @@
 use App\Models\Inmate;
 use App\Models\Institution;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
@@ -54,4 +56,37 @@ it('blocks non-inmate route mutations when inmate_id points to discharged inmate
         'title' => 'Checkup',
         'scheduled_for' => now()->toDateString(),
     ])->assertStatus(403);
+});
+
+it('locks deceased inmate except death certificate status upload', function () {
+    Storage::fake(config('filesystems.default'));
+
+    $institution = Institution::factory()->create();
+    $admin = User::factory()->create([
+        'role' => 'admin',
+        'institution_id' => $institution->id,
+    ]);
+
+    $inmate = Inmate::factory()->create([
+        'institution_id' => $institution->id,
+        'status' => Inmate::STATUS_DECEASED,
+        'created_by' => $admin->id,
+        'updated_by' => $admin->id,
+    ]);
+
+    actingAs($admin);
+
+    // Normal uploads must be blocked by EnsureInmateIsMutable
+    postJson(route('admin.inmates.upload-file', $inmate), [
+        'field' => 'photo',
+    ])->assertStatus(403);
+
+    // But the special status route must be allowed
+    $file = UploadedFile::fake()->create('death.pdf', 50, 'application/pdf');
+    $resp = \Pest\Laravel\post(route('admin.inmates.status.death-certificate', $inmate), [
+        'death_certificate' => $file,
+    ]);
+    $resp->assertStatus(302);
+
+    expect($inmate->statusEvents()->where('event_type', 'death_certificate_added')->count())->toBeGreaterThan(0);
 });

@@ -54,6 +54,40 @@ class InmateLifecycleService
         );
     }
 
+    public function addDeathCertificate(Inmate $inmate, int $actorUserId, array $data): InmateStatusEvent
+    {
+        return DB::transaction(function () use ($inmate, $actorUserId, $data) {
+            $fresh = Inmate::query()->whereKey($inmate->getKey())->lockForUpdate()->firstOrFail();
+
+            $status = $fresh->status ?: Inmate::STATUS_PRESENT;
+            if ($status !== Inmate::STATUS_DECEASED) {
+                throw ValidationException::withMessages([
+                    'status' => 'Death certificate upload is only allowed for deceased inmates.',
+                ]);
+            }
+
+            $attachments = Arr::get($data, 'attachments', []);
+            if (empty($attachments)) {
+                throw ValidationException::withMessages([
+                    'death_certificate' => 'Death certificate file is required.',
+                ]);
+            }
+
+            return InmateStatusEvent::create([
+                'inmate_id' => $fresh->id,
+                'event_type' => 'death_certificate_added',
+                'from_status' => Inmate::STATUS_DECEASED,
+                'to_status' => Inmate::STATUS_DECEASED,
+                'effective_at' => Arr::get($data, 'effective_at', now()),
+                'reason' => Arr::get($data, 'reason'),
+                'meta' => Arr::get($data, 'meta'),
+                'attachments' => $attachments,
+                'created_by' => $actorUserId,
+                'created_at' => now(),
+            ]);
+        });
+    }
+
     private function transition(Inmate $inmate, int $actorUserId, string $eventType, string $toStatus, array $data): InmateStatusEvent
     {
         return DB::transaction(function () use ($inmate, $actorUserId, $eventType, $toStatus, $data) {

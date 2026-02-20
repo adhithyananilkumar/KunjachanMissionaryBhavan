@@ -1,6 +1,10 @@
 @php
     $events = $inmate->statusEvents()->with('creator')->get();
     $status = $inmate->status ?: \App\Models\Inmate::STATUS_PRESENT;
+    $hasDeathCert = $events->contains(function($ev){
+        $atts = collect($ev->attachments ?? []);
+        return $atts->contains(fn($a) => data_get($a,'type') === 'death_certificate');
+    });
 @endphp
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
@@ -17,6 +21,20 @@
         @endif
     </div>
 </div>
+
+@if($status === \App\Models\Inmate::STATUS_DECEASED && !$hasDeathCert)
+    <div class="alert alert-info d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+            <div class="fw-semibold">Death certificate missing</div>
+            <div class="small text-muted">This is the only upload allowed after marking as deceased.</div>
+        </div>
+        <form method="POST" action="{{ route('system_admin.inmates.status.death-certificate', $inmate) }}" enctype="multipart/form-data" class="d-flex gap-2 align-items-center">
+            @csrf
+            <input type="file" name="death_certificate" class="form-control form-control-sm" required accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif">
+            <button class="btn btn-sm btn-primary" type="submit">Upload</button>
+        </form>
+    </div>
+@endif
 
 @if($events->isEmpty())
     <div class="text-muted small">No status history yet.</div>

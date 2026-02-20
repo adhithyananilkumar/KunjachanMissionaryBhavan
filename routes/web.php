@@ -140,6 +140,7 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::post('inmates/{inmate}/status/discharge', [SystemAdminInmateController::class, 'statusDischarge'])->middleware('throttle:10,1')->name('inmates.status.discharge');
     Route::post('inmates/{inmate}/status/transfer', [SystemAdminInmateController::class, 'statusTransfer'])->middleware('throttle:10,1')->name('inmates.status.transfer');
     Route::post('inmates/{inmate}/status/deceased', [SystemAdminInmateController::class, 'statusDeceased'])->middleware('throttle:10,1')->name('inmates.status.deceased');
+    Route::post('inmates/{inmate}/status/death-certificate', [SystemAdminInmateController::class, 'statusAddDeathCertificate'])->middleware('throttle:10,1')->name('inmates.status.death-certificate');
     Route::post('inmates/{inmate}/status/rejoin', [SystemAdminInmateController::class, 'statusRejoin'])->middleware('throttle:10,1')->name('inmates.status.rejoin');
     Route::get('inmates-search', SystemAdminInmateSearchController::class)->name('inmates.search');
     // Payments
@@ -282,6 +283,7 @@ Route::middleware(['auth','verified','role:admin'])->prefix('admin')->name('admi
     // Inmate lifecycle / status transitions (immutable audit)
     Route::post('inmates/{inmate}/status/discharge', [AdminInmateController::class, 'statusDischarge'])->middleware('throttle:10,1')->name('inmates.status.discharge');
     Route::post('inmates/{inmate}/status/deceased', [AdminInmateController::class, 'statusDeceased'])->middleware('throttle:10,1')->name('inmates.status.deceased');
+    Route::post('inmates/{inmate}/status/death-certificate', [AdminInmateController::class, 'statusAddDeathCertificate'])->middleware('throttle:10,1')->name('inmates.status.death-certificate');
     Route::post('inmates/{inmate}/status/rejoin', [AdminInmateController::class, 'statusRejoin'])->middleware('throttle:10,1')->name('inmates.status.rejoin');
     Route::resource('contact-submissions', \App\Http\Controllers\Admin\ContactSubmissionController::class)->only(['index','show','destroy']);
     Route::resource('donation-requests', \App\Http\Controllers\Admin\DonationRequestController::class)->only(['index','show','update']);    
