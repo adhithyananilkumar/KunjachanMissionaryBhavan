@@ -13,7 +13,17 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Aathmiya'),
+    'name' => (function () {
+        $name = env('APP_NAME');
+        if (is_string($name)) {
+            $name = trim($name);
+            if ($name !== '' && strtolower($name) !== 'laravel') {
+                return $name;
+            }
+        }
+
+        return 'Kunjachan Missionary Bhavan';
+    })(),
 
     // Optional build/version metadata (used for ticket traceability)
     'version' => env('APP_VERSION'),

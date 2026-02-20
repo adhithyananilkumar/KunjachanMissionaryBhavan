@@ -7,6 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', $appName) | FOLLOW JESUS</title>
+
+    <!-- Favicons from public/assets (avoid default /favicon.ico fallback) -->
+    <link rel="apple-touch-icon" href="{{ asset('assets/logo-241x271.png') }}">
+    <link rel="icon" type="image/png" sizes="48x54" href="{{ asset('assets/favicon-48x54.png') }}">
+    <link rel="icon" type="image/png" sizes="32x36" href="{{ asset('assets/favicon-32x36.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/favicon-16x16.png') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/favicon-48x54.png') }}">
+
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

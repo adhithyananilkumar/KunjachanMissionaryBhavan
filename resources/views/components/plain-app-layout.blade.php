@@ -14,11 +14,11 @@
       if ($pageTitleSection) { $finalTitle = $pageTitleSection.' | '.$finalTitle; }
     @endphp
     <title>{{ $finalTitle }}</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/apple-touch-icon.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('assets/logo-241x271.png') }}">
+    <link rel="icon" type="image/png" sizes="48x54" href="{{ asset('assets/favicon-48x54.png') }}">
+    <link rel="icon" type="image/png" sizes="32x36" href="{{ asset('assets/favicon-32x36.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/favicon-16x16.png') }}">
-    <link rel="manifest" href="{{ asset('assets/site.webmanifest') }}">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/favicon-48x54.png') }}">
     <meta name="theme-color" content="#0f4f4b">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
