@@ -16,7 +16,8 @@
                 <a href="{{ route('doctor.inmates.show',$t->inmate_id) }}" class="text-decoration-none">
                   {{ $t->inmate?->full_name ?? 'Patient' }}
                 </a>
-                <span class="ms-1">· Adm No {{ $t->inmate?->admission_number ?: '—' }}</span>
+              <span class="ms-1">· Adm No {{ $t->inmate?->admission_number ?: '—' }}</span>
+              @include('partials.inmates._status_badge', ['status' => $t->inmate?->status])
               </span>
               <span>Ordered: {{ optional($t->ordered_date)->format('Y-m-d') ?: '—' }}</span>
               @if($t->completed_date)<span>Completed: {{ optional($t->completed_date)->format('Y-m-d') }}</span>@endif

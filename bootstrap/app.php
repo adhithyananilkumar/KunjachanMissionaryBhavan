@@ -17,10 +17,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckUserRole::class,
             'bugreply' => \App\Http\Middleware\CheckForBugReply::class,
+            'inmate.mutable' => \App\Http\Middleware\EnsureInmateIsMutable::class,
         ]);
         // Apply bug reply checker to web group globally
         $middleware->appendToGroup('web', [
-            'bugreply'
+            'bugreply',
+            'inmate.mutable',
         ]);
 
         // Trust reverse proxies (e.g., Cloudflare) so HTTPS and host

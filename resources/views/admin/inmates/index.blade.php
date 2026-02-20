@@ -27,6 +27,15 @@
                         <option value="senior" @selected(request('type')=='senior')>Senior</option>
                     </select>
                 </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0">Status</label>
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="">All</option>
+                        @foreach(($statuses ?? []) as $st)
+                            <option value="{{ $st }}" @selected(request('status')==$st)>{{ ucfirst($st) }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="col-md-3">
                     <label class="form-label mb-0">Sort</label>
                     <select name="sort" class="form-select form-select-sm">

@@ -19,6 +19,7 @@
             </div>
             <div class="text-muted small">
               Inmate: {{ $t->inmate?->full_name ?? 'Inmate' }} · Adm No {{ $t->inmate?->admission_number ?: '—' }}
+              @include('partials.inmates._status_badge', ['status' => $t->inmate?->status])
               <span class="mx-2">•</span>
               Ordered: {{ optional($t->ordered_date)->format('Y-m-d') ?: '—' }}
             </div>

@@ -12,6 +12,7 @@
           <div class="fw-semibold">
             {{ $inmate->full_name }}
             <span class="badge bg-light text-dark border ms-2">Adm No {{ $inmate->admission_number ?: '—' }}</span>
+            @include('partials.inmates._status_badge', ['inmate' => $inmate])
           </div>
           <div class="text-muted small">
             @if($inmate->date_of_birth)
@@ -26,6 +27,21 @@
           <a href="{{ route('staff.inmates.index') }}" class="btn btn-link btn-sm text-decoration-none"><span class="bi bi-arrow-left me-1"></span> Back to Patients</a>
         </div>
       </div>
+
+    @php $stBanner = $inmate->status ?: \App\Models\Inmate::STATUS_PRESENT; @endphp
+    @if($stBanner !== \App\Models\Inmate::STATUS_PRESENT)
+      <div class="alert alert-warning d-flex align-items-start gap-2 shadow-sm mt-3 mb-0">
+        <span class="bi bi-shield-lock-fill fs-5"></span>
+        <div class="small">
+          <strong>Read-only:</strong>
+          @if($stBanner === \App\Models\Inmate::STATUS_DECEASED)
+            This inmate is marked as deceased. Changes are permanently disabled.
+          @else
+            This inmate is {{ $stBanner }}. Most changes are disabled until re-joined.
+          @endif
+        </div>
+      </div>
+    @endif
 
       <ul class="nav nav-pills small flex-wrap gap-2 mt-3" role="tablist">
         <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-medical" type="button" role="tab">Medical</button></li>

@@ -23,6 +23,11 @@
         <td class="value">{{ $inmate->admission_number ?: '—' }}</td>
     </tr>
 
+    <tr>
+        <td class="label">Status</td>
+        <td class="value">{{ ucfirst($inmate->status ?: \App\Models\Inmate::STATUS_PRESENT) }}</td>
+    </tr>
+
     @if($inmate->institution?->name)
         <tr>
             <td class="label">Institution</td>

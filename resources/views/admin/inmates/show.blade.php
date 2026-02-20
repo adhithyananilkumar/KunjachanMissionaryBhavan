@@ -11,13 +11,31 @@
 		</div>
 	@endif
 
+	@php $stBanner = $inmate->status ?: \App\Models\Inmate::STATUS_PRESENT; @endphp
+	@if($stBanner !== \App\Models\Inmate::STATUS_PRESENT)
+		<div class="alert alert-warning d-flex align-items-start gap-2 shadow-sm mb-3">
+			<span class="bi bi-shield-lock-fill fs-5"></span>
+			<div>
+				<strong>Read-only:</strong>
+				@if($stBanner === \App\Models\Inmate::STATUS_DECEASED)
+					This inmate is marked as deceased. Changes are permanently disabled.
+				@else
+					This inmate is {{ $stBanner }}. Most changes are disabled until re-joined.
+				@endif
+			</div>
+		</div>
+	@endif
+
 	<div class="card shadow-sm mb-3">
 		<div class="card-body d-flex flex-wrap gap-3 align-items-center justify-content-between">
 			<div class="d-flex align-items-center gap-3">
 				<img src="{{ $inmate->avatar_url }}" class="rounded-circle" style="width:56px;height:56px;object-fit:cover;" alt="avatar">
 				<div>
 					<div class="h5 mb-0">{{ $inmate->full_name }}</div>
-					<div class="text-muted small">Admission No : <strong>{{ $inmate->admission_number }}</strong> · {{ $inmate->institution?->name ?: '—' }}</div>
+					<div class="text-muted small d-flex flex-wrap align-items-center gap-2">
+						<span>Admission No : <strong>{{ $inmate->admission_number }}</strong> · {{ $inmate->institution?->name ?: '—' }}</span>
+						@include('partials.inmates._status_badge', ['inmate' => $inmate])
+					</div>
 					<div class="small mt-1">
 						<span class="text-muted">Allocation:</span>
 						<span class="fw-semibold">{{ optional($inmate->currentLocation?->location)->name ?? 'Not assigned' }}</span>
@@ -25,6 +43,22 @@
 				</div>
 			</div>
 			<div class="d-flex flex-wrap gap-2">
+				@php $st = $inmate->status ?: \App\Models\Inmate::STATUS_PRESENT; @endphp
+				<div class="dropdown">
+					<button class="btn btn-outline-dark btn-sm dropdown-toggle" data-bs-toggle="dropdown" type="button">
+						<span class="bi bi-arrow-repeat me-1"></span>Status
+					</button>
+					<div class="dropdown-menu dropdown-menu-end shadow-sm">
+						@if($st === \App\Models\Inmate::STATUS_PRESENT)
+							<button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#statusDischargeModal"><span class="bi bi-box-arrow-right me-2"></span>Discharge</button>
+							<button class="dropdown-item text-danger" type="button" data-bs-toggle="modal" data-bs-target="#statusDeceasedModal"><span class="bi bi-x-octagon me-2"></span>Mark Deceased</button>
+						@elseif(in_array($st, [\App\Models\Inmate::STATUS_DISCHARGED, \App\Models\Inmate::STATUS_TRANSFERRED], true))
+							<button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#statusRejoinModal"><span class="bi bi-arrow-counterclockwise me-2"></span>Re-Join (Present)</button>
+						@else
+							<span class="dropdown-item-text text-muted small">Status locked.</span>
+						@endif
+					</div>
+				</div>
 				<a href="{{ route('admin.inmates.edit',$inmate) }}" class="btn btn-outline-primary btn-sm"><span class="bi bi-pencil-square me-1"></span>Edit</a>
 				<a href="{{ route('admin.inmates.index') }}" class="btn btn-outline-secondary btn-sm">Back</a>
 			</div>
@@ -37,6 +71,7 @@
 		<li class="nav-item"><button class="nav-link" data-tab="history" type="button">History</button></li>
 		<li class="nav-item"><button class="nav-link" data-tab="documents" type="button">Documents</button></li>
 		<li class="nav-item"><button class="nav-link" data-tab="allocation" type="button">Allocation</button></li>
+		<li class="nav-item"><button class="nav-link" data-tab="status" type="button">Status</button></li>
 		<li class="nav-item ms-auto"><button class="nav-link" data-tab="settings" type="button"><span class="bi bi-gear me-1"></span>Settings</button></li>
 	</ul>
 	<div id="inmateTabContent" class="card card-body shadow-sm rounded-top-0" data-inmate-id="{{ $inmate->id }}">
@@ -71,6 +106,7 @@
 					history: '{{ route('admin.inmates.show',$inmate) }}?partial=history',
 					documents: '{{ route('admin.inmates.show',$inmate) }}?partial=documents',
 					allocation: '{{ route('admin.inmates.show',$inmate) }}?partial=allocation',
+					status: '{{ route('admin.inmates.show',$inmate) }}?partial=status',
 					settings: '{{ route('admin.inmates.show',$inmate) }}?partial=settings',
 				};
 				const finalUrl = url || urlMap[tab];
@@ -129,7 +165,7 @@
 					.catch(()=>{ const er=document.createElement('div'); er.className='alert alert-danger small mt-2'; er.textContent='Save failed'; form.appendChild(er); setTimeout(()=>er.remove(),3000); });
 			});
 			const initial = (location.hash||'').replace('#','') || 'overview';
-			const allowed=['overview','medical','history','documents','allocation','settings'];
+			const allowed=['overview','medical','history','documents','allocation','status','settings'];
 			load(allowed.includes(initial)?initial:'overview');
 			window.addEventListener('hashchange',()=>{ const h=(location.hash||'').replace('#',''); if(h && h!==active) load(h); });
 
@@ -323,4 +359,53 @@
 			}
 		});
 	</script>
+
+	<!-- Status modals -->
+	<div class="modal fade" id="statusDischargeModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog">
+			<form class="modal-content" method="POST" action="{{ route('admin.inmates.status.discharge', $inmate) }}" enctype="multipart/form-data">
+				@csrf
+				<div class="modal-header"><h5 class="modal-title">Discharge Inmate</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+				<div class="modal-body">
+					<div class="mb-2"><label class="form-label">Effective at (optional)</label><input type="datetime-local" name="effective_at" class="form-control"></div>
+					<div class="mb-2"><label class="form-label">Reason</label><textarea name="reason" class="form-control" rows="3" required></textarea></div>
+					<div class="mb-2"><label class="form-label">Attachments (optional)</label><input type="file" name="attachments[]" class="form-control" multiple></div>
+					<div class="text-muted small">Discharged inmates become read-only.</div>
+				</div>
+				<div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" type="submit">Confirm Discharge</button></div>
+			</form>
+		</div>
+	</div>
+
+	<div class="modal fade" id="statusDeceasedModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog">
+			<form class="modal-content" method="POST" action="{{ route('admin.inmates.status.deceased', $inmate) }}" enctype="multipart/form-data">
+				@csrf
+				<div class="modal-header"><h5 class="modal-title text-danger">Mark Inmate as Deceased</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+				<div class="modal-body">
+					<div class="alert alert-warning small mb-2">This action permanently locks the inmate profile for edits.</div>
+					<div class="mb-2"><label class="form-label">Effective at (optional)</label><input type="datetime-local" name="effective_at" class="form-control"></div>
+					<div class="mb-2"><label class="form-label">Reason</label><textarea name="reason" class="form-control" rows="3" required></textarea></div>
+					<div class="mb-2"><label class="form-label">Death Certificate (required)</label><input type="file" name="death_certificate" class="form-control" required></div>
+					<div class="mb-2"><label class="form-label">Other Attachments (optional)</label><input type="file" name="attachments[]" class="form-control" multiple></div>
+				</div>
+				<div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-danger" type="submit">Confirm Deceased</button></div>
+			</form>
+		</div>
+	</div>
+
+	<div class="modal fade" id="statusRejoinModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog">
+			<form class="modal-content" method="POST" action="{{ route('admin.inmates.status.rejoin', $inmate) }}" enctype="multipart/form-data">
+				@csrf
+				<div class="modal-header"><h5 class="modal-title">Re-Join Inmate</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+				<div class="modal-body">
+					<div class="mb-2"><label class="form-label">Effective at (optional)</label><input type="datetime-local" name="effective_at" class="form-control"></div>
+					<div class="mb-2"><label class="form-label">Reason</label><textarea name="reason" class="form-control" rows="3" required></textarea></div>
+					<div class="mb-2"><label class="form-label">Attachments (optional)</label><input type="file" name="attachments[]" class="form-control" multiple></div>
+				</div>
+				<div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" type="submit">Confirm Re-Join</button></div>
+			</form>
+		</div>
+	</div>
 </x-app-layout>

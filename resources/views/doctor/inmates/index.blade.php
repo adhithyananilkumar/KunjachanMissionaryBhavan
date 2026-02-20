@@ -26,6 +26,7 @@
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <span class="fw-semibold">{{ $inmate->full_name }}</span>
                         <span class="badge bg-light border text-dark">Adm No {{ $inmate->admission_number ?: '—' }}</span>
+                        @include('partials.inmates._status_badge', ['inmate' => $inmate])
                     </div>
                     <div class="text-muted small">Admitted {{ optional($inmate->admission_date)->format('Y-m-d') ?: '—' }}</div>
                 </div>

@@ -135,6 +135,12 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::get('institutions/{institution}/tabs/settings', [SystemAdminInstitutionController::class,'tabSettings'])->name('institutions.tabs.settings');
     Route::resource('inmates', SystemAdminInmateController::class);
     Route::get('inmates/{inmate}/report', [SystemAdminInmateController::class,'downloadReport'])->name('inmates.report');
+
+    // Inmate lifecycle / status transitions (immutable audit)
+    Route::post('inmates/{inmate}/status/discharge', [SystemAdminInmateController::class, 'statusDischarge'])->middleware('throttle:10,1')->name('inmates.status.discharge');
+    Route::post('inmates/{inmate}/status/transfer', [SystemAdminInmateController::class, 'statusTransfer'])->middleware('throttle:10,1')->name('inmates.status.transfer');
+    Route::post('inmates/{inmate}/status/deceased', [SystemAdminInmateController::class, 'statusDeceased'])->middleware('throttle:10,1')->name('inmates.status.deceased');
+    Route::post('inmates/{inmate}/status/rejoin', [SystemAdminInmateController::class, 'statusRejoin'])->middleware('throttle:10,1')->name('inmates.status.rejoin');
     Route::get('inmates-search', SystemAdminInmateSearchController::class)->name('inmates.search');
     // Payments
     Route::get('payments', [SystemAdminInmatePaymentController::class,'index'])->name('payments.index');
@@ -203,6 +209,9 @@ Route::middleware(['auth','verified','role:system_admin'])->prefix('system-admin
     Route::get('medicines/reports/usage-trends', [SystemAdminMedicineController::class,'reportUsageTrends'])->name('medicines.reports.usage-trends');
     // Inmate location assignment
     Route::post('inmates/{inmate}/assign-location', [SystemAdminInmateController::class,'assignLocation'])->name('inmates.assign-location');
+    Route::post('inmates/assign-location-by-admission', [SystemAdminInmateController::class,'assignLocationByAdmissionNumber'])
+        ->middleware('throttle:30,1')
+        ->name('inmates.assign-location-by-admission');
     Route::post('inmates/{inmate}/upload-file', [SystemAdminInmateController::class,'uploadFile'])->name('inmates.upload-file');
     Route::post('inmates/{inmate}/documents', [SystemAdminInmateController::class,'storeDocument'])->name('inmates.documents.store');
     Route::post('inmates/{inmate}/documents/{document}/replace', [SystemAdminInmateController::class,'replaceDocument'])->name('inmates.documents.replace');
@@ -269,11 +278,19 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth','verified','role:admin'])->prefix('admin')->name('admin.')->group(function() {
     Route::get('/dashboard', [AdminDashboardController::class,'index'])->name('dashboard');
     Route::resource('inmates', AdminInmateController::class);
+
+    // Inmate lifecycle / status transitions (immutable audit)
+    Route::post('inmates/{inmate}/status/discharge', [AdminInmateController::class, 'statusDischarge'])->middleware('throttle:10,1')->name('inmates.status.discharge');
+    Route::post('inmates/{inmate}/status/deceased', [AdminInmateController::class, 'statusDeceased'])->middleware('throttle:10,1')->name('inmates.status.deceased');
+    Route::post('inmates/{inmate}/status/rejoin', [AdminInmateController::class, 'statusRejoin'])->middleware('throttle:10,1')->name('inmates.status.rejoin');
     Route::resource('contact-submissions', \App\Http\Controllers\Admin\ContactSubmissionController::class)->only(['index','show','destroy']);
     Route::resource('donation-requests', \App\Http\Controllers\Admin\DonationRequestController::class)->only(['index','show','update']);    
     Route::post('inmates/{inmate}/assign-doctor', [AdminInmateController::class,'assignDoctor'])->name('inmates.assign-doctor');
     Route::post('inmates/{inmate}/transfer-doctor', [AdminInmateController::class,'transferDoctor'])->name('inmates.transfer-doctor');
     Route::post('inmates/{inmate}/assign-location', [AdminInmateController::class,'assignLocation'])->name('inmates.assign-location');
+    Route::post('inmates/assign-location-by-admission', [AdminInmateController::class,'assignLocationByAdmissionNumber'])
+        ->middleware('throttle:30,1')
+        ->name('inmates.assign-location-by-admission');
     Route::post('inmates/{inmate}/upload-file', [AdminInmateController::class,'uploadFile'])->name('inmates.upload-file');
     Route::post('inmates/{inmate}/documents', [AdminInmateController::class,'storeDocument'])->name('inmates.documents.store');
     Route::post('inmates/{inmate}/documents/{document}/replace', [AdminInmateController::class,'replaceDocument'])->name('inmates.documents.replace');

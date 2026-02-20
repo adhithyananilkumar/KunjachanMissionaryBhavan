@@ -10,6 +10,7 @@
                         <div class="fw-semibold">{{ $inmate->full_name }}</div>
                         <div class="text-muted small">Admitted {{ optional($inmate->admission_date)->format('Y-m-d') ?: '—' }}</div>
                     </div>
+                    @include('partials.inmates._status_badge', ['inmate' => $inmate])
                     <span class="bi bi-chevron-right text-muted"></span>
                 </a>
             @empty

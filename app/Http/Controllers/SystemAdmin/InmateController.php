@@ -13,6 +13,7 @@ use App\Http\Requests\StoreInmateRequest;
 use App\Http\Requests\UpdateInmateRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Pdf\PdfManager;
+use App\Services\InmateLifecycleService;
 
 class InmateController extends Controller
 {
@@ -21,6 +22,7 @@ class InmateController extends Controller
         $search = trim((string)$request->get('search',''));
         $institutionId = $request->get('institution_id');
         $type = $request->get('type');
+        $status = $request->get('status');
         $sort = $request->get('sort','name_asc');
         if($search !== ''){
             $query->where(function($q) use ($search){
@@ -58,6 +60,7 @@ class InmateController extends Controller
         }
         if($institutionId){ $query->where('institution_id',$institutionId); }
         if($type){ $query->where('type',$type); }
+        if($status){ $query->where('status',$status); }
         // Fallback/stable ordering when no search or same relevance
         match($sort){
             'name_desc' => $query->orderBy('first_name','desc')->orderBy('id','asc'),
@@ -65,7 +68,7 @@ class InmateController extends Controller
             'created_desc' => $query->orderBy('id','desc'),
             default => $query->orderBy('first_name','asc')->orderBy('id','asc'),
         };
-        $inmates = $query->paginate(15)->appends($request->only('search','institution_id','type','sort'));
+        $inmates = $query->paginate(15)->appends($request->only('search','institution_id','type','status','sort'));
         $institutions = Institution::orderBy('name')->get(['id','name']);
         $types = Inmate::select('type')->whereNotNull('type')->where('type','!=','')->distinct()->orderBy('type')->pluck('type');
 
@@ -73,7 +76,14 @@ class InmateController extends Controller
             return view('system_admin.inmates._list', compact('inmates'));
         }
 
-        return view('system_admin.inmates.index', compact('inmates','institutions','institutionId','types','type','sort','search'));
+        $statuses = collect([
+            Inmate::STATUS_PRESENT,
+            Inmate::STATUS_DISCHARGED,
+            Inmate::STATUS_TRANSFERRED,
+            Inmate::STATUS_DECEASED,
+        ]);
+
+        return view('system_admin.inmates.index', compact('inmates','institutions','institutionId','types','type','status','statuses','sort','search'));
     }
 
     public function create(){
@@ -242,11 +252,124 @@ class InmateController extends Controller
                 'documents' => view('system_admin.inmates.tabs.documents', compact('inmate')),
                 'allocation' => view('system_admin.inmates.tabs.allocation', compact('inmate')),
                 'payments' => view('system_admin.inmates.tabs.payments', compact('inmate')),
+                'status' => view('system_admin.inmates.tabs.status', compact('inmate')),
                 'settings' => view('system_admin.inmates.tabs.settings', compact('inmate')),
                 default => view('system_admin.inmates.tabs.overview', compact('inmate')),
             };
         }
         return view('system_admin.inmates.show', compact('inmate'));
+    }
+
+    public function statusDischarge(Request $request, Inmate $inmate, InmateLifecycleService $lifecycle)
+    {
+        $data = $request->validate([
+            'effective_at' => 'nullable|date',
+            'reason' => 'required|string|min:3|max:5000',
+            'attachments.*' => 'nullable|file|max:10240',
+        ]);
+
+        $stored = $this->storeStatusAttachments($inmate, $request->file('attachments', []));
+
+        $lifecycle->discharge($inmate, auth()->id(), [
+            'effective_at' => $data['effective_at'] ?? now(),
+            'reason' => $data['reason'],
+            'attachments' => $stored,
+        ]);
+
+        return back()->with('success', 'Inmate discharged.');
+    }
+
+    public function statusTransfer(Request $request, Inmate $inmate, InmateLifecycleService $lifecycle)
+    {
+        $data = $request->validate([
+            'effective_at' => 'nullable|date',
+            'reason' => 'required|string|min:3|max:5000',
+            'to_institution_id' => 'required|exists:institutions,id',
+            'attachments.*' => 'nullable|file|max:10240',
+        ]);
+
+        $stored = $this->storeStatusAttachments($inmate, $request->file('attachments', []));
+
+        $lifecycle->transfer($inmate, auth()->id(), [
+            'effective_at' => $data['effective_at'] ?? now(),
+            'reason' => $data['reason'],
+            'to_institution_id' => (int) $data['to_institution_id'],
+            'meta' => [
+                'to_institution_id' => (int) $data['to_institution_id'],
+            ],
+            'attachments' => $stored,
+        ]);
+
+        return back()->with('success', 'Inmate transferred.');
+    }
+
+    public function statusDeceased(Request $request, Inmate $inmate, InmateLifecycleService $lifecycle)
+    {
+        $data = $request->validate([
+            'effective_at' => 'nullable|date',
+            'reason' => 'required|string|min:3|max:5000',
+            'death_certificate' => 'required|file|mimes:pdf,jpg,jpeg,png,webp,heic,heif|max:10240',
+            'attachments.*' => 'nullable|file|max:10240',
+        ]);
+
+        $attachments = $this->storeStatusAttachments($inmate, $request->file('attachments', []));
+        $deathCert = $this->storeStatusAttachments($inmate, [$request->file('death_certificate')], type: 'death_certificate');
+        $attachments = array_values(array_merge($deathCert, $attachments));
+
+        $lifecycle->markDeceased($inmate, auth()->id(), [
+            'effective_at' => $data['effective_at'] ?? now(),
+            'reason' => $data['reason'],
+            'attachments' => $attachments,
+        ]);
+
+        return back()->with('success', 'Inmate marked as deceased.');
+    }
+
+    public function statusRejoin(Request $request, Inmate $inmate, InmateLifecycleService $lifecycle)
+    {
+        $data = $request->validate([
+            'effective_at' => 'nullable|date',
+            'reason' => 'required|string|min:3|max:5000',
+            'attachments.*' => 'nullable|file|max:10240',
+        ]);
+
+        $stored = $this->storeStatusAttachments($inmate, $request->file('attachments', []));
+
+        $lifecycle->rejoin($inmate, auth()->id(), [
+            'effective_at' => $data['effective_at'] ?? now(),
+            'reason' => $data['reason'],
+            'attachments' => $stored,
+        ]);
+
+        return back()->with('success', 'Inmate re-joined as present.');
+    }
+
+    private function storeStatusAttachments(Inmate $inmate, array $files, string $type = 'attachment'): array
+    {
+        $out = [];
+        $files = array_values(array_filter($files));
+        if (empty($files)) {
+            return $out;
+        }
+
+        $disk = Storage::disk(config('filesystems.default'));
+        $dir = \App\Support\StoragePath::inmateDocDir($inmate->id).'/status-events';
+
+        foreach ($files as $file) {
+            if (!$file instanceof \Illuminate\Http\UploadedFile) {
+                continue;
+            }
+            $name = \App\Support\StoragePath::uniqueName($file);
+            $path = $disk->putFileAs($dir, $file, $name);
+            $out[] = [
+                'type' => $type,
+                'original' => $file->getClientOriginalName(),
+                'path' => $path,
+                'mime' => $file->getClientMimeType(),
+            ];
+        }
+
+        return $out;
     }
 
     public function downloadReport(Inmate $inmate, PdfManager $pdf)
@@ -302,6 +425,41 @@ class InmateController extends Controller
         }
         if ($request->wantsJson()) { return response()->json(['ok'=>true,'message'=>'Location updated.']); }
         return back()->with('success','Location updated.');
+    }
+
+    public function assignLocationByAdmissionNumber(Request $request)
+    {
+        $data = $request->validate([
+            'admission_number' => 'required|string|max:100',
+            'location_id' => 'nullable|exists:locations,id',
+        ]);
+
+        $institutionId = null;
+        if (!empty($data['location_id'])) {
+            $institutionId = \App\Models\Location::where('id', $data['location_id'])->value('institution_id');
+        }
+
+        $inmateQuery = Inmate::query()->where('admission_number', $data['admission_number']);
+        if ($institutionId) {
+            $inmateQuery->where('institution_id', $institutionId);
+        }
+        $inmate = $inmateQuery->first();
+
+        if (!$inmate) {
+            $msg = 'Inmate not found.';
+            return $request->wantsJson()
+                ? response()->json(['ok' => false, 'message' => $msg], 404)
+                : back()->with('error', $msg);
+        }
+
+        if (($inmate->status ?: Inmate::STATUS_PRESENT) !== Inmate::STATUS_PRESENT) {
+            $msg = 'Only present inmates can be allocated/transferred.';
+            return $request->wantsJson()
+                ? response()->json(['ok' => false, 'message' => $msg], 422)
+                : back()->with('error', $msg);
+        }
+
+        return $this->assignLocation($request, $inmate);
     }
 
     /**

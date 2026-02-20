@@ -12,6 +12,11 @@ class Inmate extends Model
     use HasFactory;
     use SoftDeletes;
 
+    public const STATUS_PRESENT = 'present';
+    public const STATUS_DISCHARGED = 'discharged';
+    public const STATUS_TRANSFERRED = 'transferred';
+    public const STATUS_DECEASED = 'deceased';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -19,6 +24,7 @@ class Inmate extends Model
      */
     protected $fillable = [
         'admission_number',
+        'status',
         'first_name','last_name','date_of_birth','gender','admission_date','institution_id',
         'admitted_by','verified_by','consent_signed_at','room_location_id',
         'marital_status','blood_group','height','weight','identification_marks','religion','caste','nationality','address',
@@ -45,6 +51,21 @@ class Inmate extends Model
         'height' => 'decimal:2',
         'weight' => 'decimal:2',
     ];
+
+    public function statusEvents()
+    {
+        return $this->hasMany(InmateStatusEvent::class)->orderByDesc('effective_at')->orderByDesc('id');
+    }
+
+    public function getIsActiveAttribute(): bool
+    {
+        return ($this->status ?: self::STATUS_PRESENT) === self::STATUS_PRESENT;
+    }
+
+    public function getIsDeceasedAttribute(): bool
+    {
+        return ($this->status ?: self::STATUS_PRESENT) === self::STATUS_DECEASED;
+    }
 
     public function payments()
     {

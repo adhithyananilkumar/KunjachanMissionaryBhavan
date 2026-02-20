@@ -14,7 +14,10 @@
                             <div class="text-muted small">DOB {{ optional($inmate->date_of_birth)->format('Y-m-d') ?: '—' }} · Admitted {{ optional($inmate->admission_date)->format('Y-m-d') ?: '—' }}</div>
                         </div>
                     </div>
-                    <span class="badge text-bg-light text-capitalize">{{ $inmate->gender ?: '—' }}</span>
+                    <div class="d-flex align-items-center gap-2">
+                        @include('partials.inmates._status_badge', ['inmate' => $inmate])
+                        <span class="badge text-bg-light text-capitalize">{{ $inmate->gender ?: '—' }}</span>
+                    </div>
                 </a>
             @empty
                 <div class="list-group-item text-center text-muted py-4">No inmates found.</div>

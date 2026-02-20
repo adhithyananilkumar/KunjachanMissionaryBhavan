@@ -9,7 +9,10 @@
   @forelse($inmates as $inmate)
     <a href="{{ route('system_admin.inmates.show',$inmate) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
       <span><span class="bi bi-person-bounding-box me-2 text-muted"></span>{{ $inmate->last_name }}, {{ $inmate->first_name }}</span>
-      <span class="text-muted small">Adm No {{ $inmate->admission_number ?: '—' }}</span>
+      <span class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="text-muted small">Adm No {{ $inmate->admission_number ?: '—' }}</span>
+        @include('partials.inmates._status_badge', ['inmate' => $inmate])
+      </span>
     </a>
   @empty
     <div class="list-group-item text-center text-muted">No inmates found.</div>

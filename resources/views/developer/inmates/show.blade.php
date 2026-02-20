@@ -16,7 +16,10 @@
 					@php $disk = Storage::disk(config('filesystems.default')); $photo = $inmate->photo_path ? (config('filesystems.default')==='s3' ? $disk->temporaryUrl($inmate->photo_path, now()->addMinutes(5)) : $disk->url($inmate->photo_path)) : 'https://via.placeholder.com/200x200?text=No+Photo'; @endphp
 					<img src="{{ $photo }}" alt="Photo" class="rounded mb-3 img-fluid" style="max-height:220px;object-fit:cover;">
 					<h4 class="mb-0">{{ $inmate->full_name }}</h4>
-					<p class="text-muted mb-1">Admission No : {{ $inmate->admission_number ?: '—' }}</p>
+					<p class="text-muted mb-1 d-flex flex-wrap align-items-center gap-2">
+						<span>Admission No : {{ $inmate->admission_number ?: '—' }}</span>
+						@include('partials.inmates._status_badge', ['inmate' => $inmate])
+					</p>
 					<p class="small mb-0">Institution: {{ $inmate->institution?->name ?: '—' }}</p>
 				</div>
 			</div>

@@ -24,7 +24,8 @@
             <td>
               @if($activeAssignments->count())
                 @foreach($activeAssignments as $as)
-                  <a href="{{ route('admin.inmates.show', $as->inmate_id) }}" class="badge bg-secondary-subtle border text-secondary text-decoration-none me-1 mb-1">{{ $as->inmate?->full_name ?? 'Inmate' }} · Adm No {{ $as->inmate?->admission_number ?: '—' }}</a>
+                <a href="{{ route('admin.inmates.show', $as->inmate_id) }}" class="badge bg-secondary-subtle border text-secondary text-decoration-none me-1 mb-1">{{ $as->inmate?->full_name ?? 'Inmate' }} · Adm No {{ $as->inmate?->admission_number ?: '—' }}</a>
+                @include('partials.inmates._status_badge', ['status' => $as->inmate?->status])
                 @endforeach
               @else
                 <span class="text-muted">—</span>
@@ -40,7 +41,7 @@
             </td>
             <td class="text-end">
               @if($activeAssignments->count())
-                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#transferModal" data-inmate="{{ $activeAssignments->first()->inmate_id }}" data-inmate-name="{{ ($activeAssignments->first()->inmate?->full_name ?? 'Inmate') . ' · Admission No : ' . ($activeAssignments->first()->inmate?->admission_number ?: '—') }}" data-institution="{{ $loc->institution_id }}">Transfer</button>
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#transferModal" data-inmate="{{ $activeAssignments->first()->inmate?->admission_number }}" data-inmate-name="{{ ($activeAssignments->first()->inmate?->full_name ?? 'Inmate') . ' · Admission No : ' . ($activeAssignments->first()->inmate?->admission_number ?: '—') }}" data-institution="{{ $loc->institution_id }}">Transfer</button>
               @elseif($loc->status!=='maintenance')
                 <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#allocateModal" data-location="{{ $loc->id }}" data-institution="{{ $loc->institution_id }}" data-name="{{ $loc->name }}">Allocate</button>
               @endif
@@ -91,7 +92,8 @@
               @if($activeAssignments->count())
                 <div class="d-flex flex-wrap gap-1">
                   @foreach($activeAssignments as $as)
-                    <a href="{{ route('admin.inmates.show', $as->inmate_id) }}" class="badge bg-secondary-subtle border text-secondary text-decoration-none">{{ $as->inmate?->full_name ?? 'Inmate' }} · Adm No {{ $as->inmate?->admission_number ?: '—' }}</a>
+                <a href="{{ route('admin.inmates.show', $as->inmate_id) }}" class="badge bg-secondary-subtle border text-secondary text-decoration-none">{{ $as->inmate?->full_name ?? 'Inmate' }} · Adm No {{ $as->inmate?->admission_number ?: '—' }}</a>
+                @include('partials.inmates._status_badge', ['status' => $as->inmate?->status])
                   @endforeach
                 </div>
               @else
@@ -100,7 +102,7 @@
             </div>
             <div class="mt-2 d-flex gap-2 flex-wrap">
               @if($activeAssignments->count())
-                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#transferModal" data-inmate="{{ $activeAssignments->first()->inmate_id }}" data-inmate-name="{{ ($activeAssignments->first()->inmate?->full_name ?? 'Inmate') . ' · Admission No : ' . ($activeAssignments->first()->inmate?->admission_number ?: '—') }}" data-institution="{{ $loc->institution_id }}">Transfer</button>
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#transferModal" data-inmate="{{ $activeAssignments->first()->inmate?->admission_number }}" data-inmate-name="{{ ($activeAssignments->first()->inmate?->full_name ?? 'Inmate') . ' · Admission No : ' . ($activeAssignments->first()->inmate?->admission_number ?: '—') }}" data-institution="{{ $loc->institution_id }}">Transfer</button>
               @elseif($loc->status!=='maintenance')
                 <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#allocateModal" data-location="{{ $loc->id }}" data-institution="{{ $loc->institution_id }}" data-name="{{ $loc->name }}">Allocate</button>
               @endif
@@ -217,14 +219,14 @@
       const inmateNameOut = document.getElementById('transferInmate');
   const form = document.getElementById('transferForm');
   const transferSubmit = document.getElementById('transferSubmit');
-      let instId = null, inmateId = null, rooms = [];
+      let instId = null, admissionNumber = null, rooms = [];
   // Prevent Enter key from submitting transfer form unintentionally
   modal.addEventListener('keydown', function(ev){ if(ev.key==='Enter'){ ev.preventDefault(); } });
       modal.addEventListener('show.bs.modal', function(e){
         const btn = e.relatedTarget; if(!btn) return;
-        inmateId = btn.getAttribute('data-inmate'); instId = btn.getAttribute('data-institution');
+        admissionNumber = btn.getAttribute('data-inmate'); instId = btn.getAttribute('data-institution');
         inmateNameOut.textContent = btn.getAttribute('data-inmate-name') || 'Inmate';
-        form.action = `{{ url('admin/inmates') }}/${inmateId}/assign-location`;
+        form.action = `{{ url('admin/inmates/assign-location-by-admission') }}`;
         document.getElementById('transferLocationId').value = '';
         transferSubmit.disabled = true;
         load();
@@ -256,12 +258,13 @@
         ev.preventDefault();
         const locId = document.getElementById('transferLocationId').value;
         if(!locId){ showToast('error','Select a destination location.'); return; }
+        if(!admissionNumber){ showToast('error','Missing admission number.'); return; }
         const token = form.querySelector('input[name=_token]')?.value;
         try{
           const res = await fetch(form.action, {
             method: 'POST',
             headers: { 'Accept':'application/json','X-CSRF-TOKEN': token,'Content-Type':'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ location_id: locId })
+            body: new URLSearchParams({ admission_number: admissionNumber, location_id: locId })
           });
           const data = await res.json().catch(()=>({ ok:false, message:'Unexpected response' }));
           if(res.ok && data.ok){
@@ -302,7 +305,7 @@
         allocList.innerHTML = '';
         if(candidates.length===0){ allocList.innerHTML = '<div class="text-center text-muted py-3">No results</div>'; return; }
         candidates.forEach(i=>{
-          const btn = document.createElement('button'); btn.type='button'; btn.className='list-group-item list-group-item-action'; btn.textContent = i.name;
+          const btn = document.createElement('button'); btn.type='button'; btn.className='list-group-item list-group-item-action'; btn.textContent = i.label || i.name;
           btn.addEventListener('click', ()=>{ selectedInmate = i; allocSubmit.disabled = false; document.querySelectorAll('#allocateList .list-group-item').forEach(x=>x.classList.remove('active')); btn.classList.add('active'); });
           allocList.appendChild(btn);
         });
@@ -310,13 +313,14 @@
       allocSubmit.addEventListener('click', async function(ev){
         ev.preventDefault();
         if(!selectedInmate || !allocLocId){ showToast('error','Select an inmate.'); return; }
+        if(!selectedInmate.admission_number){ showToast('error','Selected inmate has no admission number.'); return; }
         const token = allocForm.querySelector('input[name=_token]')?.value;
-        const url = `{{ url('admin/inmates') }}/${selectedInmate.id}/assign-location`;
+        const url = `{{ url('admin/inmates/assign-location-by-admission') }}`;
         try{
           const res = await fetch(url, {
             method: 'POST',
             headers: { 'Accept':'application/json','X-CSRF-TOKEN': token,'Content-Type':'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ location_id: allocLocId })
+            body: new URLSearchParams({ admission_number: selectedInmate.admission_number, location_id: allocLocId })
           });
           const data = await res.json().catch(()=>({ ok:false, message:'Unexpected response' }));
           if(res.ok && data.ok){

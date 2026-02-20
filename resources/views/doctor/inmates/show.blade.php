@@ -24,6 +24,7 @@
                 <h2 class="h5 mb-1 d-flex align-items-center gap-2">
                     {{ $inmate->full_name }}
                     <span class="badge text-bg-secondary ms-2">Adm No {{ $inmate->admission_number ?: '—' }}</span>
+                    @include('partials.inmates._status_badge', ['inmate' => $inmate])
                 </h2>
                                 <div class="small text-muted d-flex flex-wrap gap-2">
                     @if($inmate->date_of_birth)
@@ -38,6 +39,20 @@
                 <a href="{{ route('doctor.inmates.index') }}" class="btn btn-link btn-sm text-decoration-none"><span class="bi bi-arrow-left me-1"></span> Back to Patients</a>
             </div>
         </div>
+        @php $stBanner = $inmate->status ?: \App\Models\Inmate::STATUS_PRESENT; @endphp
+        @if($stBanner !== \App\Models\Inmate::STATUS_PRESENT)
+            <div class="alert alert-warning d-flex align-items-start gap-2 shadow-sm mt-3 mb-0">
+                <span class="bi bi-shield-lock-fill fs-5"></span>
+                <div class="small">
+                    <strong>Read-only:</strong>
+                    @if($stBanner === \App\Models\Inmate::STATUS_DECEASED)
+                        This inmate is marked as deceased. Changes are permanently disabled.
+                    @else
+                        This inmate is {{ $stBanner }}. Most changes are disabled until re-joined.
+                    @endif
+                </div>
+            </div>
+        @endif
         @if($inmate->critical_alert)
             <div class="alert alert-danger d-flex align-items-start gap-2 shadow-sm mt-3 mb-0">
                 <span class="bi bi-exclamation-triangle-fill fs-5"></span>

@@ -117,7 +117,6 @@ class BlockController extends Controller
         $payload = $locations->map(function(\App\Models\Location $loc){
             $active = $loc->assignments->first();
             $occupied = $active !== null || ($loc->computed_status === 'occupied');
-            $occupantId = $active?->inmate_id;
             $occupantName = $active && $active->inmate ? $active->inmate->full_name : null;
             $occupantAdmissionNumber = $active && $active->inmate ? $active->inmate->admission_number : null;
             return [
@@ -125,7 +124,6 @@ class BlockController extends Controller
                 'name' => $loc->name,
                 'status' => $loc->status,
                 'occupied' => (bool)$occupied,
-                'occupant_id' => $occupantId,
                 'occupant' => $occupantName ?: ($occupantAdmissionNumber ? ('Adm No '.$occupantAdmissionNumber) : null),
                 'type' => $loc->type,
                 'number' => $loc->number,
@@ -140,7 +138,10 @@ class BlockController extends Controller
     {
         abort_unless($institution->id === \Auth::user()->institution_id, 403);
         $term = trim((string)$request->query('term',''));
-        $query = \App\Models\Inmate::where('institution_id', $institution->id);
+        $query = \App\Models\Inmate::where('institution_id', $institution->id)
+            ->where(function($q){
+                $q->whereNull('status')->orWhere('status', \App\Models\Inmate::STATUS_PRESENT);
+            });
         if($term !== ''){
             $query->where(function($q) use($term){
                 $q->where('first_name','like',"%$term%")
@@ -148,12 +149,14 @@ class BlockController extends Controller
                   ->orWhere('admission_number','like',"%$term%");
             });
         }
-        $inmates = $query->orderBy('first_name')->limit(20)->get(['id','first_name','last_name']);
+        $inmates = $query->orderBy('first_name')->limit(20)->get(['admission_number','first_name','last_name']);
         return response()->json([
             'inmates' => $inmates->map(fn($i)=>[
-                'id'=>$i->id,
-                'name'=>trim($i->first_name.' '.($i->last_name??''))
-            ])
+                'admission_number' => $i->admission_number,
+                'name' => trim($i->first_name.' '.($i->last_name??'')),
+                'label' => trim($i->first_name.' '.($i->last_name??''))
+                    . ($i->admission_number ? (' · Adm No ' . $i->admission_number) : ''),
+            ]),
         ]);
     }
 }

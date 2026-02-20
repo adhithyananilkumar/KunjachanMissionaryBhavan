@@ -21,6 +21,7 @@
         <dd class="col-sm-9">
           <a href="{{ route('doctor.inmates.show',$labTest->inmate_id) }}">{{ $labTest->inmate?->full_name ?? 'Patient' }}</a>
           <span class="text-muted ms-1">· Admission No : {{ $labTest->inmate?->admission_number ?: '—' }}</span>
+          @include('partials.inmates._status_badge', ['status' => $labTest->inmate?->status])
         </dd>
         <dt class="col-sm-3">Test</dt><dd class="col-sm-9">{{ $labTest->test_name }}</dd>
         <dt class="col-sm-3">Ordered</dt><dd class="col-sm-9">{{ optional($labTest->ordered_date)->format('Y-m-d H:i') }} by {{ $labTest->orderedBy?->name }}</dd>
