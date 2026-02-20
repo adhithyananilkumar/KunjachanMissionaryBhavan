@@ -31,7 +31,18 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (PostTooLargeException $e, Request $request) {
             $maxPost = (string) ini_get('post_max_size');
             $maxUpload = (string) ini_get('upload_max_filesize');
-            $message = "Upload too large. Server limits: post_max_size={$maxPost}, upload_max_filesize={$maxUpload}.";
+            try {
+                logger()->warning('Upload rejected: payload too large', [
+                    'post_max_size' => $maxPost,
+                    'upload_max_filesize' => $maxUpload,
+                    'path' => $request->path(),
+                    'ip' => $request->ip(),
+                ]);
+            } catch (\Throwable $t) {
+                // ignore logging failures
+            }
+
+            $message = 'Upload too large. Please try a smaller file.';
 
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
