@@ -11,10 +11,18 @@ class NotificationsStreamController extends Controller
         $user = $request->user();
         abort_unless($user, 401);
 
+        if (!config('notifications.sse_enabled', false)) {
+            abort(404);
+        }
+
         $since = $request->query('since');
         $sinceId = $request->header('Last-Event-ID');
 
-        return response()->stream(function () use ($user, $since, $sinceId) {
+        $maxSeconds = (int) config('notifications.sse_duration_seconds', 15);
+        $sleepMs = (int) config('notifications.sse_sleep_ms', 1500);
+        $sleepUs = max(250000, min(5000000, $sleepMs * 1000));
+
+        return response()->stream(function () use ($user, $since, $sinceId, $maxSeconds, $sleepUs) {
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', '0');
             @set_time_limit(0);
@@ -23,7 +31,7 @@ class NotificationsStreamController extends Controller
             $lastId = $sinceId ?: null;
             $lastCreatedAt = $since;
 
-            while (microtime(true) - $start < 25) {
+            while (microtime(true) - $start < $maxSeconds) {
                 $q = $user->unreadNotifications()->orderBy('created_at', 'asc');
                 if ($lastId) {
                     $q->where('id', '!=', $lastId);
@@ -65,7 +73,7 @@ class NotificationsStreamController extends Controller
                     @flush();
                 }
 
-                usleep(1500000);
+                usleep($sleepUs);
             }
         }, 200, [
             'Content-Type' => 'text/event-stream',

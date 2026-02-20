@@ -48,6 +48,19 @@
 			const container = document.getElementById('inmateTabContent');
 			const tabs = document.querySelectorAll('#inmateTabs [data-tab]');
 			let active = 'overview';
+			let currentController = null;
+			let currentSeq = 0;
+
+			function renderLoadError(message, retryFn){
+				container.innerHTML = `
+					<div class="text-center py-5">
+						<div class="text-danger mb-2"><span class="bi bi-exclamation-triangle me-1"></span>${message}</div>
+						<button type="button" class="btn btn-sm btn-outline-secondary" data-retry>Retry</button>
+					</div>
+				`;
+				container.querySelector('[data-retry]')?.addEventListener('click', retryFn);
+			}
+
 			function load(tab, url){
 				active = tab;
 				tabs.forEach(b=>b.classList.toggle('active', b.getAttribute('data-tab')===tab));
@@ -61,11 +74,36 @@
 					settings: '{{ route('admin.inmates.show',$inmate) }}?partial=settings',
 				};
 				const finalUrl = url || urlMap[tab];
-				fetch(finalUrl, {headers:{'X-Requested-With':'XMLHttpRequest'}})
-					.then(r=>r.text()).then(html=>{
+				const seq = ++currentSeq;
+				if(currentController){
+					try{ currentController.abort(); }catch(e){}
+				}
+				currentController = new AbortController();
+				const timeoutMs = 20000;
+				const timeoutId = window.setTimeout(()=>{
+					try{ currentController.abort(); }catch(e){}
+				}, timeoutMs);
+				fetch(finalUrl, {headers:{'X-Requested-With':'XMLHttpRequest'}, signal: currentController.signal})
+					.then(async (r)=>{
+						if(!r.ok){
+							throw new Error(`Failed to load (HTTP ${r.status})`);
+						}
+						return r.text();
+					})
+					.then(html=>{
+						if(seq !== currentSeq) return;
+						window.clearTimeout(timeoutId);
 						container.innerHTML = html;
 						if(tab==='allocation'){ initAllocationTab(); }
 						if(tab==='documents'){ initDocumentsTab(); }
+					})
+					.catch((err)=>{
+						if(seq !== currentSeq) return;
+						window.clearTimeout(timeoutId);
+						const msg = (err && err.name === 'AbortError')
+							? 'Request timed out. Please retry.'
+							: (err?.message || 'Failed to load. Please retry.');
+						renderLoadError(msg, ()=> load(tab, url));
 					});
 				if(location.hash !== '#'+tab) location.hash = '#'+tab;
 			}

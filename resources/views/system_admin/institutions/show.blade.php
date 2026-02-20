@@ -39,12 +39,25 @@
         const container = document.getElementById('tabContent');
         const tabs = document.querySelectorAll('#instTabs [data-tab]');
         let active = 'overview';
+        let currentController = null;
+        let currentSeq = 0;
+
+        function renderLoadError(message, retryFn){
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="text-danger mb-2"><span class="bi bi-exclamation-triangle me-1"></span>${message}</div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-retry>Retry</button>
+                </div>
+            `;
+            container.querySelector('[data-retry]')?.addEventListener('click', retryFn);
+        }
+
         function setHash(tab){
             if(location.hash !== `#${tab}`){
                 location.hash = `#${tab}`;
             }
         }
-    function load(tab, url){
+        function load(tab, url){
             active = tab;
             tabs.forEach(b=>b.classList.toggle('active', b.getAttribute('data-tab')===tab));
             container.innerHTML = '<div class="text-center text-muted py-5"><div class="spinner-border spinner-border-sm me-2"></div> Loading...</div>';
@@ -58,8 +71,37 @@
                 settings: '{{ route('system_admin.institutions.tabs.settings', $institution) }}',
             };
             const finalUrl = url || urlMap[tab];
-            fetch(finalUrl, {headers:{'X-Requested-With':'XMLHttpRequest'}})
-                .then(r=>r.text()).then(html=>{ container.innerHTML = html; });
+
+            const seq = ++currentSeq;
+            if(currentController){
+                try{ currentController.abort(); }catch(e){}
+            }
+            currentController = new AbortController();
+            const timeoutMs = 20000;
+            const timeoutId = window.setTimeout(()=>{
+                try{ currentController.abort(); }catch(e){}
+            }, timeoutMs);
+
+            fetch(finalUrl, {headers:{'X-Requested-With':'XMLHttpRequest'}, signal: currentController.signal})
+                .then(async (r)=>{
+                    if(!r.ok){
+                        throw new Error(`Failed to load (HTTP ${r.status})`);
+                    }
+                    return r.text();
+                })
+                .then(html=>{
+                    if(seq !== currentSeq) return;
+                    window.clearTimeout(timeoutId);
+                    container.innerHTML = html;
+                })
+                .catch((err)=>{
+                    if(seq !== currentSeq) return;
+                    window.clearTimeout(timeoutId);
+                    const msg = (err && err.name === 'AbortError')
+                        ? 'Request timed out. Please retry.'
+                        : (err?.message || 'Failed to load. Please retry.');
+                    renderLoadError(msg, ()=> load(tab, url));
+                });
         }
         tabs.forEach(b=>b.addEventListener('click',()=>{ const t=b.getAttribute('data-tab'); setHash(t); load(t); }));
         // Handle in-tab pagination/links to keep SPA-like feel

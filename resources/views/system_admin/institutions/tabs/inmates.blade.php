@@ -25,6 +25,29 @@
     const q = form.querySelector('[name=q]').value;
     if(q) url.searchParams.set('q', q);
     container.innerHTML = '<div class="text-center text-muted py-5"><div class="spinner-border spinner-border-sm me-2"></div> Loading...</div>';
-    fetch(url, {headers:{'X-Requested-With':'XMLHttpRequest'}}).then(r=>r.text()).then(html=>container.innerHTML=html);
+
+    const controller = new AbortController();
+    const timeoutMs = 15000;
+    const timeoutId = window.setTimeout(()=>{ try{ controller.abort(); }catch(e){} }, timeoutMs);
+    fetch(url, {headers:{'X-Requested-With':'XMLHttpRequest'}, signal: controller.signal})
+      .then(async (r)=>{
+        if(!r.ok){ throw new Error(`Failed to load (HTTP ${r.status})`); }
+        return r.text();
+      })
+      .then(html=>{
+        window.clearTimeout(timeoutId);
+        container.innerHTML = html;
+      })
+      .catch((err)=>{
+        window.clearTimeout(timeoutId);
+        const msg = (err && err.name === 'AbortError') ? 'Request timed out. Please retry.' : (err?.message || 'Failed to load. Please retry.');
+        container.innerHTML = `
+          <div class="text-center py-5">
+            <div class="text-danger small mb-2"><span class="bi bi-exclamation-triangle me-1"></span>${msg}</div>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-retry>Retry</button>
+          </div>
+        `;
+        container.querySelector('[data-retry]')?.addEventListener('click', ()=> window.tabSearchInmates(form));
+      });
   }
 </script>

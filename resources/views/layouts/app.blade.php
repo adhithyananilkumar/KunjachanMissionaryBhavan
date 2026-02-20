@@ -328,31 +328,75 @@
                                  // Real-time notifications (SSE) with no-JS fallback
                                  try {
                                      if (window.EventSource) {
-                                         const src = new EventSource(`{{ route('notifications.stream') }}`);
-                                         src.addEventListener('notification', function(ev){
-                                             let payload = null;
-                                             try { payload = JSON.parse(ev.data || '{}'); } catch (e) {}
-                                             const cnt = Number(payload?.unread_count ?? 0);
+                                         const sseEnabled = {{ config('notifications.sse_enabled', false) ? 'true' : 'false' }};
+                                         if (sseEnabled) {
+                                             let src = null;
+                                             let reconnectTimer = null;
+                                             let reconnectBackoffMs = 800;
+                                             const maxBackoffMs = 10000;
+                                             const url = `{{ route('notifications.stream') }}`;
 
-                                             const badgeMobile = document.getElementById('notifCount');
-                                             const badgeDesktop = document.getElementById('notifCountDesktop');
-                                             [badgeMobile, badgeDesktop].forEach(b=>{
-                                                 if(!b) return;
-                                                 b.textContent = String(cnt);
-                                                 if (cnt > 0) b.classList.remove('d-none');
-                                                 else b.classList.add('d-none');
+                                             const updateBadges = (cnt)=>{
+                                                 const badgeMobile = document.getElementById('notifCount');
+                                                 const badgeDesktop = document.getElementById('notifCountDesktop');
+                                                 [badgeMobile, badgeDesktop].forEach(b=>{
+                                                     if(!b) return;
+                                                     b.textContent = String(cnt);
+                                                     if (cnt > 0) b.classList.remove('d-none');
+                                                     else b.classList.add('d-none');
+                                                 });
+                                             };
+
+                                             const showToast = (msg)=>{
+                                                 const toastEl = document.getElementById('liveToast');
+                                                 const body = document.getElementById('toastBody');
+                                                 if (toastEl && body) {
+                                                     body.textContent = msg;
+                                                     const t = new bootstrap.Toast(toastEl, {delay:6000});
+                                                     t.show();
+                                                 }
+                                             };
+
+                                             const connect = ()=>{
+                                                 if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+                                                 if (src) { try { src.close(); } catch(e) {} src = null; }
+                                                 // Only keep a live connection while the tab is visible.
+                                                 if (document.visibilityState !== 'visible') return;
+                                                 src = new EventSource(url);
+                                                 src.addEventListener('notification', function(ev){
+                                                     let payload = null;
+                                                     try { payload = JSON.parse(ev.data || '{}'); } catch (e) {}
+                                                     const cnt = Number(payload?.unread_count ?? 0);
+                                                     updateBadges(cnt);
+                                                     const item = payload?.items?.[0];
+                                                     const msg = item?.data?.message || item?.data?.reply_excerpt || 'New notification received.';
+                                                     showToast(msg);
+                                                     reconnectBackoffMs = 800; // reset on success
+                                                 });
+                                                 src.addEventListener('error', function(){
+                                                     // Backoff reconnects to avoid thrashing when server is busy.
+                                                     if (src) { try { src.close(); } catch(e) {} src = null; }
+                                                     if (reconnectTimer) return;
+                                                     reconnectTimer = setTimeout(()=>{
+                                                         reconnectTimer = null;
+                                                         reconnectBackoffMs = Math.min(maxBackoffMs, Math.round(reconnectBackoffMs * 1.5));
+                                                         connect();
+                                                     }, reconnectBackoffMs);
+                                                 });
+                                             };
+
+                                             document.addEventListener('visibilitychange', ()=>{
+                                                 if (document.visibilityState !== 'visible') {
+                                                     if (src) { try { src.close(); } catch(e) {} src = null; }
+                                                     if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+                                                 } else {
+                                                     connect();
+                                                 }
                                              });
 
-                                             const item = payload?.items?.[0];
-                                             const msg = item?.data?.message || item?.data?.reply_excerpt || 'New notification received.';
-                                             const toastEl = document.getElementById('liveToast');
-                                             const body = document.getElementById('toastBody');
-                                             if (toastEl && body) {
-                                                 body.textContent = msg;
-                                                 const t = new bootstrap.Toast(toastEl, {delay:6000});
-                                                 t.show();
-                                             }
-                                         });
+                                             // Delay initial connect slightly to prioritize first paint.
+                                             setTimeout(connect, 800);
+                                         }
                                      }
                                  } catch (e) {
                                      // ignore
