@@ -123,7 +123,7 @@
                                                 <span class="badge rounded-pill bg-success">New</span>
                                             </a>
                                         @else
-                                            <a href="{{ route('tickets.show',$data['ticket_id'] ?? null) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                            <a href="{{ $data['link'] ?? (isset($data['ticket_public_id']) ? route('tickets.show', $data['ticket_public_id']) : '#') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
                                                 <div class="me-2">
                                                     <div class="fw-semibold">Reply: {{ Str::limit($data['ticket_title'] ?? 'Ticket',40) }}</div>
                                                     <div class="text-muted">{{ Str::limit($data['reply_excerpt'] ?? '',60) }}</div>
@@ -167,7 +167,7 @@
                                                 <span class="badge rounded-pill bg-success">New</span>
                                             </a>
                                         @else
-                                            <a href="{{ route('tickets.show',$data['ticket_id'] ?? null) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                            <a href="{{ $data['link'] ?? (isset($data['ticket_public_id']) ? route('tickets.show', $data['ticket_public_id']) : '#') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
                                                 <div class="me-2">
                                                     <div class="fw-semibold">Reply: {{ Str::limit($data['ticket_title'] ?? 'Ticket',40) }}</div>
                                                     <div class="text-muted">{{ Str::limit($data['reply_excerpt'] ?? '',60) }}</div>
@@ -246,7 +246,7 @@
                                         <span class="badge rounded-pill bg-success">New</span>
                                     </a>
                                 @else
-                                    <a href="{{ route('tickets.show',$data['ticket_id'] ?? null) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                    <a href="{{ $data['link'] ?? (isset($data['ticket_public_id']) ? route('tickets.show', $data['ticket_public_id']) : '#') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
                                         <div class="me-2">
                                             <div class="fw-semibold">Reply: {{ Str::limit($data['ticket_title'] ?? 'Ticket',40) }}</div>
                                             <div class="text-muted">{{ Str::limit($data['reply_excerpt'] ?? '',60) }}</div>
@@ -324,6 +324,39 @@
                                      body.textContent = (muted ? muted.textContent : body.textContent);
                                      const t = new bootstrap.Toast(toastEl, {delay:6000}); t.show();
                                  }
+
+                                 // Real-time notifications (SSE) with no-JS fallback
+                                 try {
+                                     if (window.EventSource) {
+                                         const src = new EventSource(`{{ route('notifications.stream') }}`);
+                                         src.addEventListener('notification', function(ev){
+                                             let payload = null;
+                                             try { payload = JSON.parse(ev.data || '{}'); } catch (e) {}
+                                             const cnt = Number(payload?.unread_count ?? 0);
+
+                                             const badgeMobile = document.getElementById('notifCount');
+                                             const badgeDesktop = document.getElementById('notifCountDesktop');
+                                             [badgeMobile, badgeDesktop].forEach(b=>{
+                                                 if(!b) return;
+                                                 b.textContent = String(cnt);
+                                                 if (cnt > 0) b.classList.remove('d-none');
+                                                 else b.classList.add('d-none');
+                                             });
+
+                                             const item = payload?.items?.[0];
+                                             const msg = item?.data?.message || item?.data?.reply_excerpt || 'New notification received.';
+                                             const toastEl = document.getElementById('liveToast');
+                                             const body = document.getElementById('toastBody');
+                                             if (toastEl && body) {
+                                                 body.textContent = msg;
+                                                 const t = new bootstrap.Toast(toastEl, {delay:6000});
+                                                 t.show();
+                                             }
+                                         });
+                                     }
+                                 } catch (e) {
+                                     // ignore
+                                 }
                             });
                         </script>
                         @endauth
@@ -338,9 +371,22 @@
                         <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data">@csrf
                             <div class="modal-header"><h5 class="modal-title">Report a Bug</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                             <div class="modal-body">
+                                <input type="hidden" name="page_url" value="{{ url()->current() }}">
                                 <div class="mb-3"><label class="form-label">Title</label><input name="title" class="form-control" required maxlength="255"></div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-6"><label class="form-label">Module (optional)</label><input name="module" class="form-control" maxlength="80"></div>
+                                    <div class="col-md-6"><label class="form-label">Severity (optional)</label>
+                                        <select name="severity" class="form-select">
+                                            <option value="">Select...</option>
+                                            <option value="low">Low</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="high">High</option>
+                                            <option value="critical">Critical</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="mb-3"><label class="form-label">Description</label><textarea name="description" rows="4" class="form-control" required></textarea></div>
-                                <div class="mb-3"><label class="form-label">Screenshot (optional)</label><input type="file" name="screenshot" class="form-control" accept="image/*"></div>
+                                <div class="mb-3"><label class="form-label">Attachments (optional)</label><input type="file" name="screenshots[]" class="form-control" multiple accept="image/*,.webp,.heic,.heif,.pdf"></div>
                             </div>
                             <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary">Submit</button></div>
                         </form>

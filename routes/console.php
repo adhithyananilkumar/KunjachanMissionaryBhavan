@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Schedule daily inmate birthday notifications at 08:00 server time
 Schedule::command('notify:inmate-birthdays')->dailyAt('08:00');
+
+// Schedule auto-close of resolved tickets (configurable via TICKETS_AUTO_CLOSE_DAYS)
+Schedule::command('tickets:auto-close-resolved')->dailyAt('02:00');

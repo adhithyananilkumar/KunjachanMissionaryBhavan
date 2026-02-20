@@ -29,6 +29,9 @@ class NotificationController extends Controller
             $data = $n->data ?? [];
             $type = $data['type'] ?? '';
             $title = match($type){
+                'ticket_reply' => 'Ticket Reply',
+                'ticket_status_changed' => 'Ticket Status Updated',
+                'ticket_assigned' => 'Ticket Assigned',
                 'lab_test_ordered' => 'Lab Test Ordered',
                 'lab_result_uploaded' => 'Lab Result Ready',
                 'lab_result_rejected' => 'Lab Result Rejected',
@@ -37,7 +40,7 @@ class NotificationController extends Controller
                 'inmate_birthday' => 'Inmate Birthday',
                 default => 'Notification',
             };
-            $message = $data['message'] ?? ($data['test_name'] ?? ($data['title'] ?? ''));
+            $message = $data['message'] ?? ($data['reply_excerpt'] ?? ($data['test_name'] ?? ($data['title'] ?? '')));
             return [
                 'id' => $n->id,
                 'type' => $type ?: null,

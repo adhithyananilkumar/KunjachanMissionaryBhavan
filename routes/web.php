@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\ActionRequestController as AdminActionRequestCont
 use App\Http\Controllers\Developer\ActionRequestController as DeveloperActionRequestController;
 use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\Developer\SupportTicketController as DeveloperSupportTicketController;
+use App\Http\Controllers\NotificationsStreamController;
 use App\Http\Controllers\SystemAdmin\SystemAdminDashboardController;
 use App\Http\Controllers\SystemAdmin\InstitutionController as SystemAdminInstitutionController;
 use App\Http\Controllers\Public\InstitutionController as PublicInstitutionController;
@@ -91,7 +92,7 @@ Route::middleware(['auth','verified','role:developer'])->prefix('developer')->na
     Route::patch('requests/{actionRequest}', [DeveloperActionRequestController::class,'update'])->name('requests.update');
     Route::get('tickets', [DeveloperSupportTicketController::class,'index'])->name('tickets.index');
     Route::get('tickets/{ticket}', [DeveloperSupportTicketController::class,'show'])->name('tickets.show');
-    Route::post('tickets/{ticket}/reply', [DeveloperSupportTicketController::class,'reply'])->name('tickets.reply');
+    Route::post('tickets/{ticket}/reply', [DeveloperSupportTicketController::class,'reply'])->middleware('throttle:60,1')->name('tickets.reply');
     // Removed settings/bug-access routes after consolidation
     // Doctors assignment (top user)
     Route::get('doctors', [DeveloperDoctorController::class,'index'])->name('doctors.index');
@@ -398,11 +399,12 @@ Route::middleware(['auth','verified','role:guardian'])->prefix('guardian')->name
 // Bug report submission route (auth users; gating can be improved later)
 Route::middleware(['auth','verified'])->group(function(){
     Route::get('/my/tickets', [SupportTicketController::class,'index'])->name('tickets.index.user');
-    Route::post('/my/tickets', [SupportTicketController::class,'store'])->name('tickets.store');
+    Route::post('/my/tickets', [SupportTicketController::class,'store'])->middleware('throttle:10,1')->name('tickets.store');
     Route::get('/my/tickets/{ticket}', [SupportTicketController::class,'show'])->name('tickets.show');
-    Route::post('/my/tickets/{ticket}/reply', [SupportTicketController::class,'reply'])->name('tickets.reply');
+    Route::post('/my/tickets/{ticket}/reply', [SupportTicketController::class,'reply'])->middleware('throttle:60,1')->name('tickets.reply');
     Route::get('/notifications', [\App\Http\Controllers\NotificationController::class,'index'])->name('notifications.index');
     Route::get('/notifications/feed', [\App\Http\Controllers\NotificationController::class,'feed'])->name('notifications.feed');
+    Route::get('/notifications/stream', [NotificationsStreamController::class, 'stream'])->name('notifications.stream');
     Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class,'markAllRead'])->name('notifications.mark-all');
     Route::post('/notifications/{notification}/mark-read', function($notification){
         $n = \Illuminate\Support\Facades\Auth::user()->notifications()->where('id',$notification)->firstOrFail();

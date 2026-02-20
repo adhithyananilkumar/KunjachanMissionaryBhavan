@@ -7,6 +7,8 @@
         <option value="">All</option>
         <option value="open" @selected(request('status')==='open')>Open</option>
         <option value="in_progress" @selected(request('status')==='in_progress')>In Progress</option>
+        <option value="waiting" @selected(request('status')==='waiting')>Waiting</option>
+        <option value="resolved" @selected(request('status')==='resolved')>Resolved</option>
         <option value="closed" @selected(request('status')==='closed')>Closed</option>
       </select>
       <button class="btn btn-sm btn-primary">Filter</button>
@@ -14,14 +16,14 @@
     </form>
     <div class="table-responsive">
       <table class="table table-hover mb-0 align-middle">
-        <thead><tr><th>ID</th><th>Title</th><th>User</th><th>Status</th><th>Updated</th><th></th></tr></thead>
+        <thead><tr><th>Ticket</th><th>Title</th><th>User</th><th>Status</th><th>Updated</th><th></th></tr></thead>
         <tbody>
           @forelse($tickets as $t)
             <tr>
-              <td>{{ $t->id }}</td>
+              <td class="text-nowrap">{{ $t->public_id }}</td>
               <td>{{ Str::limit($t->title,60) }}</td>
               <td>{{ $t->user->name }}</td>
-              <td><span class="badge text-bg-{{ $t->status==='open'?'warning':($t->status==='closed'?'secondary':'info') }}">{{ $t->status }}</span></td>
+              <td><span class="badge text-bg-{{ $t->status==='open'?'warning':($t->status==='in_progress'?'info':($t->status==='resolved'?'success':($t->status==='closed'?'secondary':'secondary'))) }}">{{ $t->status }}</span></td>
               <td>{{ $t->last_activity_at? $t->last_activity_at->diffForHumans() : '—' }}</td>
               <td class="text-end"><a href="{{ route('developer.tickets.show',$t) }}" class="btn btn-sm btn-outline-primary">Open</a></td>
             </tr>

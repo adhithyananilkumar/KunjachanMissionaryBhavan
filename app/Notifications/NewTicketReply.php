@@ -21,11 +21,17 @@ class NewTicketReply extends Notification
 
     public function toDatabase(object $notifiable): DatabaseMessage
     {
+        $isDeveloper = ($notifiable->role ?? null) === 'developer';
+
         return new DatabaseMessage([
-            'ticket_id' => $this->ticket->id,
+            'type' => 'ticket_reply',
+            'ticket_public_id' => $this->ticket->public_id,
             'ticket_title' => $this->ticket->title,
-            'reply_excerpt' => str(\Illuminate\Support\Str::limit($this->reply->message,120)),
+            'reply_excerpt' => \Illuminate\Support\Str::limit((string) $this->reply->message, 120),
             'replied_by' => $this->reply->user->name,
+            'link' => $isDeveloper
+                ? route('developer.tickets.show', $this->ticket)
+                : route('tickets.show', $this->ticket),
         ]);
     }
 }

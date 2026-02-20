@@ -22,11 +22,10 @@
     </form>
         <div class="table-responsive">
             <table class="table table-sm table-hover align-middle mb-0">
-        <thead><tr><th>ID</th><th>User</th><th>Title</th><th>Description</th><th>Status</th><th>Reply</th><th>Files</th><th></th></tr></thead>
+        <thead><tr><th>User</th><th>Title</th><th>Description</th><th>Status</th><th>Reply</th><th>Files</th><th></th></tr></thead>
                 <tbody>
                     @forelse($bugs as $b)
                         <tr>
-                            <td>{{ $b->id }}</td>
                             <td>{{ $b->user->name }}</td>
               <td>{{ \Illuminate\Support\Str::limit($b->title,30) }}</td>
               <td style="max-width:260px; white-space:pre-wrap">{{ \Illuminate\Support\Str::limit($b->description,120) }}</td>
@@ -47,7 +46,7 @@
                             <td class="text-end"><button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updateBugModal" data-id="{{ $b->id }}" data-status="{{ $b->status }}" data-reply="{{ $b->developer_reply }}">Update</button></td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="text-center py-4">No bug reports.</td></tr>
+                          <tr><td colspan="7" class="text-center py-4">No bug reports.</td></tr>
                     @endforelse
                 </tbody>
             </table>

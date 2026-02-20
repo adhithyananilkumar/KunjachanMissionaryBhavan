@@ -15,6 +15,10 @@ return [
 
     'name' => env('APP_NAME', 'Aathmiya'),
 
+    // Optional build/version metadata (used for ticket traceability)
+    'version' => env('APP_VERSION'),
+    'deployment_tag' => env('APP_DEPLOYMENT_TAG'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

@@ -122,7 +122,7 @@ class StaffController extends Controller
             $tickets = \App\Models\SupportTicket::where('user_id',$user->id)->latest('last_activity_at')->limit(10)->get();
             foreach($tickets as $t){ $activities[]=['at'=>$t->last_activity_at ?? $t->created_at,'icon'=>'life-preserver','text'=>"Support ticket: {$t->title}",'url'=>null]; }
             $replies = \App\Models\TicketReply::with('ticket')->where('user_id',$user->id)->latest('created_at')->limit(10)->get();
-            foreach($replies as $r){ $title=$r->ticket?->title ?? ('#'.$r->support_ticket_id); $activities[]=['at'=>$r->created_at,'icon'=>'reply','text'=>"Replied on ticket: {$title}",'url'=>null]; }
+            foreach($replies as $r){ $title=$r->ticket?->title ?? 'Ticket'; $activities[]=['at'=>$r->created_at,'icon'=>'reply','text'=>"Replied on ticket: {$title}",'url'=>null]; }
         } catch (\Throwable $e) {}
 
         usort($activities, function($a,$b){ return ($b['at']?->timestamp ?? 0) <=> ($a['at']?->timestamp ?? 0); });
