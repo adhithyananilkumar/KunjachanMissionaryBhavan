@@ -1,10 +1,16 @@
 <x-app-layout>
+    @push('styles')
+    <style>
+        main { padding-left: 0 !important; padding-right: 0 !important; }
+        .card { border-radius: 0; border-left: none; border-right: none; }
+    </style>
+    @endpush
 	<x-slot name="header">
 		<div class="d-flex justify-content-between align-items-center">
 			<h2 class="h5 mb-0">Payments</h2>
-			<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#payModal">
+			<!--<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#payModal">
 				<span class="bi bi-cash-coin me-1"></span> Pay
-			</button>
+			</button>-->
 		</div>
 	</x-slot>
 

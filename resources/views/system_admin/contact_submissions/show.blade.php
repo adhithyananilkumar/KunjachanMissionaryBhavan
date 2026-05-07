@@ -40,9 +40,16 @@
                 </div>
             </div>
             
-            <div class="text-center mt-4">
-                <a href="mailto:{{ $submission->email }}?subject=Re: Contact Message - Kunjachan Missionary Bhavan" class="btn btn-primary px-4">
-                    <i class="bi bi-reply-fill me-1"></i> Reply via Email
+            @php
+                $subject = 'Re: Contact Message - Kunjachan Missionary Bhavan';
+                $body = "Hi {$submission->name},\n\nRegarding your message:\n> " . str_replace("\n", "\n> ", $submission->message) . "\n\n";
+            @endphp
+            <div class="text-center mt-4 d-flex justify-content-center gap-3">
+                <a href="mailto:{{ $submission->email }}?subject={{ rawurlencode($subject) }}&body={{ rawurlencode($body) }}" class="btn btn-primary px-4">
+                    <i class="bi bi-envelope-at me-1"></i> Reply via Default Mail
+                </a>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ urlencode($submission->email) }}&su={{ rawurlencode($subject) }}&body={{ rawurlencode($body) }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger px-4">
+                    <i class="bi bi-google me-1"></i> Reply via Gmail
                 </a>
             </div>
         </div>

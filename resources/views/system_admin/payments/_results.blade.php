@@ -3,16 +3,30 @@
 @endphp
 
 <div class="row g-3 mb-3">
-  <div class="col-md-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-body d-flex flex-column">
+        <div class="text-muted small mb-2"><strong>Add Payment</strong></div>
+        <div class="small text-muted mb-3">Record a new payment entry for any inmate quickly.</div>
+        <div class="mt-auto">
+          <button type="button" class="btn btn-primary btn-lg w-100 py-2" data-bs-toggle="modal" data-bs-target="#payModal">
+            <span class="bi bi-cash-coin me-2"></span> Pay
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
     <div class="card shadow-sm h-100">
       <div class="card-body">
-        <div class="text-muted small mb-1">Total collected (paid)</div>
+        <div class="text-muted small mb-1"><strong>Total collected (paid)</strong></div>
         <div class="h5 mb-1">₹ {{ number_format($summary['paid_total'] ?? 0, 2) }}</div>
         <div class="small text-muted">Based on current filters.</div>
       </div>
     </div>
   </div>
-  <div class="col-md-4">
+  <!--<div class="col-md-4">
     <div class="card shadow-sm h-100">
       <div class="card-body">
         <div class="text-muted small mb-1">Payments (paid)</div>
@@ -20,11 +34,12 @@
         <div class="small text-muted">Out of {{ $summary['total_count'] ?? 0 }} payments.</div>
       </div>
     </div>
-  </div>
+  </div> -->
+  @if(false) {{-- Temporarily disabled --}}
   <div class="col-md-4">
     <div class="card shadow-sm h-100">
       <div class="card-body d-flex flex-column">
-        <div class="text-muted small mb-2">Custom report</div>
+        <div class="text-muted small mb-2"><strong>Custom report</strong></div>
         <div class="small text-muted mb-3">Download an enterprise report for the current filters.</div>
         <div class="mt-auto">
           <a
@@ -36,6 +51,7 @@
       </div>
     </div>
   </div>
+  @endif
 </div>
 
 <div class="card shadow-sm">
