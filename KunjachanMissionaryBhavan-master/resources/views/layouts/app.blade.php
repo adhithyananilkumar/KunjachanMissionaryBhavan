@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        @php
+            $appName = config('app.name', 'Aathmiya');
+            $user = auth()->user();
+            $roleLabel = $user?->role ? ucfirst(str_replace('_',' ', $user->role)) : null;
+            $pageTitleSection = trim($__env->yieldContent('title'));
+            $finalTitle = $appName;
+            if ($roleLabel) { $finalTitle = $roleLabel.' | '.$finalTitle; }
+            if ($pageTitleSection) { $finalTitle = $pageTitleSection.' | '.$finalTitle; }
+        @endphp
+        <title>{{ $finalTitle }}</title>
+
+        <!-- Favicons -->
+        <link rel="apple-touch-icon" href="{{ asset('assets/logo-241x271.png') }}">
+        <link rel="icon" type="image/png" sizes="48x54" href="{{ asset('assets/favicon-48x54.png') }}">
+        <link rel="icon" type="image/png" sizes="32x36" href="{{ asset('assets/favicon-32x36.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/favicon-16x16.png') }}">
+        <link rel="shortcut icon" href="{{ asset('assets/favicon-48x54.png') }}">
+        <meta name="theme-color" content="#0f4f4b">
+
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    		@vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- App notices are injected via layouts.partials.app-notice-cards --}}
+        <style>
+            /* Global readability: slightly larger base font for middle-aged users */
+            html { font-size: 17px; }
+            body { line-height: 1.6; }
+
+            /* Make mobile offcanvas the same width as the sidebar and remove extra white band */
+            #mobileSidebar{ --bs-offcanvas-width: 260px; background: transparent; }
+
+            /* Global mobile hardening to stop sideways dragging and overflow */
+            html, body { max-width: 100%; overflow-x: hidden; }
+            main, .container-fluid { max-width: 100vw; }
+            img, svg, video, canvas { max-width: 100%; height: auto; }
+            /* Avoid aggressive wrapping that broke words inside tables/headers on mobile */
+            .alert, .modal-body, .offcanvas-body { word-wrap: break-word; overflow-wrap: anywhere; }
+            h1, h2, h3, h4, h5, h6 { word-break: keep-all; overflow-wrap: normal; }
+            .table th, .table td { white-space: nowrap; }
+            .table-responsive { -webkit-overflow-scrolling: touch; }
+            @media (max-width: 576px){
+                .card-header h5, .card-header .fw-semibold, .card-header .card-title { white-space: nowrap; }
+            }
+            .table-responsive { -webkit-overflow-scrolling: touch; }
+            .nav.nav-pills, .nav.nav-tabs { flex-wrap: wrap; gap: .25rem; }
+            .nav.nav-pills .nav-link, .nav.nav-tabs .nav-link { padding: .375rem .5rem; }
+            .btn-group { flex-wrap: wrap; }
+
+            /* Modern subtle rounding and hover effects */
+            .btn, .form-control, .card, .dropdown-menu, .modal-content { border-radius: .7rem; }
+            .list-group-item-action:hover { background: rgba(13,110,253,.06); }
+            .card { box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+            .aw-tile { transition: transform .12s ease, box-shadow .12s ease; }
+            .aw-tile:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+            /* Pagination hygiene */
+            .pagination{ gap:.25rem; }
+            .pagination .page-link{ display:inline-flex; align-items:center; justify-content:center; min-width:2.25rem; height:2.25rem; padding:.375rem .5rem; }
+            .pagination .bi{ font-size:1rem; line-height:1; }
+            @media (max-width: 576px){ .pagination .page-link{ min-width:2rem; height:2rem; padding:.25rem .4rem; font-size:.9rem; } }
+        </style>
+    @stack('styles')
+
+    </head>
+    <body class="font-sans antialiased bg-light" @auth data-auth="{{ auth()->id() }}" @endauth>
+    <div class="d-flex min-vh-100 w-100">
+        <!-- Desktop Sidebar (locked/fixed) -->
+        <div class="d-none d-lg-block position-fixed h-100 overflow-y-auto" style="width:260px; left:0; top:0; z-index:1030; scrollbar-width: thin;">
+            @include('layouts.partials.sidebar')
+        </div>
+        <!-- Content wrapper: no fixed margin here; handled via CSS so mobile isn't squashed -->
+        <div class="flex-grow-1 d-flex flex-column aw-app-shell">
+            <nav class="navbar navbar-light bg-white border-bottom sticky-top d-lg-none">
+                <div class="container-fluid">
+                    <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"><span class="bi bi-list"></span></button>
+                    <span class="navbar-brand ms-2 fw-semibold d-flex align-items-center gap-2">
+                        <img src="{{ asset('assets/kunjachanMissionaryLogo.png') }}" alt="Kunjachan Missionary Bhavan" style="height:28px;width:28px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(255,255,255,.9);">
+                        <span class="text-uppercase" style="letter-spacing:.05em;font-size:.75rem;line-height:1.2;">KUNJACHAN MISSIONARY<br>BHAVAN</span>
+                    </span>
+                    @auth
+                    @php
+                        $unreadNotifications = auth()->user()?->unreadNotifications ?? collect();
+                        $unreadNotificationsCount = $unreadNotifications->count();
+                    @endphp
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Notifications bell (desktop) -->
+                        @if(request()->routeIs('dashboard') || request()->routeIs('*.dashboard'))
+                        <div class="d-none d-lg-block dropdown">
+                            <a class="btn btn-outline-secondary position-relative" href="#" id="notifDropdownDesktop" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
+                                <span class="bi bi-bell"></span>
+                                <span id="notifCountDesktop" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ ($unreadNotificationsCount ?? 0)>0 ? '' : 'd-none' }}">{{ $unreadNotificationsCount ?? 0 }}</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end p-0 shadow" aria-labelledby="notifDropdownDesktop" style="min-width:320px; max-height:360px; overflow:auto">
+                                <div id="notifListDesktop" class="list-group list-group-flush small">
+                                    @forelse(($unreadNotifications ?? collect()) as $n)
+                                        @php $data = $n->data; $type = $data['type'] ?? 'ticket_reply'; @endphp
+                                        @if($type === 'lab_test_ordered')
+                                            <a href="{{ ($data['link'] ?? '#') }}@if(isset($n) && isset($data['link']) && Str::contains($data['link'],'?'))&nid={{ $n->id }}@elseif(isset($n) && isset($data['link']))?nid={{ $n->id }}@endif" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                                <div class="me-2">
+                                                    <div class="fw-semibold">Lab Test Ordered</div>
+                                                    <div>{{ Str::limit($data['test_name'] ?? 'Test',40) }} for {{ Str::limit($data['inmate_name'] ?? 'Inmate',40) }}</div>
+                                                    <div class="text-muted small">by {{ $data['ordered_by'] ?? 'Doctor' }}</div>
+                                                </div>
+                                                <span class="badge rounded-pill bg-warning text-dark">New</span>
+                                            </a>
+                                        @elseif($type === 'lab_result_uploaded')
+                                            <a href="{{ ($data['link'] ?? '#') }}@if(isset($n) && isset($data['link']) && Str::contains($data['link'],'?'))&nid={{ $n->id }}@elseif(isset($n) && isset($data['link']))?nid={{ $n->id }}@endif" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                                <div class="me-2">
+                                                    <div class="fw-semibold">Lab Result Ready</div>
+                                                    <div>{{ Str::limit($data['test_name'] ?? 'Test',40) }} for {{ Str::limit($data['inmate_name'] ?? 'Inmate',40) }}</div>
+                                                    <div class="text-muted small">Updated by {{ $data['updated_by'] ?? 'Staff' }}</div>
+                                                </div>
+                                                <span class="badge rounded-pill bg-success">New</span>
+                                            </a>
+                                        @else
+                                            <a href="{{ $data['link'] ?? (isset($data['ticket_public_id']) ? route('tickets.show', $data['ticket_public_id']) : '#') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                                <div class="me-2">
+                                                    <div class="fw-semibold">Reply: {{ Str::limit($data['ticket_title'] ?? 'Ticket',40) }}</div>
+                                                    <div class="text-muted">{{ Str::limit($data['reply_excerpt'] ?? '',60) }}</div>
+                                                    <div class="text-muted fst-italic">by {{ $data['replied_by'] ?? 'User' }}</div>
+                                                </div>
+                                                <span class="badge rounded-pill bg-primary">New</span>
+                                            </a>
+                                        @endif
+                                    @empty
+                                        <div class="p-3 text-center text-muted">No new notifications</div>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Notifications bell (mobile) -->
+                        <div class="dropdown">
+                            <a class="btn btn-outline-secondary position-relative" href="#" id="notifDropdownMobile" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
+                                <span class="bi bi-bell"></span>
+                                <span id="notifCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ ($unreadNotificationsCount ?? 0)>0 ? '' : 'd-none' }}">{{ $unreadNotificationsCount ?? 0 }}</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end p-0 shadow" aria-labelledby="notifDropdownMobile" style="min-width:320px; max-height:360px; overflow:auto">
+                                <div id="notifList" class="list-group list-group-flush small">
+                                    @forelse(($unreadNotifications ?? collect()) as $n)
+                                        @php $data = $n->data; $type = $data['type'] ?? 'ticket_reply'; @endphp
+                                        @if($type === 'lab_test_ordered')
+                                            <a href="{{ ($data['link'] ?? '#') }}@if(isset($n) && isset($data['link']) && Str::contains($data['link'],'?'))&nid={{ $n->id }}@elseif(isset($n) && isset($data['link']))?nid={{ $n->id }}@endif" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                                <div class="me-2">
+                                                    <div class="fw-semibold">Lab Test Ordered</div>
+                                                    <div>{{ Str::limit($data['test_name'] ?? 'Test',40) }} for {{ Str::limit($data['inmate_name'] ?? 'Inmate',40) }}</div>
+                                                    <div class="text-muted small">by {{ $data['ordered_by'] ?? 'Doctor' }}</div>
+                                                </div>
+                                                <span class="badge rounded-pill bg-warning text-dark">New</span>
+                                            </a>
+                                        @elseif($type === 'lab_result_uploaded')
+                                            <a href="{{ ($data['link'] ?? '#') }}@if(isset($n) && isset($data['link']) && Str::contains($data['link'],'?'))&nid={{ $n->id }}@elseif(isset($n) && isset($data['link']))?nid={{ $n->id }}@endif" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                                <div class="me-2">
+                                                    <div class="fw-semibold">Lab Result Ready</div>
+                                                    <div>{{ Str::limit($data['test_name'] ?? 'Test',40) }} for {{ Str::limit($data['inmate_name'] ?? 'Inmate',40) }}</div>
+                                                    <div class="text-muted small">Updated by {{ $data['updated_by'] ?? 'Staff' }}</div>
+                                                </div>
+                                                <span class="badge rounded-pill bg-success">New</span>
+                                            </a>
+                                        @else
+                                            <a href="{{ $data['link'] ?? (isset($data['ticket_public_id']) ? route('tickets.show', $data['ticket_public_id']) : '#') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                                <div class="me-2">
+                                                    <div class="fw-semibold">Reply: {{ Str::limit($data['ticket_title'] ?? 'Ticket',40) }}</div>
+                                                    <div class="text-muted">{{ Str::limit($data['reply_excerpt'] ?? '',60) }}</div>
+                                                    <div class="text-muted fst-italic">by {{ $data['replied_by'] ?? 'User' }}</div>
+                                                </div>
+                                                <span class="badge rounded-pill bg-primary">New</span>
+                                            </a>
+                                        @endif
+                                    @empty
+                                        <div class="p-3 text-center text-muted">No new notifications</div>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                        <div class="dropdown">
+                        <button class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center" data-bs-toggle="dropdown" aria-expanded="false" style="width:34px;height:34px;">
+                            @php 
+                                $nm = trim(auth()->user()->name ?? '');
+                                $parts = preg_split('/\s+/', $nm);
+                                $ini = strtoupper(substr($parts[0] ?? 'U',0,1) . substr(end($parts) ?: '',0,1));
+                            @endphp
+                            @if(auth()->user()->avatar_url)
+                                <img src="{{ auth()->user()->avatar_url }}" class="rounded-circle" style="width:28px;height:28px;object-fit:cover" alt="avatar">
+                            @else
+                                <span style="font-size:.8rem">{{ $ini }}</span>
+                            @endif
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><span class="bi bi-person me-2"></span>Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}" class="d-inline">@csrf
+                                    <button class="dropdown-item text-danger"><span class="bi bi-box-arrow-right me-2"></span>Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                        </div>
+                    </div>
+                    @endauth
+                </div>
+            </nav>
+            @auth
+            <!-- Desktop notifications (fixed top-right) -->
+            @if(request()->routeIs('dashboard') || request()->routeIs('*.dashboard'))
+            <div class="d-none d-lg-block position-fixed" style="top:1rem; right:1rem; z-index:1060">
+                @php
+                    $unreadNotifications = auth()->user()?->unreadNotifications ?? collect();
+                    $unreadNotificationsCount = $unreadNotifications->count();
+                @endphp
+                <div class="dropdown">
+                    <a class="btn btn-outline-secondary position-relative" href="#" id="notifDropdownFixedDesktop" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
+                        <span class="bi bi-bell"></span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ ($unreadNotificationsCount ?? 0)>0 ? '' : 'd-none' }}">{{ $unreadNotificationsCount ?? 0 }}</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end p-0 shadow" aria-labelledby="notifDropdownFixedDesktop" style="min-width:320px; max-height:360px; overflow:auto">
+                        <div class="list-group list-group-flush small">
+                            @forelse(($unreadNotifications ?? collect()) as $n)
+                                @php $data = $n->data; $type = $data['type'] ?? 'ticket_reply'; @endphp
+                                @if($type === 'lab_test_ordered')
+                                            <a href="{{ ($data['link'] ?? '#') }}@if(isset($n) && isset($data['link']) && Str::contains($data['link'],'?'))&nid={{ $n->id }}@elseif(isset($n) && isset($data['link']))?nid={{ $n->id }}@endif" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                        <div class="me-2">
+                                            <div class="fw-semibold">Lab Test Ordered</div>
+                                            <div>{{ Str::limit($data['test_name'] ?? 'Test',40) }} for {{ Str::limit($data['inmate_name'] ?? 'Inmate',40) }}</div>
+                                            <div class="text-muted small">by {{ $data['ordered_by'] ?? 'Doctor' }}</div>
+                                        </div>
+                                        <span class="badge rounded-pill bg-warning text-dark">New</span>
+                                    </a>
+                                @elseif($type === 'lab_result_uploaded')
+                                    <a href="{{ $data['link'] ?? '#' }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                        <div class="me-2">
+                                            <div class="fw-semibold">Lab Result Ready</div>
+                                            <div>{{ Str::limit($data['test_name'] ?? 'Test',40) }} for {{ Str::limit($data['inmate_name'] ?? 'Inmate',40) }}</div>
+                                            <div class="text-muted small">Updated by {{ $data['updated_by'] ?? 'Staff' }}</div>
+                                        </div>
+                                        <span class="badge rounded-pill bg-success">New</span>
+                                    </a>
+                                @else
+                                    <a href="{{ $data['link'] ?? (isset($data['ticket_public_id']) ? route('tickets.show', $data['ticket_public_id']) : '#') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start notification-item" data-id="{{ $n->id }}">
+                                        <div class="me-2">
+                                            <div class="fw-semibold">Reply: {{ Str::limit($data['ticket_title'] ?? 'Ticket',40) }}</div>
+                                            <div class="text-muted">{{ Str::limit($data['reply_excerpt'] ?? '',60) }}</div>
+                                            <div class="text-muted fst-italic">by {{ $data['replied_by'] ?? 'User' }}</div>
+                                        </div>
+                                        <span class="badge rounded-pill bg-primary">New</span>
+                                    </a>
+                                @endif
+                            @empty
+                                <div class="p-3 text-center text-muted">No new notifications</div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+            @endauth
+            @if (isset($header))
+                <header class="bg-white shadow-sm d-print-none">
+                    <div class="container-fluid py-3 px-3">
+                        {{ $header }}
+                    </div>
+                </header>
+            @endif
+            <main class="flex-grow-1 py-4 px-3 w-100">
+                @isset($slot)
+                    {{ $slot }}
+                @else
+                    @yield('content')
+                @endisset
+                @include('layouts.partials.app-notice-cards')
+            </main>
+        </div>
+    </div>
+
+    <style>
+        /* Layout shell: on large screens push content right of fixed sidebar; on small screens use full width */
+        .aw-app-shell { margin-left: 0; }
+        @media (min-width: 992px) {
+            .aw-app-shell { margin-left: 260px; }
+        }
+    </style>
+
+    <!-- Mobile Offcanvas Sidebar -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
+        <div class="offcanvas-body p-0">
+            @include('layouts.partials.sidebar')
+        </div>
+    </div>
+
+                        @auth
+                        <div class="position-fixed top-0 end-0 p-3" style="z-index:1080">
+                            <div id="liveToast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div class="d-flex">
+                                    <div class="toast-body" id="toastBody">New reply received.</div>
+                                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function(){
+                                 const notifLinks = document.querySelectorAll('.notification-item');
+                                 notifLinks.forEach(el=>{
+                                     el.addEventListener('click', function(){
+                                         const id=this.getAttribute('data-id');
+                                         fetch(`{{ url('/notifications') }}/${id}/mark-read`, {method:'POST', headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content}});
+                                     });
+                                 });
+                                 // Auto show toast for most recent unread notification (if any)
+                                 const first = document.querySelector('.notification-item');
+                                 if(first){
+                                     const toastEl = document.getElementById('liveToast');
+                                     const body = document.getElementById('toastBody');
+                                     var muted = first.querySelector('.text-muted');
+                                     body.textContent = (muted ? muted.textContent : body.textContent);
+                                     const t = new bootstrap.Toast(toastEl, {delay:6000}); t.show();
+                                 }
+
+                                 // Real-time notifications (SSE) with no-JS fallback
+                                 try {
+                                     if (window.EventSource) {
+                                         const sseEnabled = {{ config('notifications.sse_enabled', false) ? 'true' : 'false' }};
+                                         if (sseEnabled) {
+                                             let src = null;
+                                             let reconnectTimer = null;
+                                             let reconnectBackoffMs = 800;
+                                             const maxBackoffMs = 10000;
+                                             const url = `{{ route('notifications.stream') }}`;
+
+                                             const updateBadges = (cnt)=>{
+                                                 const badgeMobile = document.getElementById('notifCount');
+                                                 const badgeDesktop = document.getElementById('notifCountDesktop');
+                                                 [badgeMobile, badgeDesktop].forEach(b=>{
+                                                     if(!b) return;
+                                                     b.textContent = String(cnt);
+                                                     if (cnt > 0) b.classList.remove('d-none');
+                                                     else b.classList.add('d-none');
+                                                 });
+                                             };
+
+                                             const showToast = (msg)=>{
+                                                 const toastEl = document.getElementById('liveToast');
+                                                 const body = document.getElementById('toastBody');
+                                                 if (toastEl && body) {
+                                                     body.textContent = msg;
+                                                     const t = new bootstrap.Toast(toastEl, {delay:6000});
+                                                     t.show();
+                                                 }
+                                             };
+
+                                             const connect = ()=>{
+                                                 if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+                                                 if (src) { try { src.close(); } catch(e) {} src = null; }
+                                                 // Only keep a live connection while the tab is visible.
+                                                 if (document.visibilityState !== 'visible') return;
+                                                 src = new EventSource(url);
+                                                 src.addEventListener('notification', function(ev){
+                                                     let payload = null;
+                                                     try { payload = JSON.parse(ev.data || '{}'); } catch (e) {}
+                                                     const cnt = Number(payload?.unread_count ?? 0);
+                                                     updateBadges(cnt);
+                                                     const item = payload?.items?.[0];
+                                                     const msg = item?.data?.message || item?.data?.reply_excerpt || 'New notification received.';
+                                                     showToast(msg);
+                                                     reconnectBackoffMs = 800; // reset on success
+                                                 });
+                                                 src.addEventListener('error', function(){
+                                                     // Backoff reconnects to avoid thrashing when server is busy.
+                                                     if (src) { try { src.close(); } catch(e) {} src = null; }
+                                                     if (reconnectTimer) return;
+                                                     reconnectTimer = setTimeout(()=>{
+                                                         reconnectTimer = null;
+                                                         reconnectBackoffMs = Math.min(maxBackoffMs, Math.round(reconnectBackoffMs * 1.5));
+                                                         connect();
+                                                     }, reconnectBackoffMs);
+                                                 });
+                                             };
+
+                                             document.addEventListener('visibilitychange', ()=>{
+                                                 if (document.visibilityState !== 'visible') {
+                                                     if (src) { try { src.close(); } catch(e) {} src = null; }
+                                                     if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+                                                 } else {
+                                                     connect();
+                                                 }
+                                             });
+
+                                             // Delay initial connect slightly to prioritize first paint.
+                                             setTimeout(connect, 800);
+                                         }
+                                     }
+                                 } catch (e) {
+                                     // ignore
+                                 }
+                            });
+                        </script>
+                        @endauth
+
+    @if(auth()->check() && auth()->user()->can_report_bugs)
+            <button type="button" class="btn btn-danger rounded-circle position-fixed" style="bottom:2rem; right:2rem; width:3.5rem; height:3.5rem; z-index:1070" data-bs-toggle="modal" data-bs-target="#globalBugModal" title="Report a Bug">
+                <span class="bi bi-bug-fill"></span>
+            </button>
+            <div class="modal fade" id="globalBugModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data">@csrf
+                            <div class="modal-header"><h5 class="modal-title">Report a Bug</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                            <div class="modal-body">
+                                <input type="hidden" name="page_url" value="{{ url()->current() }}">
+                                <div class="mb-3"><label class="form-label">Title</label><input name="title" class="form-control" required maxlength="255"></div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-6"><label class="form-label">Module (optional)</label><input name="module" class="form-control" maxlength="80"></div>
+                                    <div class="col-md-6"><label class="form-label">Severity (optional)</label>
+                                        <select name="severity" class="form-select">
+                                            <option value="">Select...</option>
+                                            <option value="low">Low</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="high">High</option>
+                                            <option value="critical">Critical</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3"><label class="form-label">Description</label><textarea name="description" rows="4" class="form-control" required></textarea></div>
+                                <div class="mb-3"><label class="form-label">Attachments (optional)</label><input type="file" name="screenshots[]" class="form-control" multiple accept="image/*,.webp,.heic,.heif,.pdf"></div>
+                            </div>
+                            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary">Submit</button></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+                {{-- Toastr is replaced by AppNotice (with back-compat stub). --}}
+                @stack('scripts')
+    </body>
+</html>

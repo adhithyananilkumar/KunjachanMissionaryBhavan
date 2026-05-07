@@ -1,0 +1,151 @@
+@extends('layouts.public')
+
+@section('title', 'Home')
+
+@section('content')
+    <section class="hero hero-home position-relative">
+        <div class="vector-blob" aria-hidden="true">
+            <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="var(--kb-accent)" stop-opacity=".12" />
+                        <stop offset="100%" stop-color="var(--kb-primary-soft)" stop-opacity=".12" />
+                    </linearGradient>
+                </defs>
+                <path d="M0,300 C150,350 250,150 400,220 C550,290 650,120 800,180 L800,400 L0,400 Z" fill="url(#g)" />
+            </svg>
+        </div>
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-copy">
+                    <div class="tagline mb-3">Welcome</div>
+                    <h1 class="hero-title">Compassion. Dignity. Community.</h1>
+                    <p class="hero-subtitle mt-3">Kunjachan Missionary Bhavan is a place of care and belonging. We serve with
+                        faith and love, supporting residents and families through every season.</p>
+                    <div class="hero-actions d-flex flex-wrap gap-2 mt-4">
+                        <a href="{{ route('about') }}" class="btn btn-kb rounded-pill px-3">Learn more</a>
+                        <a href="{{ route('donate') }}" class="btn btn-outline-secondary rounded-pill px-3">Support our
+                            mission</a>
+                    </div>
+                </div>
+
+                <div class="hero-aside">
+                    <div class="section-heading mb-2">Highlights</div>
+                    <ul class="list-check hero-list">
+                        <li>Resident-centered care</li>
+                        <li>Qualified, caring staff</li>
+                        <li>Spiritual support and guidance</li>
+                        <li>Safe, peaceful environment</li>
+                        <li>Community outreach</li>
+                        <li>Transparent governance</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="hero-divider" aria-hidden="true"></div>
+
+            <div class="row g-4 mt-4 hero-features">
+                <div class="col-md-4">
+                    <div class="hero-feature">
+                        <div class="hero-feature__icon"><i class="bi bi-heart-pulse"></i></div>
+                        <div>
+                            <div class="section-heading mb-1">Our Purpose</div>
+                            <h3 class="h5 mb-2">Serving with love</h3>
+                            <p class="muted mb-0">Rooted in faith, we create a home where dignity and compassion guide every
+                                interaction.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="hero-feature">
+                        <div class="hero-feature__icon"><i class="bi bi-calendar-heart"></i></div>
+                        <div>
+                            <div class="section-heading mb-1">Programs</div>
+                            <h3 class="h5 mb-2">Care and activities</h3>
+                            <p class="muted mb-0">From daily care to community events, our programs foster connection and
+                                well-being.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="hero-feature">
+                        <div class="hero-feature__icon"><i class="bi bi-people"></i></div>
+                        <div>
+                            <div class="section-heading mb-1">Get Involved</div>
+                            <h3 class="h5 mb-2">Volunteer & donate</h3>
+                            <p class="muted mb-0">Your support strengthens our mission. Join as a volunteer or make a
+                                contribution.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-4">
+        <div class="container">
+            <div class="d-flex align-items-baseline justify-content-between mb-3">
+                <div>
+                    <div class="section-heading">Gallery</div>
+                    <h2 class="h4 mb-0">Moments from our home</h2>
+                </div>
+                <a href="{{ route('gallery') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">View all</a>
+            </div>
+            <div class="marquee surface" onmouseenter="this.classList.add('paused')"
+                onmouseleave="this.classList.remove('paused')">
+                <div class="marquee__track">
+                    @if(isset($galleryImages) && $galleryImages->count() > 0)
+                        {{-- Loop twice for marquee effect --}}
+                        @foreach($galleryImages as $image)
+                            <div class="marquee__item">
+                                <img src="{{ $image->image_url }}"
+                                    alt="{{ $image->caption ?? 'Moments from our home' }}" loading="lazy">
+                            </div>
+                        @endforeach
+                        @foreach($galleryImages as $image)
+                            <div class="marquee__item">
+                                <img src="{{ $image->image_url }}"
+                                    alt="{{ $image->caption ?? 'Moments from our home' }}" loading="lazy">
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="marquee__item">
+                            <p class="text-white">No images in gallery</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-4">
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="surface text-center">
+                        <div class="display-6 fw-bold">24+</div>
+                        <div class="muted">Years serving</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="surface text-center">
+                        <div class="display-6 fw-bold">100%</div>
+                        <div class="muted">Resident-first care</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="surface text-center">
+                        <div class="display-6 fw-bold">7d</div>
+                        <div class="muted">Care all week</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="surface text-center">
+                        <div class="display-6 fw-bold">∞</div>
+                        <div class="muted">Compassion</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection

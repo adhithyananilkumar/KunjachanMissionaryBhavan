@@ -1,0 +1,8 @@
+/*
+ * Public site styles.
+ *
+ * We keep the canonical public theme CSS in /public/css/public.css.
+ * This file is a thin wrapper so Vite can build/version it.
+ */
+
+@import "../../public/css/public.css";

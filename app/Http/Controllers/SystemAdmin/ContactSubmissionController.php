@@ -14,16 +14,16 @@ class ContactSubmissionController extends Controller
         return view('system_admin.contact_submissions.index', compact('submissions'));
     }
 
-    public function show(ContactSubmission $submission)
+    public function show(ContactSubmission $contact_submission)
     {
-        return view('system_admin.contact_submissions.show', compact('submission'));
+        return view('system_admin.contact_submissions.show', ['submission' => $contact_submission]);
     }
 
-    public function destroy(ContactSubmission $submission)
+    public function destroy(ContactSubmission $contact_submission)
     {
-        $submission->delete();
+        $contact_submission->delete();
         if (request()->ajax()) {
-            return response()->json(['ok' => true, 'id' => $submission->id, 'message' => 'Submission deleted.']);
+            return response()->json(['ok' => true, 'id' => $contact_submission->id, 'message' => 'Submission deleted.']);
         }
         return redirect()->route('system_admin.contact-submissions.index')->with('success', 'Submission deleted.');
     }

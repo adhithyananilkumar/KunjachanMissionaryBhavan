@@ -21,8 +21,10 @@
                             </div>
                         </div>
                         <div class="text-end text-muted small">
-                            <div>{{ $submission->created_at->format('M d, Y h:i A') }}</div>
-                            <div>{{ $submission->created_at->diffForHumans() }}</div>
+                            @if($submission->created_at)
+                                <div>{{ \Carbon\Carbon::parse($submission->created_at)->format('M d, Y h:i A') }}</div>
+                                <div>{{ \Carbon\Carbon::parse($submission->created_at)->diffForHumans() }}</div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -31,7 +33,7 @@
                 </div>
                 <div class="card-footer bg-white d-flex justify-content-between align-items-center">
                      <span class="text-muted small">IP: {{ $submission->ip_address }}</span>
-                     <form method="POST" action="{{ route('system_admin.contact-submissions.destroy', $submission) }}" onsubmit="return confirm('Delete this message?');">
+                     <form method="POST" action="{{ route('system_admin.contact-submissions.destroy', $submission->id) }}" onsubmit="return confirm('Delete this message?');">
                         @csrf @method('DELETE')
                         <button class="btn btn-danger btn-sm"><i class="bi bi-trash me-1"></i> Delete</button>
                     </form>
@@ -46,3 +48,4 @@
         </div>
     </div>
 </x-app-layout>
+$
