@@ -22,7 +22,9 @@
                         @forelse($requests as $r)
                         <tr class="position-relative">
                             <td class="ps-4">
-                                <div class="fw-semibold">{{ $r->donor_name }}</div>
+                                <a href="{{ route('admin.donation-requests.show', $r) }}" class="text-decoration-none text-dark stretched-link">
+                                    <div class="fw-semibold">{{ $r->donor_name }}</div>
+                                </a>
                                 <div class="small text-muted">{{ $r->donor_email }}</div>
                                 @if($r->donor_phone)<div class="small text-muted"><i class="bi bi-telephone me-1"></i>{{ $r->donor_phone }}</div>@endif
                             </td>
