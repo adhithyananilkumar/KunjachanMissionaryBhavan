@@ -64,9 +64,23 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-3 text-center">
-                            <span class="text-muted small me-2">Or contribute what you can</span>
-                            <button class="btn btn-link btn-sm text-kb text-decoration-none fw-bold" onclick="openDonateModal('{{ $inst->id }}', '{{ $otherAmount }}', 'Custom Amount', '{{ $inst->name }}')">Custom Amount</button>
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="row align-items-center g-3">
+                                <div class="col-lg-7 text-start">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-gift text-kb"></i>
+                                        <h4 class="h6 mb-0 fw-bold text-dark">Custom Contribution</h4>
+                                    </div>
+                                    <p class="small text-muted mb-0">Every donation makes a difference. Enter any amount you wish to contribute.</p>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-end-0 text-muted">₹</span>
+                                        <input type="number" class="form-control border-start-0" placeholder="Enter amount" min="1" id="custom-amount-{{ $inst->id }}">
+                                        <button class="btn btn-kb px-4" type="button" onclick="submitCustomAmount('{{ $inst->id }}', '{{ $inst->name }}')">Donate</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -162,6 +176,19 @@
 
         var myModal = new bootstrap.Modal(document.getElementById('donateModal'));
         myModal.show();
+    }
+
+    function submitCustomAmount(instId, instName) {
+        const amountInput = document.getElementById('custom-amount-' + instId);
+        const amount = amountInput.value.trim();
+        
+        if (!amount || parseFloat(amount) <= 0) {
+            alert('Please enter a valid donation amount.');
+            amountInput.focus();
+            return;
+        }
+        
+        openDonateModal(instId, amount, 'Custom Amount', instName);
     }
 </script>
 @endsection
